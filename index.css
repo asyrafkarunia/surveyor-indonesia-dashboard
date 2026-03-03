@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root{
+  --primary:#d33131;
+  --primary-dark:#b91c1c;
+  --brand-blue:#0D3B66;
+  --brand-teal:#0FBFBF;
+}
+.bg-primary{background-color:var(--primary)!important;}
+.hover\:bg-primary-dark:hover{background-color:var(--primary-dark)!important;}
+.text-primary{color:var(--primary)!important;}
+.border-primary{border-color:var(--primary)!important;}
+.focus\:border-primary:focus{border-color:var(--primary)!important;}
+
+/* MARS Application Styles */
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
