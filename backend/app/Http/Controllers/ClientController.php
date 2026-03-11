@@ -91,10 +91,14 @@ class ClientController extends Controller
             'logo' => 'nullable|string',
         ]);
 
-        $validated['code'] = 'CLI-' . str_pad(Client::count() + 1, 5, '0', STR_PAD_LEFT);
-        $validated['status'] = 'Aktif';
+        $client = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+            // Lock existing rows to prevent race condition on code numbering
+            $count = Client::lockForUpdate()->count() + 1;
+            $validated['code'] = 'CLI-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            $validated['status'] = 'Aktif';
 
-        $client = Client::create($validated);
+            return Client::create($validated);
+        });
         
         // Log client creation
         LogActivity::logClientCreated($client->id, $client->company_name, $request->user()->id ?? null);

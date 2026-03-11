@@ -15,7 +15,7 @@ class ProjectAttachmentController extends Controller
 
         if ($request->hasFile('file')) {
             $request->validate([
-                'file' => 'required|file|max:10240',
+                'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,zip,rar|max:10240',
             ]);
 
             $file = $request->file('file');

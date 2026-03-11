@@ -57,13 +57,16 @@ class SphController extends Controller
             'terms_conditions' => 'nullable|string',
         ]);
 
-        $year = date('Y');
-        $count = Sph::whereYear('created_at', $year)->count() + 1;
-        $validated['sph_no'] = 'SPH-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/PTSI/' . $year;
-        $validated['status'] = 'waiting_head_section';
-        $validated['created_by'] = $request->user()->id;
+        $sph = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+            $year = date('Y');
+            // Lock existing rows to prevent race condition on numbering
+            $count = Sph::whereYear('created_at', $year)->lockForUpdate()->count() + 1;
+            $validated['sph_no'] = 'SPH-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/PTSI/' . $year;
+            $validated['status'] = 'waiting_head_section';
+            $validated['created_by'] = $request->user()->id;
 
-        $sph = Sph::create($validated);
+            return Sph::create($validated);
+        });
         
         // Log SPH creation
         LogActivity::logSphCreated($sph->id, $sph->sph_no, $request->user()->id);
@@ -182,9 +185,12 @@ class SphController extends Controller
                 'download_url' => asset('storage/' . $filePath),
             ]);
         } catch (\Exception $e) {
+            Log::error('SPH Generate Error: ' . $e->getMessage(), [
+                'sph_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
-                'message' => 'Gagal membuat dokumen SPH',
-                'error' => $e->getMessage()
+                'message' => 'Gagal membuat dokumen SPH. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }
@@ -255,8 +261,7 @@ class SphController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
-                'message' => 'Gagal menyetujui dokumen',
-                'error' => $e->getMessage()
+                'message' => 'Gagal menyetujui dokumen. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }

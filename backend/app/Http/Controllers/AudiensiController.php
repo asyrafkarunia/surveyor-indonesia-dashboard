@@ -67,14 +67,17 @@ class AudiensiController extends Controller
             'is_new_application' => 'nullable|boolean',
         ]);
 
-        $year = date('Y');
-        $month = date('n');
-        $count = AudiensiLetter::whereYear('created_at', $year)->whereMonth('created_at', $month)->count() + 1;
-        $validated['letter_number'] = 'AUD/SI/' . $year . '/' . $month . '/' . str_pad($count, 4, '0', STR_PAD_LEFT);
-        $validated['created_by'] = $request->user()->id;
-        $validated['status'] = $request->boolean('is_new_application') ? 'waiting_client' : 'waiting_head_section';
+        $letter = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+            $year = date('Y');
+            $month = date('n');
+            // Lock existing rows to prevent race condition on numbering
+            $count = AudiensiLetter::whereYear('created_at', $year)->whereMonth('created_at', $month)->lockForUpdate()->count() + 1;
+            $validated['letter_number'] = 'AUD/SI/' . $year . '/' . $month . '/' . str_pad($count, 4, '0', STR_PAD_LEFT);
+            $validated['created_by'] = $request->user()->id;
+            $validated['status'] = $request->boolean('is_new_application') ? 'waiting_client' : 'waiting_head_section';
 
-        $letter = AudiensiLetter::create($validated);
+            return AudiensiLetter::create($validated);
+        });
 
         return response()->json($letter->load(['client', 'template', 'creator']), 201);
     }
@@ -124,9 +127,12 @@ class AudiensiController extends Controller
                 'download_url' => asset('storage/' . $filePath),
             ]);
         } catch (\Exception $e) {
+            Log::error('Audiensi Generate Error: ' . $e->getMessage(), [
+                'letter_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
-                'message' => 'Gagal membuat PDF',
-                'error' => $e->getMessage()
+                'message' => 'Gagal membuat PDF. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }
@@ -221,12 +227,10 @@ class AudiensiController extends Controller
                         'letter_id' => $id,
                         'error' => $pdfException->getMessage()
                     ]);
-                    // We don't necessarily fail the whole approval if only PDF generation fails, 
-                    // but we should inform the user
+                    // Approval succeeded but PDF generation failed — inform user without leaking error detail
                     return response()->json([
-                        'message' => 'Persetujuan berhasil, namun gagal memperbarui file PDF',
+                        'message' => 'Persetujuan berhasil, namun gagal memperbarui file PDF. Silakan generate ulang.',
                         'data' => $letter->fresh(['client', 'template', 'creator']),
-                        'error' => $pdfException->getMessage()
                     ], 200); 
                 }
                 
@@ -244,8 +248,7 @@ class AudiensiController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
-                'message' => 'Gagal menyetujui dokumen: ' . $e->getMessage(),
-                'error_type' => get_class($e)
+                'message' => 'Gagal menyetujui dokumen. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }
@@ -459,9 +462,11 @@ class AudiensiController extends Controller
             'message' => 'Template audiensi berhasil dihapus'
         ]);
     } catch (\Exception $e) {
+        Log::error('Audiensi Template Delete Error: ' . $e->getMessage(), [
+            'template_id' => $id,
+        ]);
         return response()->json([
-            'message' => 'Gagal menghapus template',
-            'error' => $e->getMessage()
+            'message' => 'Gagal menghapus template. Silakan coba lagi atau hubungi administrator.',
         ], 500);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Helpers\LogActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -71,8 +72,9 @@ class UserController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
+            Log::error('Password update error: ' . $e->getMessage(), ['user_id' => $request->user()->id]);
             return response()->json([
-                'message' => 'Failed to update password: ' . $e->getMessage(),
+                'message' => 'Gagal memperbarui kata sandi. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }
@@ -118,8 +120,9 @@ class UserController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
+            Log::error('User creation error: ' . $e->getMessage(), ['admin_id' => $request->user()->id ?? null]);
             return response()->json([
-                'message' => 'Failed to create user: ' . $e->getMessage(),
+                'message' => 'Gagal membuat akun pengguna. Silakan coba lagi atau hubungi administrator.',
             ], 500);
         }
     }

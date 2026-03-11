@@ -37,10 +37,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const userData = await api.getCurrentUser();
         console.log('Loaded user data:', userData);
         if (userData) {
-          // HOTFIX: Assign roleName for Ibnu Khaldun if missing, to ensure correct permission checks
-          if (userData.name === 'Ibnu Khaldun' && userData.role === 'approver') {
-            userData.roleName = 'General Manager';
-          }
           setUser(userData);
         } else {
           setUser(null);
@@ -67,10 +63,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await api.login(email, password);
       console.log('Login response:', response);
       if (response && response.user) {
-        // HOTFIX: Assign roleName for Ibnu Khaldun if missing
-        if (response.user.name === 'Ibnu Khaldun' && response.user.role === 'approver') {
-          response.user.roleName = 'General Manager';
-        }
         setUser(response.user);
       } else {
         throw new Error('Invalid login response');

@@ -23,8 +23,7 @@ use App\Http\Controllers\ActivityLogController;
 */
 
 // Public routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // Protected routes
 Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
@@ -139,6 +138,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     Route::post('/users', [UserController::class, 'store'])->middleware('role:marketing');
     Route::put('/users/{id}', [UserController::class, 'update'])->middleware('role:marketing');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('role:marketing');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('role:marketing');
     
     // Permissions (Admin only)
     Route::get('/permissions', [PermissionController::class, 'index'])->middleware('role:marketing');
