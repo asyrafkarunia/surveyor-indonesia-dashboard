@@ -148,8 +148,8 @@ const BerkasDokumenScreen: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <main className="flex-1 flex items-center justify-center bg-slate-50">
-        <p className="text-sm font-bold text-slate-500">
+      <main className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
           Halaman ini hanya dapat diakses oleh Administrator Marketing.
         </p>
       </main>
@@ -157,20 +157,20 @@ const BerkasDokumenScreen: React.FC = () => {
   }
 
   return (
-    <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 custom-scrollbar">
+    <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="max-w-6xl mx-auto px-8 py-8 space-y-8">
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900">Berkas Dokumen</h2>
-            <p className="text-sm text-slate-500 font-medium">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Berkas Dokumen</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Kumpulan dokumen PDF essensial yang siap diunduh oleh Administrator.
             </p>
           </div>
           <div className="hidden"></div>
         </header>
 
-        <section className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-          <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-2">
+        <section className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
             Tambah Dokumen Baru
           </h3>
@@ -182,7 +182,7 @@ const BerkasDokumenScreen: React.FC = () => {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                 placeholder="Contoh: Pedoman Mutu 2025"
               />
             </div>
@@ -193,7 +193,7 @@ const BerkasDokumenScreen: React.FC = () => {
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                 placeholder="Opsional"
               />
             </div>
@@ -220,16 +220,16 @@ const BerkasDokumenScreen: React.FC = () => {
           {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
         </section>
 
-        <section className="bg-white rounded-2xl border border-slate-200 p-6">
+        <section className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">Daftar Dokumen</h3>
+            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Daftar Dokumen</h3>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary w-64"
+                  className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary w-64"
                   placeholder="Cari dokumen..."
                 />
               </div>
@@ -238,68 +238,68 @@ const BerkasDokumenScreen: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="py-8 text-center text-sm text-slate-500 font-medium">
+            <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
               Memuat data dokumen...
             </div>
           ) : documents.length === 0 ? (
-            <div className="py-8 text-center text-sm text-slate-500 font-medium">
+            <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
               Belum ada dokumen yang disimpan.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Judul
                     </th>
-                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Keterangan
                     </th>
-                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Ukuran
                     </th>
-                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Diunggah Oleh
                     </th>
-                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Tanggal
                     </th>
-                    <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                    <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                       Aksi
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {documents.map((doc) => (
-                    <tr key={doc.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-bold text-slate-900">
+                    <tr key={doc.id} className="hover:bg-slate-50 dark:bg-slate-900">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
                         {doc.title}
                       </td>
-                      <td className="px-4 py-3 text-slate-600 text-xs">
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">
                         {doc.description || '-'}
                       </td>
-                      <td className="px-4 py-3 text-slate-600 text-xs">
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">
                         {formatSize(doc.file_size || null)}
                       </td>
-                      <td className="px-4 py-3 text-slate-600 text-xs">
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">
                         {doc.uploader?.name || '-'}
                       </td>
-                      <td className="px-4 py-3 text-slate-600 text-xs">
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300 text-xs">
                         {formatDate(doc.created_at)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-2">
                           <button
                             onClick={() => setPreviewDoc(doc)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 hover:bg-slate-50"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
                           >
                             <span className="material-symbols-outlined text-[16px]">visibility</span>
                             Preview
                           </button>
                           <button
                             onClick={() => handleDownload(doc.id, doc.file_name)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-black uppercase tracking-[0.14em] text-primary hover:bg-red-50"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-[0.14em] text-primary hover:bg-red-50"
                           >
                             <span className="material-symbols-outlined text-[16px]">download</span>
                             Download
@@ -323,11 +323,11 @@ const BerkasDokumenScreen: React.FC = () => {
 
         {previewDoc && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white w-[90%] h-[80%] rounded-2xl shadow-xl overflow-hidden relative">
+            <div className="bg-white dark:bg-slate-800 w-[90%] h-[80%] rounded-2xl shadow-xl overflow-hidden relative">
               <div className="absolute top-3 right-3 flex gap-2">
                 <button
                   onClick={() => setPreviewDoc(null)}
-                  className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
+                  className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"
                   title="Tutup Preview"
                 >
                   <span className="material-symbols-outlined">close</span>
@@ -336,7 +336,7 @@ const BerkasDokumenScreen: React.FC = () => {
                   href={getFileUrl(previewDoc.file_path)}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
+                  className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"
                   title="Buka di Tab"
                 >
                   <span className="material-symbols-outlined">open_in_new</span>

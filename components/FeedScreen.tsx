@@ -145,19 +145,19 @@ const FeedItem: React.FC<{
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {item.user.avatar ? (
-            <div className="size-10 rounded-full bg-cover bg-center border border-slate-200" style={{ backgroundImage: `url("${item.user.avatar}")` }}></div>
+            <div className="size-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${item.user.avatar}")` }}></div>
           ) : (
-            <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold">
+            <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300 font-bold">
               {item.user.name.charAt(0)}
             </div>
           )}
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-900">{item.user.name}</span>
+              <span className="font-bold text-slate-900 dark:text-white">{item.user.name}</span>
               {item.type === 'project_update' && (
                 <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600">
                   Update Proyek
@@ -175,7 +175,7 @@ const FeedItem: React.FC<{
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500">{formatTime(item.created_at)}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{formatTime(item.created_at)}</p>
           </div>
         </div>
 
@@ -183,19 +183,19 @@ const FeedItem: React.FC<{
           <div className="relative" ref={menuRef}>
             <button 
               onClick={() => setShowMenu(!showMenu)}
-              className="rounded-full p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+              className="rounded-full p-1 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-600 dark:text-slate-300"
             >
               <span className="material-symbols-outlined text-[20px]">more_horiz</span>
             </button>
             
             {showMenu && (
-              <div className="absolute right-0 top-8 z-10 w-32 overflow-hidden rounded-lg border border-slate-100 bg-white shadow-lg">
+              <div className="absolute right-0 top-8 z-10 w-32 overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg">
                 <button 
                   onClick={() => {
                     setIsEditing(true);
                     setShowMenu(false);
                   }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
                 >
                   <span className="material-symbols-outlined text-[16px]">edit</span>
                   Edit
@@ -224,13 +224,13 @@ const FeedItem: React.FC<{
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full rounded-lg border-slate-200 text-sm focus:border-primary focus:ring-primary"
+              className="w-full rounded-lg border-slate-200 dark:border-slate-700 text-sm focus:border-primary focus:ring-primary"
               rows={3}
             />
             <div className="mt-2 flex justify-end gap-2">
               <button 
                 onClick={() => setIsEditing(false)}
-                className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
               >
                 Batal
               </button>
@@ -245,16 +245,16 @@ const FeedItem: React.FC<{
           </div>
         ) : (
           <>
-            <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{item.content}</p>
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap">{item.content}</p>
             
             {item.project && (
-              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
-                <div className="flex size-8 items-center justify-center rounded bg-white text-xs font-bold text-slate-700 shadow-sm">
+              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+                <div className="flex size-8 items-center justify-center rounded bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm">
                   {item.project.code.substring(0, 2)}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-700">{item.project.code}</p>
-                  <p className="text-[10px] text-slate-500 line-clamp-1 max-w-[200px]">{item.project.title}</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{item.project.code}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 max-w-[200px]">{item.project.title}</p>
                 </div>
               </div>
             )}
@@ -267,7 +267,7 @@ const FeedItem: React.FC<{
                     href={file.path}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors"
+                    className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors"
                   >
                     <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>
                     {file.name}
@@ -278,11 +278,11 @@ const FeedItem: React.FC<{
           </>
         )}
 
-        <div className="mt-4 flex items-center gap-6 border-t border-slate-100 pt-3">
+        <div className="mt-4 flex items-center gap-6 border-t border-slate-100 dark:border-slate-700 pt-3">
           <button 
             onClick={() => onLike(item.id)}
             className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
-              item.is_liked ? 'text-pink-600' : 'text-slate-500 hover:text-pink-600'
+              item.is_liked ? 'text-pink-600' : 'text-slate-500 dark:text-slate-400 hover:text-pink-600'
             }`}
           >
             <span className={`material-symbols-outlined text-[18px] ${item.is_liked ? 'fill' : ''}`}>favorite</span>
@@ -290,7 +290,7 @@ const FeedItem: React.FC<{
           </button>
           <button 
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">chat_bubble</span>
             {item.comments_count > 0 ? item.comments_count : 'Komentar'}
@@ -298,22 +298,22 @@ const FeedItem: React.FC<{
         </div>
 
         {showComments && (
-          <div className="mt-4 space-y-4 border-t border-slate-100 pt-4">
+          <div className="mt-4 space-y-4 border-t border-slate-100 dark:border-slate-700 pt-4">
             {item.comments && item.comments.map(comment => (
               <div key={comment.id} className="flex gap-3">
                 {comment.user.avatar ? (
-                  <div className="size-6 rounded-full bg-cover bg-center border border-slate-200" style={{ backgroundImage: `url("${comment.user.avatar}")` }}></div>
+                  <div className="size-6 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${comment.user.avatar}")` }}></div>
                 ) : (
-                  <div className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">
+                  <div className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 dark:text-slate-300">
                     {comment.user.name.charAt(0)}
                   </div>
                 )}
-                <div className="flex-1 rounded-lg bg-slate-50 p-2">
+                <div className="flex-1 rounded-lg bg-slate-50 dark:bg-slate-900 p-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">{comment.user.name}</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">{comment.user.name}</span>
                     <span className="text-[10px] text-slate-400">{formatTime(comment.created_at)}</span>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600">{comment.comment}</p>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{comment.comment}</p>
                 </div>
               </div>
             ))}
@@ -324,7 +324,7 @@ const FeedItem: React.FC<{
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Tulis komentar..."
-                className="flex-1 rounded-lg border-slate-200 bg-slate-50 px-3 py-1.5 text-xs focus:border-primary focus:ring-primary"
+                className="flex-1 rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 text-xs focus:border-primary focus:ring-primary"
               />
               <button 
                 type="submit"
@@ -512,17 +512,17 @@ const FeedScreen: React.FC = () => {
         >
           {isRefreshing ? (
             <div className="flex flex-col items-center gap-2 py-4">
-              <div className="p-2 bg-white/80 backdrop-blur rounded-full shadow-sm">
-                <svg className="animate-spin h-6 w-6 text-slate-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <div className="p-2 bg-white dark:bg-slate-800/80 backdrop-blur rounded-full shadow-sm">
+                <svg className="animate-spin h-6 w-6 text-slate-700 dark:text-slate-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-1 py-2 text-slate-500 font-semibold">
+            <div className="flex flex-col items-center gap-1 py-2 text-slate-500 dark:text-slate-400 font-semibold">
               <span 
-                className="material-symbols-outlined transition-transform duration-200 text-2xl bg-white/50 p-1.5 rounded-full"
+                className="material-symbols-outlined transition-transform duration-200 text-2xl bg-white dark:bg-slate-800/50 p-1.5 rounded-full"
                 style={{ transform: `rotate(${pullDistance * 2}deg)` }}
               >
                 arrow_downward
@@ -533,19 +533,19 @@ const FeedScreen: React.FC = () => {
 
         {/* Pull Hint Text */}
         <div className="w-full flex items-center justify-center py-2 -mb-2 cursor-grab active:cursor-grabbing">
-          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2 bg-slate-50/50 px-3 py-1 rounded-full border border-slate-100/50">
+          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700/50">
             <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
             Tarik ke bawah untuk refresh
           </span>
         </div>
 
         {/* Post Input */}
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
           <div className="flex gap-4">
             {user?.avatar ? (
-              <div className="size-10 rounded-full bg-cover bg-center border border-slate-200" style={{ backgroundImage: `url("${user.avatar}")` }}></div>
+              <div className="size-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${user.avatar}")` }}></div>
             ) : (
-              <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+              <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300">
                 <span className="material-symbols-outlined">person</span>
               </div>
             )}
@@ -560,7 +560,7 @@ const FeedScreen: React.FC = () => {
               {files.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {files.map((file, index) => (
-                    <div key={index} className="flex items-center gap-2 rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
+                    <div key={index} className="flex items-center gap-2 rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:text-slate-300">
                       <span className="truncate max-w-[150px]">{file.name}</span>
                       <button onClick={() => setFiles(files.filter((_, i) => i !== index))} className="text-slate-400 hover:text-red-500">
                         <span className="material-symbols-outlined text-[16px]">close</span>
@@ -569,11 +569,11 @@ const FeedScreen: React.FC = () => {
                   ))}
                 </div>
               )}
-              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+              <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
                 <div className="flex gap-2">
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-1 rounded px-2 py-1 text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 rounded px-2 py-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors"
                   >
                     <span className="material-symbols-outlined text-[18px]">attach_file</span>
                     Lampirkan File
@@ -617,10 +617,10 @@ const FeedScreen: React.FC = () => {
       {/* Right Widgets */}
       <div className="w-80 flex-none flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2">
         {/* Aktivitas Mendatang Widget */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">Aktivitas Mendatang</h3>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aktivitas Mendatang</h3>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:text-slate-300">
               {deadlines.length}
             </span>
           </div>
@@ -643,13 +643,13 @@ const FeedScreen: React.FC = () => {
                     }`}>{deadline.day}</span>
                   </div>
                   <div className="flex flex-col overflow-hidden">
-                    <p className="text-sm font-bold text-slate-900 line-clamp-1">{deadline.title}</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{deadline.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">{deadline.team}</p>
                       {deadline.time && (
                         <>
                           <span className="text-slate-300">•</span>
-                          <span className="text-[11px] font-medium text-slate-500">{deadline.time}</span>
+                          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{deadline.time}</span>
                         </>
                       )}
                     </div>
@@ -661,9 +661,9 @@ const FeedScreen: React.FC = () => {
         </div>
 
         {/* Tim Online Widget */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900">Tim Online</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Tim Online</h3>
             <span className="flex items-center gap-1.5 text-[10px] font-bold text-green-600 uppercase tracking-tight">
               <span className="relative flex size-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
@@ -681,22 +681,22 @@ const FeedScreen: React.FC = () => {
                   <div key={member.id} className="flex items-center gap-3">
                     <div className="relative">
                       {member.avatar ? (
-                        <div className="size-9 rounded-full bg-cover bg-center border border-slate-100 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
+                        <div className="size-9 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-700 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
                       ) : (
-                        <div className="size-9 rounded-full bg-slate-100 border border-slate-100 shadow-sm flex items-center justify-center">
-                          <span className="material-symbols-outlined text-sm text-slate-600">person</span>
+                        <div className="size-9 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center">
+                          <span className="material-symbols-outlined text-sm text-slate-600 dark:text-slate-300">person</span>
                         </div>
                       )}
                       <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-white bg-green-500"></span>
                     </div>
-                    <span className="text-sm font-bold text-slate-700">{member.name}</span>
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{member.name}</span>
                   </div>
                 ))}
               </div>
               {onlineUsers.length > 10 && (
                 <button 
                   onClick={() => setShowAllOnlineUsers(true)}
-                  className="mt-6 w-full rounded-xl bg-slate-50 py-2.5 text-[11px] font-black text-slate-500 hover:bg-slate-100 transition-colors uppercase tracking-widest border border-slate-200/50"
+                  className="mt-6 w-full rounded-xl bg-slate-50 dark:bg-slate-900 py-2.5 text-[11px] font-black text-slate-500 dark:text-slate-400 hover:bg-slate-100 transition-colors uppercase tracking-widest border border-slate-200 dark:border-slate-700/50"
                 >
                   Lihat Semua Anggota
                 </button>
@@ -709,12 +709,12 @@ const FeedScreen: React.FC = () => {
       {/* Online Users Modal */}
       {showAllOnlineUsers && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-100 p-5">
-              <h3 className="text-lg font-bold text-slate-900">Semua Anggota Online ({onlineUsers.length})</h3>
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-5">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Semua Anggota Online ({onlineUsers.length})</h3>
               <button 
                 onClick={() => setShowAllOnlineUsers(false)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
+                className="rounded-full p-2 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-600 dark:text-slate-300 transition-colors"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -725,23 +725,23 @@ const FeedScreen: React.FC = () => {
                   <div key={member.id} className="flex items-center gap-4">
                     <div className="relative">
                       {member.avatar ? (
-                        <div className="size-12 rounded-full bg-cover bg-center border border-slate-100 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
+                        <div className="size-12 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-700 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
                       ) : (
-                        <div className="size-12 rounded-full bg-slate-100 border border-slate-100 shadow-sm flex items-center justify-center">
-                          <span className="material-symbols-outlined text-lg text-slate-600">person</span>
+                        <div className="size-12 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center">
+                          <span className="material-symbols-outlined text-lg text-slate-600 dark:text-slate-300">person</span>
                         </div>
                       )}
                       <span className="absolute bottom-0 right-0 size-3.5 rounded-full border-2 border-white bg-green-500"></span>
                     </div>
                     <div>
-                      <span className="block text-base font-bold text-slate-900">{member.name}</span>
-                      <span className="text-xs text-slate-500">{member.email || 'Anggota Tim'}</span>
+                      <span className="block text-base font-bold text-slate-900 dark:text-white">{member.name}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{member.email || 'Anggota Tim'}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="border-t border-slate-100 p-5">
+            <div className="border-t border-slate-100 dark:border-slate-700 p-5">
               <button 
                 onClick={() => setShowAllOnlineUsers(false)}
                 className="w-full rounded-xl bg-slate-900 py-3 text-sm font-bold text-white hover:bg-slate-800 transition-colors"

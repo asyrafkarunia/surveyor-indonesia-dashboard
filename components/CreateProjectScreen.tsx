@@ -282,27 +282,27 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
       <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 custom-scrollbar">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Tambah Proyek Baru</h2>
-            <p className="mt-2 text-base text-slate-500">Silakan lengkapi formulir di bawah ini untuk mendaftarkan proyek assurance baru.</p>
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Tambah Proyek Baru</h2>
+            <p className="mt-2 text-base text-slate-500 dark:text-slate-400">Silakan lengkapi formulir di bawah ini untuk mendaftarkan proyek assurance baru.</p>
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit}>
             {/* Informasi Dasar */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">info</span>
-                <h3 className="text-lg font-bold text-slate-900">Informasi Dasar</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Informasi Dasar</h3>
               </div>
               <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Klien <span className="text-primary">*</span>
                   </label>
                   <select
                     name="client_id"
                     value={formData.client_id}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                     required
                   >
                     <option value="">Pilih Klien</option>
@@ -314,39 +314,39 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Judul Proyek <span className="text-primary">*</span>
                   </label>
                   <input
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                     placeholder="Masukkan nama lengkap proyek"
                     required
                     type="text"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Deskripsi Proyek</label>
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Deskripsi Proyek</label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                     placeholder="Jelaskan detail lingkup kerja proyek..."
                     rows={4}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Jenis Proyek <span className="text-primary">*</span>
                   </label>
                   <select
                     name="project_type"
                     value={formData.project_type}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                     required
                   >
                     <option value="">Pilih jenis proyek</option>
@@ -361,18 +361,18 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             </div>
 
             {/* Lokasi Proyek */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">distance</span>
-                <h3 className="text-lg font-bold text-slate-900">Lokasi Proyek</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Lokasi Proyek</h3>
               </div>
               <div className="space-y-6">
-                <div className="relative w-full aspect-video rounded-xl border border-slate-200 bg-slate-50 overflow-hidden" style={{ minHeight: '400px' }}>
+                <div className="relative w-full aspect-video rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden" style={{ minHeight: '400px' }}>
                   {/* Search Box */}
                   <div className="absolute top-4 left-4 z-[1000] w-full max-w-md">
-                    <div className="flex items-center bg-white rounded-md shadow-md border border-slate-100 overflow-hidden">
+                    <div className="flex items-center bg-white dark:bg-slate-800 rounded-md shadow-md border border-slate-100 dark:border-slate-700 overflow-hidden">
                       <input
-                        className="border-none text-xs px-3 py-2 flex-1 focus:ring-0 text-slate-900"
+                        className="border-none text-xs px-3 py-2 flex-1 focus:ring-0 text-slate-900 dark:text-white"
                         placeholder="Cari lokasi..."
                         type="text"
                         value={searchLocation}
@@ -413,7 +413,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
 
                   {/* Coordinates Display */}
                   {markerPosition && (
-                    <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded text-[10px] text-slate-600 font-mono border border-white/50 shadow-sm z-[1000]">
+                    <div className="absolute bottom-3 left-3 bg-white dark:bg-slate-800/90 backdrop-blur-sm px-3 py-1.5 rounded text-[10px] text-slate-600 dark:text-slate-300 font-mono border border-white/50 shadow-sm z-[1000]">
                       {formData.latitude}° N, {formData.longitude}° E
                     </div>
                   )}
@@ -421,28 +421,28 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                       Alamat Lengkap <span className="text-primary">*</span>
                     </label>
                     <textarea
                       name="location_address"
                       value={formData.location_address}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                       placeholder="Alamat otomatis terisi saat pin dipilih atau cari lokasi..."
                       rows={2}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Latitude</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Latitude</label>
                     <div className="relative group">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] group-focus-within:text-primary">explore</span>
                       <input
                         name="latitude"
                         value={formData.latitude}
                         onChange={handleInputChange}
-                        className="w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
                         placeholder="-6.234567"
                         type="text"
                         readOnly
@@ -450,14 +450,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Longitude</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Longitude</label>
                     <div className="relative group">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] group-focus-within:text-primary">explore</span>
                       <input
                         name="longitude"
                         value={formData.longitude}
                         onChange={handleInputChange}
-                        className="w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
                         placeholder="106.827234"
                         type="text"
                         readOnly
@@ -469,14 +469,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             </div>
 
             {/* Waktu & Nilai */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">schedule</span>
-                <h3 className="text-lg font-bold text-slate-900">Waktu & Nilai</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Waktu & Nilai</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Tanggal Mulai <span className="text-primary">*</span>
                   </label>
                   <div className="relative group">
@@ -485,14 +485,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       name="start_date"
                       value={formData.start_date}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                       type="date"
                       required
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Tanggal Selesai <span className="text-primary">*</span>
                   </label>
                   <div className="relative group">
@@ -501,14 +501,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       name="end_date"
                       value={formData.end_date}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                       type="date"
                       required
                     />
                   </div>
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Nilai Kontrak <span className="text-primary">*</span>
                   </label>
                   <div className="relative flex items-center group">
@@ -517,7 +517,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       name="budget"
                       value={formatNumberInput(formData.budget)}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white pl-12 pr-4 py-2.5 text-sm text-slate-900 font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-12 pr-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                       placeholder="0"
                       type="text"
                       required
@@ -528,14 +528,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             </div>
 
             {/* Margin Proyek Section */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">percent</span>
-                <h3 className="text-lg font-bold text-slate-900">Margin Proyek</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Margin Proyek</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Target Margin (%) <span className="text-primary">*</span>
                   </label>
                   <div className="relative flex items-center group">
@@ -543,7 +543,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       name="target_margin"
                       value={formData.target_margin}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white pr-12 pl-4 py-2.5 text-sm text-slate-900 font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pr-12 pl-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                       placeholder="0"
                       type="number"
                       step="0.1"
@@ -559,18 +559,18 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             </div>
 
             {/* Detail Assurance */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">verified_user</span>
-                <h3 className="text-lg font-bold text-slate-900">Detail Assurance</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Detail Assurance</h3>
               </div>
               <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Pelaksana (Project Lead) <span className="text-primary">*</span>
                   </label>
               <div className="flex gap-3 items-center">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
                   <input
                     type="radio"
                     name="pic_mode"
@@ -580,7 +580,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   />
                   Pilih dari daftar
                 </label>
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
                   <input
                     type="radio"
                     name="pic_mode"
@@ -600,7 +600,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   name="pic_id"
                   value={formData.pic_id}
                   onChange={handleInputChange}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                   required
                 >
                   <option value="">Pilih Project Lead</option>
@@ -615,17 +615,17 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   name="custom_pic_name"
                   value={formData.custom_pic_name}
                   onChange={handleInputChange}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                   placeholder="Tuliskan nama project lead"
                   required
                 />
               )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Anggota Tim</label>
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Anggota Tim</label>
                   <select
                     multiple
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer min-h-[100px]"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer min-h-[100px]"
                     onChange={(e) => {
                       const selected = Array.from(e.target.selectedOptions, (option: HTMLOptionElement) => parseInt(option.value));
                       setSelectedTeamMembers(selected);
@@ -643,7 +643,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 <textarea
                   value={customTeamNotes}
                   onChange={(e) => setCustomTeamNotes(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                   rows={3}
                   placeholder="Tuliskan nama anggota tim manual atau keterangan lainnya"
                 />
@@ -651,12 +651,12 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Standar Kualitas</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Standar Kualitas</label>
                     <select
                       name="quality_standard"
                       value={formData.quality_standard}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 font-bold focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                     >
                       <option value="">Pilih Standar</option>
                       <option value="ISO 9001:2015">ISO 9001:2015</option>
@@ -667,24 +667,24 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Target Kepatuhan</label>
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Target Kepatuhan</label>
                     <input
                       name="target_compliance"
                       value={formData.target_compliance}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none font-bold"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none font-bold"
                       placeholder="Misal: Regulasi KLHK No. 12"
                       type="text"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest text-[10px]">Persyaratan Kepatuhan Khusus</label>
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Persyaratan Kepatuhan Khusus</label>
                   <textarea
                     name="compliance_requirements"
                     value={formData.compliance_requirements}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
                     placeholder="Sebutkan jika ada persyaratan kepatuhan spesifik dari klien..."
                     rows={3}
                   />
@@ -693,20 +693,20 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             </div>
 
             {/* Lampiran & Dokumen Section */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">attach_file</span>
-                <h3 className="text-lg font-bold text-slate-900">Lampiran & Dokumen</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Lampiran & Dokumen</h3>
               </div>
               <div className="space-y-6">
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 hover:bg-slate-50 hover:border-primary transition-all cursor-pointer group"
+                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-50 dark:bg-slate-900 hover:border-primary transition-all cursor-pointer group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-slate-400 group-hover:text-primary shadow-sm mb-3 transition-colors">
+                  <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary shadow-sm mb-3 transition-colors">
                     <span className="material-symbols-outlined text-[28px]">cloud_upload</span>
                   </div>
-                  <p className="text-sm font-bold text-slate-600">Klik untuk upload atau tarik file ke sini</p>
+                  <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Klik untuk upload atau tarik file ke sini</p>
                   <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">PDF, DOCX, XLSX atau Gambar (Max. 10MB)</p>
                   <input
                     ref={fileInputRef}
@@ -721,13 +721,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 {attachments.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {attachments.map((attachment, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-white shadow-sm group hover:border-primary/30 transition-all">
+                      <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm group hover:border-primary/30 transition-all">
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className="w-10 h-10 rounded-lg bg-red-50 text-primary flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-[22px]">description</span>
                           </div>
                           <div className="flex flex-col overflow-hidden">
-                            <span className="text-xs font-bold text-slate-900 truncate">{attachment.name}</span>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{attachment.name}</span>
                             <span className="text-[10px] font-medium text-slate-400 uppercase">{attachment.size}</span>
                           </div>
                         </div>
@@ -749,7 +749,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             <div className="flex items-center justify-end gap-4 pt-4 pb-12">
               <button
                 onClick={onCancel}
-                className="rounded-lg border border-slate-200 bg-white px-8 py-3 text-sm font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-8 py-3 text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm active:scale-95"
                 type="button"
                 disabled={loading}
               >
@@ -767,7 +767,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
         </div>
       </div>
 
-      <footer className="text-center py-6 border-t border-slate-100 bg-white">
+      <footer className="text-center py-6 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">© 2025 PT Surveyor Indonesia. All rights reserved.</p>
       </footer>
     </main>

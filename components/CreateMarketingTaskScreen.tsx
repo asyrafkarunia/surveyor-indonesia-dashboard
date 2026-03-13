@@ -149,13 +149,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
             </li>
             <li>
               <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">chevron_right</span>
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 text-[18px]">chevron_right</span>
                 <button onClick={onCancel} className="ml-1 md:ml-2 hover:text-primary transition-colors">Kanban Board</button>
               </div>
             </li>
             <li aria-current="page">
               <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">chevron_right</span>
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 text-[18px]">chevron_right</span>
                 <span className="ml-1 md:ml-2 text-slate-900 dark:text-white font-bold uppercase text-[10px] tracking-widest">Tambah Kegiatan</span>
               </div>
             </li>
@@ -164,8 +164,8 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
 
         {/* Header */}
         <div className="flex flex-col gap-2 mb-8">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">Tambah Kegiatan Marketing Baru</h2>
-          <p className="text-slate-500 text-sm max-w-2xl font-medium">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Tambah Kegiatan Marketing Baru</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl font-medium">
             Isi formulir di bawah ini untuk menambahkan kartu kegiatan baru ke papan Kanban. Pastikan semua informasi penting terisi untuk memudahkan pelacakan tim.
           </p>
         </div>
@@ -184,7 +184,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               </div>
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
                     Judul Kegiatan <span className="text-primary">*</span>
                   </label>
                   <input 
@@ -198,17 +198,17 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
                     Deskripsi Lengkap
                   </label>
                   <textarea 
                     name="description"
                     value={form.description}
                     onChange={handleChange}
-                    className="w-full rounded-xl border-slate-200 bg-slate-50 text-sm font-medium text-slate-700 focus:ring-primary/20 focus:border-primary min-h-[140px] px-4 py-3 resize-none" 
+                    className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-primary/20 focus:border-primary min-h-[140px] px-4 py-3 resize-none" 
                     placeholder="Jelaskan detail tujuan, target audience, dan deliverables dari kegiatan ini..."
                   ></textarea>
-                  <p className="mt-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 text-right uppercase tracking-widest">
+                  <p className="mt-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right uppercase tracking-widest">
                     {(form.description || '').length}/500 karakter
                   </p>
                 </div>
@@ -225,9 +225,9 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Ditugaskan Ke</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Ditugaskan Ke</label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">person</span>
                     </span>
                     <select 
@@ -242,13 +242,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                         <option key={u.id} value={u.id}>{u.name}</option>
                       ))}
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">expand_more</span>
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Klien / Proyek Terkait</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Klien / Proyek Terkait</label>
                   <div className="grid grid-cols-1 gap-3">
                     <div className="relative group">
                       <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
@@ -269,7 +269,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                           <option key={c.id} value={c.id}>{c.company_name || c.companyName}</option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                         <span className="material-symbols-outlined text-[20px]">expand_more</span>
                       </span>
                     </div>
@@ -288,7 +288,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                           <option key={p.id} value={p.id}>{p.title || p.name}</option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                         <span className="material-symbols-outlined text-[20px]">expand_more</span>
                       </span>
                     </div>
@@ -300,7 +300,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                         name="client"
                         value={form.client}
                         onChange={handleChange}
-                        className="w-full rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary h-12 pl-10 pr-10 transition-all outline-none" 
+                        className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary h-12 pl-10 pr-10 transition-all outline-none" 
                         placeholder="(Opsional) Tulis manual nama klien/proyek..." 
                         type="text"
                       />
@@ -308,7 +308,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Prioritas</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Prioritas</label>
                   <div className="relative">
                     <select 
                       name="priority"
@@ -320,13 +320,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                       <option value="Medium">Sedang (Medium)</option>
                       <option value="Low">Rendah (Low)</option>
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">expand_more</span>
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Tenggat Waktu</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Tenggat Waktu</label>
                   <div className="relative">
                     <input 
                       name="date"
@@ -339,7 +339,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Status Awal (Kolom Kanban)</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Status Awal (Kolom Kanban)</label>
                   <div className="relative">
                     <select 
                       name="status"
@@ -353,7 +353,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                       <option value="berjalan">Sedang Berjalan</option>
                       <option value="selesai">Selesai</option>
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">view_column</span>
                     </span>
                   </div>
@@ -364,7 +364,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
             {/* Bottom Actions */}
             <div className="pt-8 border-t border-slate-100 dark:border-slate-700 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
               <button 
-                className="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex justify-center items-center" 
+                className="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex justify-center items-center" 
                 type="button"
                 onClick={onCancel}
               >

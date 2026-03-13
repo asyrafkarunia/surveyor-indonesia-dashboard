@@ -63,15 +63,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
     <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transition-transform lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="flex flex-col gap-8 p-6 flex-1 overflow-hidden">
         <div className="flex items-center gap-3">
-          <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-slate-100 border border-slate-200">
+          <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-slate-100 border border-slate-200 dark:border-slate-700">
             <div 
               className="absolute inset-0 bg-center bg-cover" 
               style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSERvJ1idddmJjE2gASHfL72NSzlW3Yh_rF78kx3XZlx4gkTviXNQh-_Bh2_c3K4CgrHPygE6D9xseLWU9wUQS6-HN2G-6JTikV2i74m3YwcDtu_ncu9DUuQ-srBWQi3SBQbD0BAWXBe_fFNxm37rY5f0MJW76PiK20Vfjeli80e746F3YnJtHp6D4mFvTOkXhFMNfzS2Irip6Z0oweY7TfTob1c-zLI2WzFti7CzoD4uDDWC_pxnmR9yhPpLrqQFXZ4hRhr19WWI")' }}
             ></div>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-sm font-bold leading-tight text-slate-900">PT Surveyor Indonesia</h1>
-            <p className="text-xs text-slate-500">Admin Console</p>
+            <h1 className="text-sm font-bold leading-tight text-slate-900 dark:text-white">PT Surveyor Indonesia</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Admin Console</p>
           </div>
           <button onClick={onToggle} className="ml-auto lg:hidden text-slate-400">
              <span className="material-symbols-outlined">close</span>
@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors group text-left ${
                 activeId === item.id 
                   ? 'bg-red-50 dark:bg-red-900/20 text-primary' 
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700'
               }`}
             >
               <span className={`material-symbols-outlined text-[24px] ${activeId === item.id ? 'fill' : ''}`}>
@@ -112,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                     ? 'bg-red-50 dark:bg-red-900/20 text-primary' 
                     : ['permissions', 'admin_log'].includes(activeId) 
                       ? 'text-primary' 
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700'
                 }`}
               >
                 <span className={`material-symbols-outlined text-[24px] ${activeId === 'settings' || isSettingsOpen ? 'fill' : ''}`}>
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                    <button
                     onClick={() => onNavigate('settings')}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors text-left ${
-                      activeId === 'settings' ? 'text-primary font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      activeId === 'settings' ? 'text-primary font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-white dark:hover:text-white'
                     }`}
                   >
                     <span className="text-xs">Profil Saya</span>
@@ -144,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors text-left ${
                         activeId === item.id 
                           ? 'text-primary font-bold' 
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-white dark:hover:text-white'
                       }`}
                     >
                       <span className="text-xs">{item.label}</span>
@@ -158,12 +158,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
       </div>
 
       <div className="mt-auto border-t border-slate-200 dark:border-slate-700 p-4">
-        <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-700 p-3 bg-slate-50/50 dark:bg-slate-800/50">
+        <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/50 dark:bg-slate-800/50">
           <div 
             className="flex flex-1 items-center gap-3 overflow-hidden cursor-pointer group" 
             onClick={() => onNavigate('settings')}
           >
-            <div className="size-9 rounded-full bg-cover bg-center border border-slate-200" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCgDCf55ND08WPg8DubqFZ9EGK8cCH16t9LrzzV-7wZDo_29Xq073BDudx1oTlS6RIpF8LFCTng3lIqAiP3HnOMBNDpC76-4TdqHKzGXr_G2ltU1Dw_WKRyFgZz8vf2q65awbNyd5kRdZSYtH2psc_YFPhkCresYvPI49UuOGc7BfQdrBrkodQ837ZgLBj2clgyTfXEJ7g0OL5qIp1QuLpFlGBH7FMjEMUbetTf51jrGywSuggrjJb8CdmF4cCPwey1abOoRkcIkg8")' }}></div>
+            <div className="size-9 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCgDCf55ND08WPg8DubqFZ9EGK8cCH16t9LrzzV-7wZDo_29Xq073BDudx1oTlS6RIpF8LFCTng3lIqAiP3HnOMBNDpC76-4TdqHKzGXr_G2ltU1Dw_WKRyFgZz8vf2q65awbNyd5kRdZSYtH2psc_YFPhkCresYvPI49UuOGc7BfQdrBrkodQ837ZgLBj2clgyTfXEJ7g0OL5qIp1QuLpFlGBH7FMjEMUbetTf51jrGywSuggrjJb8CdmF4cCPwey1abOoRkcIkg8")' }}></div>
             <div className="flex flex-1 flex-col overflow-hidden">
               <p className="truncate text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{user?.name || 'User'}</p>
               <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">{getUserRoleLabel(user)}</p>
@@ -177,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                 console.error('Logout error:', error);
               }
             }}
-            className="text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"
             title="Logout"
           >
             <span className="material-symbols-outlined text-[20px]">logout</span>

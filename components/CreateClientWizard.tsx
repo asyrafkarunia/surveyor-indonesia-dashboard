@@ -134,12 +134,12 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
   const progressWidth = ((currentStep - 1) / (totalSteps - 1)) * 100;
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
         <BackButton onClick={onCancel} />
 
         {/* Stepper Indicator */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="relative flex items-center justify-between px-2 md:px-10">
             {/* Progress Track */}
             <div className="absolute left-10 right-10 top-5 h-1 bg-slate-100 -z-0 rounded-full"></div>
@@ -154,7 +154,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   onClick={() => goToStep(step.id)}
                   disabled={step.id >= currentStep}
                   className={`size-10 rounded-full flex items-center justify-center font-black text-sm shadow-sm ring-8 ring-white transition-all duration-300 ${
-                    currentStep >= step.id ? 'bg-primary text-white scale-110' : 'bg-white text-slate-300 border-2 border-slate-100'
+                    currentStep >= step.id ? 'bg-primary text-white scale-110' : 'bg-white dark:bg-slate-800 text-slate-300 border-2 border-slate-100 dark:border-slate-700'
                   }`}
                 >
                   {currentStep > step.id ? (
@@ -174,7 +174,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
         </div>
 
         {/* Content Box */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           <div className="p-8 md:p-10 flex-1">
             
             {currentStep === 1 && (
@@ -184,7 +184,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <span className="material-symbols-outlined fill">domain</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Informasi Dasar Perusahaan</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Informasi Dasar Perusahaan</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identitas legal dan profil industri klien.</p>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       Nama Perusahaan <span className="text-primary">*</span>
                     </label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary transition-all px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary transition-all px-4" 
                       placeholder="Contoh: PT Sumber Daya Energi Tbk" 
                       type="text"
                       value={formData.company_name}
@@ -208,7 +208,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       Tipe Entitas <span className="text-primary">*</span>
                     </label>
                     <select 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary cursor-pointer px-4"
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary cursor-pointer px-4"
                       value={formData.type}
                       onChange={(e) => updateFormData('type', e.target.value as 'BUMN' | 'Swasta' | 'Pemerintah')}
                       required
@@ -221,7 +221,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Sektor Industri</label>
                     <select 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary cursor-pointer px-4"
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary cursor-pointer px-4"
                       value={formData.industry}
                       onChange={(e) => updateFormData('industry', e.target.value)}
                     >
@@ -242,7 +242,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <span className="material-symbols-outlined fill">person</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Detail Kontak Utama (PIC)</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Detail Kontak Utama (PIC)</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Orang yang dapat dihubungi untuk operasional.</p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       Nama Lengkap PIC <span className="text-primary">*</span>
                     </label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                       placeholder="Contoh: Budi Santoso" 
                       type="text"
                       value={formData.contact_person}
@@ -264,7 +264,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Jabatan PIC</label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                       placeholder="Contoh: Direktur Operasional" 
                       type="text"
                       value={formData.contact_role}
@@ -276,7 +276,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       Email PIC <span className="text-primary">*</span>
                     </label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                       placeholder="email@perusahaan.com" 
                       type="email"
                       value={formData.email}
@@ -289,7 +289,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       Nomor Telepon <span className="text-primary">*</span>
                     </label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                       placeholder="0812-xxxx-xxxx" 
                       type="tel"
                       value={formData.phone}
@@ -308,7 +308,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <span className="material-symbols-outlined fill">location_on</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Alamat Perusahaan</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Alamat Perusahaan</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Informasi domisili kantor pusat klien.</p>
                   </div>
                 </div>
@@ -317,7 +317,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div className="col-span-1 md:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Alamat Lengkap</label>
                     <textarea 
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary p-4" 
+                      className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary p-4" 
                       placeholder="Nama Jalan, Gedung, Lantai..." 
                       rows={3}
                       value={formData.address}
@@ -327,7 +327,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Kota / Kabupaten</label>
                     <input 
-                      className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                      className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                       placeholder="Contoh: Jakarta Selatan" 
                       type="text"
                       value={formData.location}
@@ -345,7 +345,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <span className="material-symbols-outlined fill">note_add</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Catatan Tambahan</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Catatan Tambahan</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Informasi internal atau instruksi khusus.</p>
                   </div>
                 </div>
@@ -353,7 +353,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                 <div className="space-y-4">
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Catatan Internal</label>
                   <textarea 
-                    className="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary p-6 italic" 
+                    className="w-full rounded-2xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary p-6 italic" 
                     placeholder="Masukkan instruksi khusus atau kriteria prioritas klien..." 
                     rows={8}
                     value={formData.notes}
@@ -365,10 +365,10 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
 
             {currentStep === 5 && (
               <div className="space-y-8 animate-in fade-in zoom-in duration-300">
-                <div className="border-b border-slate-100 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="border-b border-slate-100 dark:border-slate-700 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 mb-1">Pratinjau & Konfirmasi Data</h2>
-                    <p className="text-slate-500 text-sm font-medium">Mohon periksa kembali kelengkapan dan kebenaran data sebelum menyimpan ke database.</p>
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-1">Pratinjau & Konfirmasi Data</h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Mohon periksa kembali kelengkapan dan kebenaran data sebelum menyimpan ke database.</p>
                   </div>
                   <div className="hidden md:block">
                     <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-[10px] font-black text-yellow-800 ring-1 ring-inset ring-yellow-600/20 uppercase tracking-widest">
@@ -380,13 +380,13 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
 
                 <div className="grid grid-cols-1 gap-6">
                   {/* Preview Section: Basic Info */}
-                  <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 group hover:border-primary/30 transition-all">
-                    <div className="flex justify-between items-start mb-6 border-b border-slate-200/60 pb-4">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all">
+                    <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
                           <span className="material-symbols-outlined text-[20px] fill">domain</span>
                         </div>
-                        <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Info Dasar Perusahaan</h3>
+                        <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Info Dasar Perusahaan</h3>
                       </div>
                       <button 
                         onClick={() => goToStep(1)}
@@ -398,15 +398,15 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Nama Perusahaan</p>
-                        <p className="font-black text-slate-900 text-base">{formData.company_name || '-'}</p>
+                        <p className="font-black text-slate-900 dark:text-white text-base">{formData.company_name || '-'}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Sektor Industri</p>
-                        <p className="font-bold text-slate-700">{formData.industry || '-'}</p>
+                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.industry || '-'}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Tipe Badan Usaha</p>
-                        <p className="font-bold text-slate-700">{formData.type}</p>
+                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.type}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Status Klien</p>
@@ -418,13 +418,13 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   </div>
 
                   {/* Preview Section: Contact Info */}
-                  <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 group hover:border-primary/30 transition-all">
-                    <div className="flex justify-between items-start mb-6 border-b border-slate-200/60 pb-4">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all">
+                    <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
                           <span className="material-symbols-outlined text-[20px] fill">person</span>
                         </div>
-                        <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Detail Kontak Utama</h3>
+                        <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Detail Kontak Utama</h3>
                       </div>
                       <button 
                         onClick={() => goToStep(2)}
@@ -436,32 +436,32 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Nama Lengkap</p>
-                        <p className="font-black text-slate-900">{formData.contact_person || '-'}</p>
+                        <p className="font-black text-slate-900 dark:text-white">{formData.contact_person || '-'}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Jabatan</p>
-                        <p className="font-bold text-slate-700">{formData.contact_role || '-'}</p>
+                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.contact_role || '-'}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Email</p>
-                        <p className="font-bold text-slate-700">{formData.email || '-'}</p>
+                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.email || '-'}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Nomor Telepon</p>
-                        <p className="font-bold text-slate-700">{formData.phone || '-'}</p>
+                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.phone || '-'}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Preview Section: Address */}
-                    <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 group hover:border-primary/30 transition-all h-full">
-                      <div className="flex justify-between items-start mb-6 border-b border-slate-200/60 pb-4">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all h-full">
+                      <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
                             <span className="material-symbols-outlined text-[20px] fill">location_on</span>
                           </div>
-                          <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Alamat Perusahaan</h3>
+                          <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Alamat Perusahaan</h3>
                         </div>
                         <button 
                           onClick={() => goToStep(3)}
@@ -473,23 +473,23 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       <div className="space-y-4">
                         <div>
                           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Alamat Lengkap</p>
-                          <p className="font-bold text-slate-900">{formData.address || '-'}</p>
+                          <p className="font-bold text-slate-900 dark:text-white">{formData.address || '-'}</p>
                         </div>
                         <div>
                           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Kota / Kab</p>
-                          <p className="font-bold text-slate-700">{formData.location || '-'}</p>
+                          <p className="font-bold text-slate-700 dark:text-slate-200">{formData.location || '-'}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* Preview Section: Notes */}
-                    <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 group hover:border-primary/30 transition-all h-full">
-                      <div className="flex justify-between items-start mb-6 border-b border-slate-200/60 pb-4">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all h-full">
+                      <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
                             <span className="material-symbols-outlined text-[20px] fill">note_add</span>
                           </div>
-                          <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Catatan Tambahan</h3>
+                          <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Catatan Tambahan</h3>
                         </div>
                         <button 
                           onClick={() => goToStep(4)}
@@ -500,8 +500,8 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">Catatan Internal</p>
-                        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-4">
-                          <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 p-4">
+                          <p className="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed italic">
                             {formData.notes || 'Tidak ada catatan'}
                           </p>
                         </div>
@@ -514,14 +514,14 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
           </div>
 
           {/* Footer Controls */}
-          <div className="bg-slate-50 p-6 md:px-10 md:py-6 border-t border-slate-100 flex justify-between items-center z-20 sticky bottom-0">
+          <div className="bg-slate-50 dark:bg-slate-900 p-6 md:px-10 md:py-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center z-20 sticky bottom-0">
             <button 
               onClick={prevStep}
               disabled={currentStep === 1}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
                 currentStep === 1 
-                  ? 'text-slate-300 border border-slate-200 cursor-not-allowed' 
-                  : 'text-slate-600 border border-slate-200 bg-white hover:bg-slate-50'
+                  ? 'text-slate-300 border border-slate-200 dark:border-slate-700 cursor-not-allowed' 
+                  : 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900'
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>

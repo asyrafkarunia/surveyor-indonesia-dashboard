@@ -183,15 +183,15 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
     }
   };
   return (
-    <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+    <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
       {/* Top Header / Breadcrumbs */}
-      <header className="h-14 bg-white border-b border-slate-200 flex items-center px-8 shrink-0">
+      <header className="h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center px-8 shrink-0">
         <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
           <button onClick={onBack} className="hover:text-primary transition-colors">Dashboard</button>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
           <button onClick={onBack} className="hover:text-primary transition-colors">Surat Audiensi</button>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-slate-900 font-black">Buat Baru</span>
+          <span className="text-slate-900 dark:text-white font-black">Buat Baru</span>
         </div>
       </header>
 
@@ -211,12 +211,12 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
             
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-2">Pengajuan Surat Audiensi</h1>
-                <p className="text-slate-500 text-sm">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
+                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Pengajuan Surat Audiensi</h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
               </div>
               <button 
                 onClick={onManageTemplates}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
               >
                 <span className="material-symbols-outlined text-[18px] text-slate-400">tune</span>
                 Kelola Template Surat
@@ -225,9 +225,9 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
           </div>
 
           {/* Main Form Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
             {/* Progress Bar */}
-            <div className="p-6 border-b border-slate-100">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[11px] font-black uppercase tracking-widest text-primary">
                   {progress < 50 ? 'Langkah 1 dari 2' : 'Langkah 2 dari 2'}
@@ -244,21 +244,21 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
 
             <div className="flex flex-col lg:flex-row">
               {/* Left Panel: Step 1 (Template Selection) */}
-              <div className="p-8 flex-1 lg:border-r border-slate-100">
+              <div className="p-8 flex-1 lg:border-r border-slate-100 dark:border-slate-700">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="flex items-center justify-center size-7 rounded-full bg-primary text-white text-[12px] font-black">1</span>
-                  <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Pilih Template Sektor</h2>
+                  <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Pilih Template Sektor</h2>
                 </div>
                 <p className="text-xs font-bold text-slate-400 mb-8 uppercase tracking-widest">Pilih jenis template surat yang sesuai dengan sektor tujuan.</p>
                 
                 <div className="grid grid-cols-1 gap-4">
-                  <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                     <label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 mb-2">Pilih Template</label>
                     <select
                       name="template_id"
                       value={form.template_id}
                       onChange={handleChange}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                     >
                       <option value="">Tanpa Template</option>
                       {templates.map((tpl) => (
@@ -268,13 +268,13 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                       ))}
                     </select>
                   </div>
-                  <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                     <label className="block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 mb-2">Sektor</label>
                     <input
                       name="sector"
                       value={form.sector}
                       readOnly
-                      className="w-full rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-bold text-slate-500 focus:outline-none cursor-not-allowed"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 px-4 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 focus:outline-none cursor-not-allowed"
                       placeholder="Otomatis dari template"
                     />
                   </div>
@@ -282,10 +282,10 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
               </div>
 
               {/* Right Panel: Step 2 (Details Form) */}
-              <div className="p-8 flex-1 bg-slate-50/50">
+              <div className="p-8 flex-1 bg-slate-50 dark:bg-slate-900/50">
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="flex items-center justify-center size-7 rounded-full bg-slate-200 text-slate-500 text-[12px] font-black">2</span>
-                  <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Detail Surat</h2>
+                  <span className="flex items-center justify-center size-7 rounded-full bg-slate-200 text-slate-500 dark:text-slate-400 text-[12px] font-black">2</span>
+                  <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Detail Surat</h2>
                 </div>
                 <p className="text-xs font-bold text-slate-400 mb-8 uppercase tracking-widest">Lengkapi informasi detail untuk isi surat.</p>
                 
@@ -294,7 +294,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nomor Surat Audiensi</label>
                     <div className="relative">
                       <input 
-                        className="w-full bg-slate-100 text-slate-500 border-slate-200 rounded-lg text-sm px-4 py-3 cursor-not-allowed select-none font-mono" 
+                        className="w-full bg-slate-100 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 rounded-lg text-sm px-4 py-3 cursor-not-allowed select-none font-mono" 
                         disabled 
                         type="text" 
                         value="Auto-generated setelah disimpan"
@@ -310,7 +310,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
                       </span>
                       <input 
-                        className="w-full bg-white border border-slate-200 rounded-lg text-sm pl-10 px-4 py-3 font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm pl-10 px-4 py-3 font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
                         type="date"
                         name="date"
                         value={form.date}
@@ -323,7 +323,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Perusahaan / Instansi</label>
                     <div className="space-y-3">
                       <select
-                        className="w-full bg-white border border-slate-200 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all cursor-pointer"
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all cursor-pointer"
                         onChange={handleClientChange}
                         value={isCustomCompany ? 'custom' : (form.client_id || '')}
                       >
@@ -336,7 +336,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                       
                       {isCustomCompany && (
                         <input 
-                          className="w-full bg-white border border-slate-200 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all animate-in fade-in slide-in-from-top-2" 
+                          className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all animate-in fade-in slide-in-from-top-2" 
                           placeholder="Tuliskan nama perusahaan..." 
                           type="text"
                           name="company_name"
@@ -351,7 +351,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Pimpinan / Tujuan Surat</label>
                     <input 
-                      className="w-full bg-white border border-slate-200 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
                       placeholder="Contoh: Arsy" 
                       type="text"
                       name="purpose"
@@ -364,7 +364,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Jabatan Pimpinan</label>
                     <input 
-                      className="w-full bg-white border border-slate-200 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-4 py-3 font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" 
                       placeholder="Contoh: Direktur Utama" 
                       type="text"
                       name="position"
@@ -379,13 +379,13 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                       name="content"
                       value={form.content}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                       rows={6}
                       placeholder="Isi surat atau poin-poin penting"
                     />
                   </div>
 
-                  <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                     <label className="flex items-center gap-3 cursor-pointer group">
                       <div className="relative flex items-center">
                         <input
@@ -393,12 +393,12 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                           name="is_new_application"
                           checked={form.is_new_application}
                           onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                          className="peer appearance-none size-5 rounded border border-slate-300 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                          className="peer appearance-none size-5 rounded border border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
                         />
                         <span className="material-symbols-outlined absolute text-white text-[16px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">check</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
                         <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Ceklis jika surat tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
                       </div>
                     </label>
@@ -413,10 +413,10 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
             </div>
 
             {/* Footer Actions */}
-            <div className="p-6 border-t border-slate-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
               <button 
                 onClick={onBack}
-                className="px-6 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-colors"
+                className="px-6 py-3 rounded-lg text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 transition-colors"
               >
                 Batal
               </button>
@@ -424,7 +424,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                 <button
                   onClick={() => handleSubmit(false)}
                   disabled={saving}
-                  className="flex-1 sm:flex-none px-6 py-3 rounded-lg border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors disabled:opacity-50"
+                  className="flex-1 sm:flex-none px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Menyimpan...' : 'Simpan Draft'}
                 </button>
@@ -442,30 +442,30 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
 
           {/* Helper / Instructions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-12">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
               <div className="size-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 group-hover:bg-green-100 transition-colors">
                 <span className="material-symbols-outlined text-[20px] fill">verified_user</span>
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">Validasi Otomatis</h3>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-tight">Validasi Otomatis</h3>
                 <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Sistem akan mengecek duplikasi nomor surat secara real-time.</p>
               </div>
             </div>
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
               <div className="size-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-100 transition-colors">
                 <span className="material-symbols-outlined text-[20px] fill">history_edu</span>
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">Arsip Digital</h3>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-tight">Arsip Digital</h3>
                 <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Salinan surat akan otomatis tersimpan di menu Arsip Dokumen.</p>
               </div>
             </div>
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 group hover:border-primary transition-colors">
               <div className="size-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 group-hover:bg-orange-100 transition-colors">
                 <span className="material-symbols-outlined text-[20px] fill">notifications_active</span>
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">Notifikasi</h3>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-tight">Notifikasi</h3>
                 <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Reminder akan dikirim H-3 sebelum tanggal audiensi.</p>
               </div>
             </div>

@@ -156,7 +156,7 @@ const ProjectApprovalScreen: React.FC = () => {
   if (!isApprover()) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-slate-500">You don't have permission to access this page.</p>
+        <p className="text-slate-500 dark:text-slate-400">You don't have permission to access this page.</p>
       </div>
     );
   }
@@ -166,8 +166,8 @@ const ProjectApprovalScreen: React.FC = () => {
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Persetujuan Dokumen</h3>
-            <p className="mt-1 text-sm text-slate-500">Review and approve SPH and Audiensi letters</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Persetujuan Dokumen</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Review and approve SPH and Audiensi letters</p>
           </div>
           <button
             onClick={loadApprovals}
@@ -181,13 +181,13 @@ const ProjectApprovalScreen: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-200">
+        <div className="flex border-b border-slate-200 dark:border-slate-700">
           <button
             onClick={() => setActiveTab('sph')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'sph'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'
             }`}
           >
             SPH
@@ -197,7 +197,7 @@ const ProjectApprovalScreen: React.FC = () => {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'audiensi'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'
             }`}
           >
             Surat Audiensi
@@ -207,8 +207,8 @@ const ProjectApprovalScreen: React.FC = () => {
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center gap-2">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-500"></div>
-              <p className="text-sm text-slate-500">Loading approvals...</p>
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Loading approvals...</p>
             </div>
           </div>
         ) : (
@@ -216,8 +216,8 @@ const ProjectApprovalScreen: React.FC = () => {
             {/* List */}
             <div className="lg:col-span-1 space-y-4">
               {items.length === 0 ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-6 text-center">
-                  <p className="text-slate-500">No pending approvals</p>
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center">
+                  <p className="text-slate-500 dark:text-slate-400">No pending approvals</p>
                 </div>
               ) : (
                 items.map((item) => (
@@ -227,15 +227,15 @@ const ProjectApprovalScreen: React.FC = () => {
                     className={`rounded-xl border p-4 cursor-pointer transition-all ${
                       selectedItem?.id === item.id
                         ? 'border-primary bg-primary/5'
-                        : 'border-slate-200 bg-white hover:border-primary/50'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50'
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-bold text-slate-900 truncate pr-2">{item.title}</h4>
-                      <span className="text-xs font-medium text-slate-500 whitespace-nowrap">{item.number}</span>
+                      <h4 className="font-bold text-slate-900 dark:text-white truncate pr-2">{item.title}</h4>
+                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">{item.number}</span>
                     </div>
-                    <p className="text-sm text-slate-600 mb-2">{item.client_name}</p>
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">{item.client_name}</p>
+                    <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                       <span>PIC: {item.pic}</span>
                       {item.value && (
                         <span>Rp {item.value.toLocaleString('id-ID')}</span>
@@ -249,34 +249,34 @@ const ProjectApprovalScreen: React.FC = () => {
             {/* Detail */}
             <div className="lg:col-span-2">
               {selectedItem ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm space-y-6">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">{selectedItem.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{selectedItem.title}</h3>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300 mb-4">
                       <span>Number: {selectedItem.number}</span>
                       <span>Status: <span className="font-bold">{selectedItem.status}</span></span>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-slate-900 mb-2">Client</h4>
-                    <p className="text-slate-600">{selectedItem.client_name}</p>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Client</h4>
+                    <p className="text-slate-600 dark:text-slate-300">{selectedItem.client_name}</p>
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-slate-900 mb-2">Document Information</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Document Information</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-slate-500">Date:</span>
+                        <span className="text-slate-500 dark:text-slate-400">Date:</span>
                         <p className="font-medium">{new Date(selectedItem.date).toLocaleDateString('id-ID')}</p>
                       </div>
                       <div>
-                        <span className="text-slate-500">PIC:</span>
+                        <span className="text-slate-500 dark:text-slate-400">PIC:</span>
                         <p className="font-medium">{selectedItem.pic}</p>
                       </div>
                       {selectedItem.value && (
                         <div>
-                          <span className="text-slate-500">Value:</span>
+                          <span className="text-slate-500 dark:text-slate-400">Value:</span>
                           <p className="font-medium">Rp {selectedItem.value.toLocaleString('id-ID')}</p>
                         </div>
                       )}
@@ -285,15 +285,15 @@ const ProjectApprovalScreen: React.FC = () => {
 
                   {selectedItem.description && (
                     <div>
-                      <h4 className="font-bold text-slate-900 mb-2">Description/Content</h4>
-                      <p className="text-slate-600 whitespace-pre-wrap">{selectedItem.description}</p>
+                      <h4 className="font-bold text-slate-900 dark:text-white mb-2">Description/Content</h4>
+                      <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{selectedItem.description}</p>
                     </div>
                   )}
 
                   {(isSeniorManager() || isGeneralManager()) && (
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Input Tanda Tangan</h4>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Input Tanda Tangan</h4>
                         {user?.signature && (
                           <div className="flex items-center gap-2">
                             <input
@@ -304,9 +304,9 @@ const ProjectApprovalScreen: React.FC = () => {
                                 setUseExistingSignature(e.target.checked);
                                 if (e.target.checked) setSignatureFile(null);
                               }}
-                              className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
+                              className="w-4 h-4 text-primary border-slate-300 dark:border-slate-600 rounded focus:ring-primary"
                             />
-                            <label htmlFor="useExisting" className="text-xs font-bold text-slate-700 cursor-pointer">
+                            <label htmlFor="useExisting" className="text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer">
                               Gunakan Tanda Tangan Tersimpan
                             </label>
                           </div>
@@ -315,7 +315,7 @@ const ProjectApprovalScreen: React.FC = () => {
 
                       <div className="flex items-start gap-4">
                         <div className="flex-1 space-y-3">
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">
                             {useExistingSignature ? 'Menggunakan tanda tangan yang tersimpan di profil Anda' : 'Silakan pilih file gambar tanda tangan (PNG/JPG)'}
                           </p>
                           <input 
@@ -326,7 +326,7 @@ const ProjectApprovalScreen: React.FC = () => {
                               setSignatureFile(e.target.files?.[0] || null);
                               if (e.target.files?.[0]) setUseExistingSignature(false);
                             }}
-                            className={`block w-full text-xs text-slate-500
+                            className={`block w-full text-xs text-slate-500 dark:text-slate-400
                               file:mr-4 file:py-2 file:px-4
                               file:rounded-full file:border-0
                               file:text-xs file:font-black
@@ -346,7 +346,7 @@ const ProjectApprovalScreen: React.FC = () => {
                         {(useExistingSignature && user?.signature) && (
                           <div className="flex flex-col items-center gap-1">
                             <p className="text-[8px] font-black text-slate-400 uppercase">Preview</p>
-                            <div className="h-16 w-24 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                            <div className="h-16 w-24 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 p-1 flex items-center justify-center overflow-hidden">
                               <img 
                                 src={user.signature.startsWith('http') ? user.signature : `http://localhost:8000/storage/${user.signature}`} 
                                 alt="Signature Preview" 
@@ -359,7 +359,7 @@ const ProjectApprovalScreen: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="flex gap-4 pt-4 border-t border-slate-200">
+                  <div className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                     {selectedItem.status === 'waiting_client' ? (
                       <>
                         <button
@@ -402,8 +402,8 @@ const ProjectApprovalScreen: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-                  <p className="text-slate-500">Select an item to review</p>
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
+                  <p className="text-slate-500 dark:text-slate-400">Select an item to review</p>
                 </div>
               )}
             </div>
@@ -413,13 +413,13 @@ const ProjectApprovalScreen: React.FC = () => {
         {/* Reject Modal */}
         {showRejectModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Reject Document</h3>
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Reject Document</h3>
               <textarea
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="Please provide a reason for rejection..."
-                className="w-full rounded-lg border border-slate-200 p-3 mb-4 min-h-[100px]"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 p-3 mb-4 min-h-[100px]"
               />
               <div className="flex gap-4">
                 <button
@@ -427,7 +427,7 @@ const ProjectApprovalScreen: React.FC = () => {
                     setShowRejectModal(false);
                     setRejectionReason('');
                   }}
-                  className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                  className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:bg-slate-900 transition-colors"
                 >
                   Cancel
                 </button>

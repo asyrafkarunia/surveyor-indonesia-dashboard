@@ -117,13 +117,13 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
   };
 
   return (
-    <main className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50">
+    <main className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="mx-auto max-w-[1200px] flex flex-col gap-6 pb-12">
         {/* Page Heading & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 mb-2">Surat Penawaran Harga</h2>
-            <p className="text-slate-500 text-sm max-w-xl">Kelola, lacak, dan buat dokumen penawaran harga untuk klien Anda secara efisien.</p>
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Surat Penawaran Harga</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Kelola, lacak, dan buat dokumen penawaran harga untuk klien Anda secara efisien.</p>
           </div>
           <button 
             onClick={onCreateClick}
@@ -135,14 +135,14 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
         </div>
 
         {/* Filters and Table Section */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col overflow-hidden">
           {/* Filters Header */}
-          <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-1 items-center gap-2 max-w-md">
               <div className="relative w-full group">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
                 <input 
-                  className="pl-10 pr-4 py-2.5 bg-slate-50 border border-transparent focus:bg-white focus:border-primary rounded-lg text-sm w-full transition-all outline-none" 
+                  className="pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-transparent focus:bg-white dark:bg-slate-800 focus:border-primary rounded-lg text-sm w-full transition-all outline-none" 
                   placeholder="Cari No. SPH, Klien, atau Proyek..." 
                   type="text"
                   value={search}
@@ -155,16 +155,16 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="px-3 py-2.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 border border-slate-200"
+                className="px-3 py-2.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
               >
                 {statusOptions.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
               <div className="flex items-center gap-2">
-                <input type="date" className="px-3 py-2.5 border rounded-lg text-xs font-semibold text-slate-600" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                <input type="date" className="px-3 py-2.5 border rounded-lg text-xs font-semibold text-slate-600" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                <button onClick={() => { setPage(1); fetchSph(); }} className="px-3 py-2.5 bg-slate-50 border rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100">Terapkan</button>
+                <input type="date" className="px-3 py-2.5 border rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                <input type="date" className="px-3 py-2.5 border rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                <button onClick={() => { setPage(1); fetchSph(); }} className="px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-slate-100">Terapkan</button>
                 <button
                   onClick={fetchSph}
                   disabled={loading}
@@ -182,7 +182,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-400 font-black border-b border-slate-100">
+                <tr className="bg-slate-50 dark:bg-slate-900 text-[10px] uppercase tracking-widest text-slate-400 font-black border-b border-slate-100 dark:border-slate-700">
                   <th className="px-6 py-4">No. SPH</th>
                   <th className="px-6 py-4">Klien & Proyek</th>
                   <th className="px-6 py-4 text-right">Nilai (IDR)</th>
@@ -198,18 +198,18 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                   <tr><td className="px-6 py-5 text-center text-slate-400" colSpan={6}>Tidak ada SPH</td></tr>
                 ) : (
                   sphList.map((sph) => (
-                    <tr key={sph.id} className="group hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-5 font-bold text-slate-900">{sph.sph_no}</td>
+                    <tr key={sph.id} className="group hover:bg-slate-50 dark:bg-slate-900 transition-colors">
+                      <td className="px-6 py-5 font-bold text-slate-900 dark:text-white">{sph.sph_no}</td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col">
-                          <span className="font-bold text-slate-900 truncate">{sph.client?.company_name || '-'}</span>
-                          <span className="text-[10px] font-medium text-slate-500 truncate uppercase tracking-tight">{sph.project_name || sph.project?.title || '-'}</span>
+                          <span className="font-bold text-slate-900 dark:text-white truncate">{sph.client?.company_name || '-'}</span>
+                          <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate uppercase tracking-tight">{sph.project_name || sph.project?.title || '-'}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-right font-black text-slate-900 tabular-nums">
+                      <td className="px-6 py-5 text-right font-black text-slate-900 dark:text-white tabular-nums">
                         {Number(sph.value || 0).toLocaleString('id-ID')}
                       </td>
-                      <td className="px-6 py-5 text-slate-500 font-medium">
+                      <td className="px-6 py-5 text-slate-500 dark:text-slate-400 font-medium">
                         {sph.date_created ? format(new Date(sph.date_created), 'dd MMM yyyy', { locale: id }) : '-'}
                       </td>
                       <td className="px-6 py-5">
@@ -252,7 +252,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                             <a href={sph.generated_file_path?.startsWith('http') 
                               ? sph.generated_file_path 
                               : `${(((import.meta as any).env.VITE_API_URL) || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${sph.generated_file_path}`}
-                              target="_blank" rel="noreferrer" className="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-colors" title="Download PDF">
+                              target="_blank" rel="noreferrer" className="p-1.5 text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-200 rounded-lg transition-colors" title="Download PDF">
                               <span className="material-symbols-outlined text-[20px]">download</span>
                             </a>
                           )}
@@ -266,18 +266,18 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
           </div>
 
           {/* Pagination */}
-          <div className="p-5 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+          <div className="p-5 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/30">
             <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Menampilkan halaman {page} dari {lastPage} • Total {total}</span>
             <div className="flex items-center gap-2">
               <button
-                className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-black uppercase tracking-widest text-slate-400 bg-white hover:bg-slate-50 disabled:opacity-50 transition-all"
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50 transition-all"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
               >
                 Previous
               </button>
               <button
-                className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 bg-white hover:bg-slate-50 shadow-sm transition-all"
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 shadow-sm transition-all"
                 onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
                 disabled={page >= lastPage}
               >

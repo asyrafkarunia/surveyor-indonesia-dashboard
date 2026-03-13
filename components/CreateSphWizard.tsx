@@ -117,9 +117,9 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
   };
 
   const Info = ({ label, value }: { label: string; value: string }) => (
-    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col gap-1">
+    <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 flex flex-col gap-1">
       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
-      <span className="text-sm font-bold text-slate-900">{value || '-'}</span>
+      <span className="text-sm font-bold text-slate-900 dark:text-white">{value || '-'}</span>
     </div>
   );
 
@@ -223,34 +223,34 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
         {/* Breadcrumbs */}
         <nav className="flex text-sm font-medium text-slate-400">
           <ol className="flex items-center space-x-2">
             <li><button onClick={onCancel} className="hover:text-primary transition-colors">Manage SPH</button></li>
             <li><span className="mx-1">/</span></li>
-            <li className="text-slate-900 font-black uppercase text-[10px] tracking-widest">Buat SPH Baru</li>
+            <li className="text-slate-900 dark:text-white font-black uppercase text-[10px] tracking-widest">Buat SPH Baru</li>
           </ol>
         </nav>
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">Buat SPH Baru</h2>
-            <p className="text-slate-500 text-sm font-medium uppercase tracking-tight">Wizard pembuatan Surat Penawaran Harga.</p>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Buat SPH Baru</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-tight">Wizard pembuatan Surat Penawaran Harga.</p>
           </div>
           <div className="flex gap-3">
             <button 
               onClick={onCancel}
-              className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm"
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm"
             >
               Batal
             </button>
             <button 
               onClick={() => handleSaveDraft(false)}
               disabled={saving}
-              className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm disabled:opacity-50"
             >
               {saving ? 'Menyimpan...' : 'Simpan Draft'}
             </button>
@@ -258,7 +258,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         </div>
 
         {/* Progress Stepper */}
-        <div className="w-full bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
+        <div className="w-full bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center justify-between relative px-2 md:px-12">
             <div className="absolute left-12 right-12 top-5 h-1 bg-slate-100 -z-0"></div>
             <div 
@@ -269,7 +269,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
             {steps.map((step) => (
               <div key={step.id} className="relative z-10 flex flex-col items-center gap-3">
                 <div className={`size-10 rounded-full flex items-center justify-center font-black text-sm shadow-sm ring-8 ring-white transition-all ${
-                  currentStep >= step.id ? 'bg-primary text-white scale-110' : 'bg-slate-50 text-slate-300 border-2 border-slate-100'
+                  currentStep >= step.id ? 'bg-primary text-white scale-110' : 'bg-slate-50 dark:bg-slate-900 text-slate-300 border-2 border-slate-100 dark:border-slate-700'
                 }`}>
                   {currentStep > step.id ? (
                     <span className="material-symbols-outlined text-[20px]">check</span>
@@ -288,7 +288,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           <div className="p-8 flex-1">
             {currentStep === 1 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
@@ -298,7 +298,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                       <span className="material-symbols-outlined fill">domain</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-900 leading-tight">Informasi Klien</h3>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Informasi Klien</h3>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pilih klien dan tentukan PIC untuk proyek ini.</p>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="client_id"
                         value={form.client_id}
                         onChange={handleClientChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4 appearance-none"
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4 appearance-none"
                         required
                       >
                         <option value="">Pilih Klien</option>
@@ -325,7 +325,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="pic_name"
                         value={form.pic_name}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                         placeholder="Ex: Bpk. Haryanto" 
                         type="text"
                       />
@@ -336,7 +336,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="pic_position"
                         value={form.pic_position}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                         placeholder="Ex: Direktur Operasional" 
                         type="text"
                       />
@@ -344,7 +344,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <div className="col-span-1 md:col-span-2">
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Alamat Perusahaan</label>
                       <textarea 
-                        className="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm font-medium text-slate-500 focus:ring-primary/20 focus:border-primary px-4 py-3" 
+                        className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-sm font-medium text-slate-500 dark:text-slate-400 focus:ring-primary/20 focus:border-primary px-4 py-3" 
                         readOnly 
                         rows={3}
                         value={(clients.find((c: any) => c.id === parseInt(form.client_id)) as any)?.address || (clients.find((c: any) => c.id === parseInt(form.client_id)) as any)?.location || 'Pilih klien untuk melihat alamat'}
@@ -363,7 +363,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                       <span className="material-symbols-outlined fill">work</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-900 leading-tight">Detail Proyek</h3>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Detail Proyek</h3>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Informasi umum mengenai proyek yang ditawarkan.</p>
                     </div>
                   </div>
@@ -374,7 +374,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="project_name"
                         value={form.project_name}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                         placeholder="Ex: Jasa Konsultansi Pengawasan Pembangunan Gedung..." 
                         type="text"
                         required
@@ -387,7 +387,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="project_location"
                           value={form.project_location}
                           onChange={handleChange}
-                          className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary pl-11 px-4" 
+                          className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary pl-11 px-4" 
                           placeholder="Ex: Jakarta" 
                           type="text"
                         />
@@ -400,7 +400,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="project_ref"
                         value={form.project_ref}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                         placeholder="Nomor RFQ / Tender" 
                         type="text"
                       />
@@ -411,13 +411,13 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="date_created"
                         value={form.date_created}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4" 
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
                         type="date"
                         required
                       />
                     </div>
                     <div className="col-span-1 md:col-span-2">
-                      <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                      <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                         <label className="flex items-center gap-3 cursor-pointer group">
                           <div className="relative flex items-center">
                             <input
@@ -425,12 +425,12 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                              className="peer appearance-none size-5 rounded border border-slate-300 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                              className="peer appearance-none size-5 rounded border border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
                             />
                             <span className="material-symbols-outlined absolute text-white text-[16px] left-1/2 top-1/2 -translate-y-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">check</span>
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
                             <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Ceklis jika SPH tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
                           </div>
                         </label>
@@ -448,7 +448,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <span className="material-symbols-outlined fill">receipt_long</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Rincian Biaya & Lingkup</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Rincian Biaya & Lingkup</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">TENTUKAN ITEM LAYANAN DAN HARGA SATUAN.</p>
                   </div>
                   <button
@@ -471,7 +471,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-slate-200">
+                          <tr className="border-b border-slate-200 dark:border-slate-700">
                             <th className="text-left py-3 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">#</th>
                             <th className="text-left py-3 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">URAIAN</th>
                             <th className="text-center py-3 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ITEM</th>
@@ -484,13 +484,13 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         </thead>
                         <tbody>
                           {form.items.map((item, index) => (
-                            <tr key={index} className="border-b border-slate-100">
-                              <td className="py-4 px-4 font-bold text-slate-600">{index + 1}</td>
+                            <tr key={index} className="border-b border-slate-100 dark:border-slate-700">
+                              <td className="py-4 px-4 font-bold text-slate-600 dark:text-slate-300">{index + 1}</td>
                               <td className="py-4 px-4">
                                 <input
                                   value={item.service || ''}
                                   onChange={(e) => updateServiceItem(index, 'service', e.target.value)}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
                                   placeholder="Uraian layanan..."
                                 />
                               </td>
@@ -499,7 +499,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                                   <select
                                     value={item.unit || ''}
                                     onChange={(e) => updateServiceItem(index, 'unit', e.target.value)}
-                                    className="w-28 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
+                                    className="w-28 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
                                   >
                                     <option value="">-</option>
                                     <option value="Mandays">Mandays</option>
@@ -514,7 +514,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                                     <input
                                       value={item.manualUnit || ''}
                                       onChange={(e) => updateServiceItem(index, 'manualUnit', e.target.value)}
-                                      className="w-28 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
+                                      className="w-28 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold focus:ring-primary/20 focus:border-primary"
                                       placeholder="Tulis item..."
                                     />
                                   )}
@@ -525,7 +525,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                                   type="number"
                                   value={item.qty || 1}
                                   onChange={(e) => updateServiceItem(index, 'qty', e.target.value)}
-                                  className="w-20 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-center focus:ring-primary/20 focus:border-primary"
+                                  className="w-20 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-center focus:ring-primary/20 focus:border-primary"
                                   min="1"
                                 />
                               </td>
@@ -534,7 +534,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                                   type="number"
                                   value={item.person || 1}
                                   onChange={(e) => updateServiceItem(index, 'person', e.target.value)}
-                                  className="w-20 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-center focus:ring-primary/20 focus:border-primary"
+                                  className="w-20 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-center focus:ring-primary/20 focus:border-primary"
                                   min="1"
                                 />
                               </td>
@@ -543,11 +543,11 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                                   type="number"
                                   value={item.unit_price || 0}
                                   onChange={(e) => updateServiceItem(index, 'unit_price', e.target.value)}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-right focus:ring-primary/20 focus:border-primary"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-right focus:ring-primary/20 focus:border-primary"
                                   min="0"
                                 />
                               </td>
-                              <td className="py-4 px-4 text-right font-bold text-slate-900">
+                              <td className="py-4 px-4 text-right font-bold text-slate-900 dark:text-white">
                                 {Number(item.total || 0).toLocaleString('id-ID')}
                               </td>
                               <td className="py-4 px-4 text-center">
@@ -567,11 +567,11 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <div className="flex justify-end">
                       <div className="w-full max-w-md space-y-3">
                         <div className="flex justify-between text-sm">
-                          <span className="font-bold text-slate-600">SUBTOTAL:</span>
-                          <span className="font-black text-slate-900">IDR {calculateTotal().subtotal.toLocaleString('id-ID')}</span>
+                          <span className="font-bold text-slate-600 dark:text-slate-300">SUBTOTAL:</span>
+                          <span className="font-black text-slate-900 dark:text-white">IDR {calculateTotal().subtotal.toLocaleString('id-ID')}</span>
                         </div>
-                        <div className="flex justify-between text-lg pt-3 border-t border-slate-200">
-                          <span className="font-black text-slate-900">TOTAL AKHIR:</span>
+                        <div className="flex justify-between text-lg pt-3 border-t border-slate-200 dark:border-slate-700">
+                          <span className="font-black text-slate-900 dark:text-white">TOTAL AKHIR:</span>
                           <span className="font-black text-primary">IDR {calculateTotal().total.toLocaleString('id-ID')}</span>
                         </div>
                       </div>
@@ -588,7 +588,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <span className="material-symbols-outlined fill">gavel</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 leading-tight">Syarat & Ketentuan</h3>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Syarat & Ketentuan</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">KETENTUAN HUKUM DAN MASA BERLAKU PENAWARAN.</p>
                   </div>
                 </div>
@@ -603,7 +603,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         name="validity_period"
                         value={form.validity_period}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary pl-11 px-4"
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary pl-11 px-4"
                         placeholder="dd/mm/yyyy"
                         type="date"
                         required
@@ -627,7 +627,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="time_period"
                           value={form.time_period}
                           onChange={handleChange}
-                          className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4"
+                          className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4"
                           placeholder="Contoh: 30 Hari Kerja (Tentatif)"
                           type="text"
                         />
@@ -638,7 +638,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="term_payment"
                           value={form.term_payment}
                           onChange={handleChange}
-                          className="w-full min-h-[120px] p-4 text-sm font-medium text-slate-700 border border-slate-200 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
+                          className="w-full min-h-[120px] p-4 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
                           placeholder="Contoh: Termin 1: 60% setelah BA pekerjaan; Termin 2: 40% setelah LP"
                         />
                       </div>
@@ -649,7 +649,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                             name="bank_name"
                             value={form.bank_name}
                             onChange={handleChange}
-                            className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4"
+                            className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4"
                             type="text"
                           />
                         </div>
@@ -659,7 +659,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                             name="bank_acc_no"
                             value={form.bank_acc_no}
                             onChange={handleChange}
-                            className="w-full h-12 rounded-xl border-slate-200 bg-slate-50 text-sm font-bold text-slate-900 focus:ring-primary/20 focus:border-primary px-4"
+                            className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4"
                             type="text"
                           />
                         </div>
@@ -670,7 +670,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="terms_conditions"
                           value={form.terms_conditions}
                           onChange={handleChange}
-                          className="w-full min-h-[180px] p-4 text-sm font-medium text-slate-700 border border-slate-200 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
+                          className="w-full min-h-[180px] p-4 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
                           placeholder="Tambahkan ketentuan lainnya bila diperlukan"
                         />
                       </div>
@@ -683,8 +683,8 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
             {currentStep === 4 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="text-center space-y-3 py-8">
-                  <h3 className="text-2xl font-black text-slate-900">Review & Finalisasi</h3>
-                  <p className="text-sm text-slate-500 max-w-xl mx-auto">Pastikan data sudah benar sebelum menyimpan draft. Draft akan dikirim ke approver untuk disetujui sebelum dapat di-generate menjadi PDF.</p>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">Review & Finalisasi</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">Pastikan data sudah benar sebelum menyimpan draft. Draft akan dikirim ke approver untuk disetujui sebelum dapat di-generate menjadi PDF.</p>
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -700,10 +700,10 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     
                     {form.items.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-black text-slate-900 mb-3 uppercase tracking-widest">Rincian Biaya</h4>
-                        <div className="border border-slate-200 rounded-xl overflow-hidden">
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white mb-3 uppercase tracking-widest">Rincian Biaya</h4>
+                        <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
                           <table className="w-full text-sm">
-                            <thead className="bg-slate-50">
+                            <thead className="bg-slate-50 dark:bg-slate-900">
                               <tr>
                                 <th className="text-left py-2 px-4 text-[10px] font-black text-slate-400 uppercase">Item</th>
                                 <th className="text-left py-2 px-4 text-[10px] font-black text-slate-400 uppercase">Uraian</th>
@@ -715,7 +715,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                             </thead>
                             <tbody>
                               {form.items.map((item, index) => (
-                                <tr key={index} className="border-t border-slate-100">
+                                <tr key={index} className="border-t border-slate-100 dark:border-slate-700">
                                   <td className="py-2 px-4 font-medium">{item.manualUnit || item.unit || '-'}</td>
                                   <td className="py-2 px-4">{item.service || '-'}</td>
                                   <td className="py-2 px-4 text-center">{item.qty}</td>
@@ -726,7 +726,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                               ))}
                             </tbody>
                           </table>
-                          <div className="bg-slate-50 p-4 flex justify-end">
+                          <div className="bg-slate-50 dark:bg-slate-900 p-4 flex justify-end">
                             <div className="text-right space-y-1">
                               <div className="text-sm"><span className="font-bold">Total: </span><span className="font-black text-primary">IDR {calculateTotal().total.toLocaleString('id-ID')}</span></div>
                             </div>
@@ -741,15 +741,15 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
 
                     {form.terms_conditions && (
                       <div>
-                        <h4 className="text-sm font-black text-slate-900 mb-2 uppercase tracking-widest">Syarat & Ketentuan</h4>
-                        <div className="p-4 border border-slate-200 rounded-xl bg-slate-50 text-sm whitespace-pre-wrap">{form.terms_conditions}</div>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white mb-2 uppercase tracking-widest">Syarat & Ketentuan</h4>
+                        <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 text-sm whitespace-pre-wrap">{form.terms_conditions}</div>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Preview Surat</h4>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Preview Surat</h4>
                       <button 
                         onClick={handlePreview}
                         disabled={loadingPreview}
@@ -759,9 +759,9 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                         Refresh Preview
                       </button>
                     </div>
-                    <div className="border-2 border-slate-200 rounded-2xl overflow-hidden bg-slate-100 h-[600px] relative">
+                    <div className="border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-100 h-[600px] relative">
                       {loadingPreview ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-slate-800/80 z-10">
                           <div className="size-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Membuat Preview...</p>
                         </div>
@@ -786,14 +786,14 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
           </div>
 
           {/* Footer Controls */}
-          <div className="bg-slate-50 p-6 border-t border-slate-100 flex justify-between items-center mt-auto">
+          <div className="bg-slate-50 dark:bg-slate-900 p-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center mt-auto">
             <button 
               onClick={prevStep}
               disabled={currentStep === 1}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
                 currentStep === 1 
-                  ? 'text-slate-300 border border-slate-200 cursor-not-allowed' 
-                  : 'text-slate-600 border border-slate-200 bg-white hover:bg-slate-50'
+                  ? 'text-slate-300 border border-slate-200 dark:border-slate-700 cursor-not-allowed' 
+                  : 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900'
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>

@@ -182,13 +182,13 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   const comments = project?.comments || [];
 
   return (
-    <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50">
+    <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <BackButton onClick={onBack} />
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 md:p-8 shadow-sm">
           {loading ? (
-            <div className="py-16 text-center text-sm font-bold text-slate-500">
+            <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
               Memuat detail proyek...
             </div>
           ) : error ? (
@@ -196,17 +196,17 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
               {error}
             </div>
           ) : !project ? (
-            <div className="py-16 text-center text-sm font-bold text-slate-500">
+            <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
               Detail proyek tidak ditemukan.
             </div>
           ) : (
             <>
               <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between mb-6">
                 <div className="min-w-0 space-y-1">
-                  <h1 className="text-2xl md:text-3xl font-black text-slate-900 break-words">
+                  <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white break-words">
                     {project.title}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                     <span>{project.code}</span>
                     {project.client?.company_name && (
                       <>
@@ -224,14 +224,14 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 </div>
                 <div className="flex flex-col items-stretch md:items-end gap-3">
                   <div className="flex flex-wrap gap-3 justify-start md:justify-end">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 text-slate-700 border-slate-200">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700">
                       Status: {project.status}
                     </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 text-slate-700 border-slate-200">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700">
                       Progress: {project.progress ?? 0}%
                     </span>
                     {project.approval_status && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 text-slate-700 border-slate-200">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700">
                         Approval: {project.approval_status}
                       </span>
                     )}
@@ -243,7 +243,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                           type="button"
                           onClick={handleCancelEdit}
                           disabled={saving}
-                          className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                          className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50"
                         >
                           Batal
                         </button>
@@ -265,62 +265,62 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     Nilai Kontrak
                   </p>
                   {isEditing ? (
                     <input
                       type="number"
-                      className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                      className="mt-2 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                       value={editData.budget}
                       onChange={(e) => setEditData((prev) => ({ ...prev, budget: e.target.value }))}
                     />
                   ) : (
-                    <p className="mt-2 text-xl font-black text-slate-900">
+                    <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
                       {formatCurrency(project.budget)}
                     </p>
                   )}
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     Aktualisasi (Terserap)
                   </p>
                   {isEditing ? (
                     <input
                       type="number"
-                      className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                      className="mt-2 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                       value={editData.actual_revenue}
                       onChange={(e) => setEditData((prev) => ({ ...prev, actual_revenue: e.target.value }))}
                     />
                   ) : (
-                    <p className="mt-2 text-xl font-black text-slate-900">
+                    <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
                       {formatCurrency(project.actual_revenue)}
                     </p>
                   )}
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     Target Margin
                   </p>
                   {isEditing ? (
                     <input
                       type="number"
-                      className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                      className="mt-2 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                       value={editData.target_margin}
                       onChange={(e) => setEditData((prev) => ({ ...prev, target_margin: e.target.value }))}
                     />
                   ) : (
-                    <p className="mt-2 text-xl font-black text-slate-900">
+                    <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
                       {project.target_margin != null ? `${project.target_margin}%` : 'N/A'}
                     </p>
                   )}
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     Periode Proyek
                   </p>
-                  <p className="mt-2 text-sm font-black text-slate-900">
+                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">
                     {formatDate(project.start_date)} – {formatDate(project.end_date)}
                   </p>
                 </div>
@@ -328,11 +328,11 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
 
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2 space-y-6">
-                  <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                    <h2 className="text-sm font-black text-slate-900 mb-4 uppercase tracking-widest">
+                  <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 uppercase tracking-widest">
                       Informasi Proyek
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-bold text-slate-900">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-bold text-slate-900 dark:text-white">
                       <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
                           PIC
@@ -345,7 +345,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </p>
                         {isEditing ? (
                           <textarea
-                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             rows={3}
                             value={editData.location_address}
                             onChange={(e) => setEditData((prev) => ({ ...prev, location_address: e.target.value }))}
@@ -365,14 +365,14 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                             <input
                               type="number"
                               placeholder="Latitude"
-                              className="w-1/2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                              className="w-1/2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                               value={editData.latitude}
                               onChange={(e) => setEditData((prev) => ({ ...prev, latitude: e.target.value }))}
                             />
                             <input
                               type="number"
                               placeholder="Longitude"
-                              className="w-1/2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                              className="w-1/2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                               value={editData.longitude}
                               onChange={(e) => setEditData((prev) => ({ ...prev, longitude: e.target.value }))}
                             />
@@ -391,7 +391,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </p>
                         {isEditing ? (
                           <textarea
-                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             rows={3}
                             value={editData.compliance_requirements}
                             onChange={(e) => setEditData((prev) => ({ ...prev, compliance_requirements: e.target.value }))}
@@ -408,7 +408,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </p>
                         {isEditing ? (
                           <textarea
-                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             rows={3}
                             value={editData.quality_standard}
                             onChange={(e) => setEditData((prev) => ({ ...prev, quality_standard: e.target.value }))}
@@ -425,7 +425,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </p>
                         {isEditing ? (
                           <textarea
-                            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             rows={3}
                             value={editData.target_compliance}
                             onChange={(e) => setEditData((prev) => ({ ...prev, target_compliance: e.target.value }))}
@@ -443,21 +443,21 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                       </p>
                       {isEditing ? (
                         <textarea
-                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                          className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                           rows={4}
                           value={editData.description}
                           onChange={(e) => setEditData((prev) => ({ ...prev, description: e.target.value }))}
                         />
                       ) : (
-                        <p className="text-sm font-bold text-slate-900 whitespace-pre-line">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white whitespace-pre-line">
                           {project.description || 'N/A'}
                         </p>
                       )}
                     </div>
                   </section>
 
-                  <section className="rounded-2xl border border-slate-200 bg-white p-5">
-                    <h2 className="text-sm font-black text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                  <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-primary">
                         attachment
                       </span>
@@ -480,16 +480,16 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                           return (
                             <div
                               key={att.id}
-                              className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 hover:bg-slate-100 transition-colors"
+                              className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 transition-colors"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-200 text-slate-400">
+                                <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 text-slate-400">
                                   <span className="material-symbols-outlined text-[20px]">
                                     {isLink ? 'link' : 'description'}
                                   </span>
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="text-xs font-bold text-slate-900 truncate">
+                                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                                     {mainLabel}
                                   </p>
                                   <p className="text-[10px] text-slate-400 font-medium truncate">
@@ -520,13 +520,13 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                           <input
                             value={attachmentLabel}
                             onChange={(e) => setAttachmentLabel(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             placeholder="Judul / nama file (opsional)"
                           />
                           <input
                             value={attachmentUrl}
                             onChange={(e) => setAttachmentUrl(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             placeholder="Tempelkan link Google Drive atau URL lain"
                           />
                           <button
@@ -547,8 +547,8 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 </div>
 
                 <div className="space-y-6">
-                  <section className="rounded-2xl border border-slate-200 bg-white p-5">
-                    <h2 className="text-sm font-black text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                  <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-primary">
                         forum
                       </span>
@@ -563,17 +563,17 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         {comments.map((c: any) => (
                           <div
                             key={c.id}
-                            className="rounded-xl border border-slate-100 bg-slate-50 p-3"
+                            className="rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3"
                           >
                             <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <p className="text-xs font-bold text-slate-900">
+                              <p className="text-xs font-bold text-slate-900 dark:text-white">
                                 {c.user?.name || 'User'}
                               </p>
                               <p className="text-[10px] text-slate-400 font-medium">
                                 {formatDate(c.created_at)}
                               </p>
                             </div>
-                            <p className="text-xs text-slate-700 whitespace-pre-line">
+                            <p className="text-xs text-slate-700 dark:text-slate-200 whitespace-pre-line">
                               {c.comment}
                             </p>
                           </div>
@@ -581,10 +581,10 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                       </div>
                     )}
 
-                    <div className="mt-4 pt-3 border-t border-slate-100">
+                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
                       <div className="relative group">
                         <input
-                          className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                          className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
                           placeholder="Tulis komentar..."
                           type="text"
                           value={commentInput}

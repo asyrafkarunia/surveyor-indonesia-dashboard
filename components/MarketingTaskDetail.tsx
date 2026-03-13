@@ -53,7 +53,7 @@ const statusLabelMap: Record<string, string> = {
 };
 
 const statusStyleMap: Record<string, string> = {
-  ide_baru: 'bg-slate-100 text-slate-700 border-slate-200',
+  ide_baru: 'bg-slate-100 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700',
   review: 'bg-amber-50 text-amber-700 border-amber-100',
   sph: 'bg-indigo-50 text-indigo-700 border-indigo-100',
   berjalan: 'bg-blue-50 text-blue-700 border-blue-100',
@@ -165,16 +165,16 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
 
   const statusKey = (task as any).status || 'ide_baru';
   const statusLabel = statusLabelMap[statusKey] || statusKey;
-  const statusStyle = statusStyleMap[statusKey] || 'bg-slate-100 text-slate-700 border-slate-200';
+  const statusStyle = statusStyleMap[statusKey] || 'bg-slate-100 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
+        className="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
-        <div className="flex items-start justify-between p-6 border-b border-slate-100 bg-white sticky top-0 z-10">
+        <div className="flex items-start justify-between p-6 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 sticky top-0 z-10">
           <div className="flex-1 mr-4">
             <div className="flex items-center gap-3 mb-2">
               <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${statusStyle}`}>
@@ -185,14 +185,14 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                 Branding
               </span>
             </div>
-            <h2 className="text-2xl font-black text-slate-900 leading-tight">{task.title} - {task.client}</h2>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">{task.title} - {task.client}</h2>
             <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 font-medium">
-              Added to <span className="font-bold text-slate-600 uppercase tracking-tighter">Marketing Plan</span> list
+              Added to <span className="font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter">Marketing Plan</span> list
             </p>
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-primary transition-colors bg-slate-50 rounded-xl p-2 hover:bg-red-50 group"
+            className="text-slate-400 hover:text-primary transition-colors bg-slate-50 dark:bg-slate-900 rounded-xl p-2 hover:bg-red-50 group"
           >
             <span className="material-symbols-outlined text-[24px] block group-hover:rotate-90 transition-transform">close</span>
           </button>
@@ -201,13 +201,13 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row h-full">
           {/* Main Content (Left) */}
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
+          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white dark:bg-slate-800">
             <div className="mb-10">
               <h3 className="text-[10px] font-black text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-[0.2em]">
                 <span className="material-symbols-outlined text-[18px]">description</span>
                 Description
               </h3>
-              <div className="text-sm text-slate-600 leading-relaxed space-y-4 font-medium whitespace-pre-line">
+              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4 font-medium whitespace-pre-line">
                 {task.description ? (
                   <p>{task.description}</p>
                 ) : (
@@ -225,13 +225,13 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                 <button
                   type="button"
                   onClick={handleLinkedProjectClick}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group text-left"
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group text-left"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-white p-2 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 p-2 flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm">
                     <span className="material-symbols-outlined text-slate-400 text-[24px]">apartment</span>
                   </div>
                   <div>
-                    <p className="text-sm font-black text-slate-900 group-hover:text-primary transition-colors">{task.client}</p>
+                    <p className="text-sm font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors">{task.client}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Lihat detail proyek/klien di Monitoring Project</p>
                   </div>
                   <span className="material-symbols-outlined ml-auto text-slate-300 group-hover:text-primary transition-colors">open_in_new</span>
@@ -258,7 +258,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                     const userName = att.user?.name || 'Pengguna';
                     const label = att.label || att.url;
                     return (
-                      <div key={att.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 bg-slate-50 hover:border-primary/30 transition-colors">
+                      <div key={att.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:border-primary/30 transition-colors">
                         <span className="material-symbols-outlined text-[18px] text-slate-400">attach_file</span>
                         <div className="flex-1 min-w-0">
                           <a
@@ -293,13 +293,13 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                   <input
                     value={attachmentLabel}
                     onChange={(e) => setAttachmentLabel(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                     placeholder="Judul / nama file (opsional)"
                   />
                   <input
                     value={attachmentUrl}
                     onChange={(e) => setAttachmentUrl(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                     placeholder="Tempelkan link Google Drive atau URL lain"
                   />
                   <button
@@ -318,7 +318,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
             </div>
 
             {/* History Section */}
-            <div className="pt-8 border-t border-slate-100">
+            <div className="pt-8 border-t border-slate-100 dark:border-slate-700">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-[10px] font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
                   <span className="material-symbols-outlined text-[18px]">history</span>
@@ -344,26 +344,26 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                   return (
                     <div key={item.id} className="relative">
                       <div className="absolute -left-[41px] top-1 h-5 w-5 rounded-full bg-primary ring-4 ring-white shadow-sm flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-white"></div>
+                        <div className="h-1.5 w-1.5 rounded-full bg-white dark:bg-slate-800"></div>
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-baseline">
                           <div className="flex items-center gap-2">
-                            <div className="size-6 rounded-full bg-slate-200 border border-slate-300 bg-cover bg-center overflow-hidden">
+                            <div className="size-6 rounded-full bg-slate-200 border border-slate-300 dark:border-slate-600 bg-cover bg-center overflow-hidden">
                               {item.user?.avatar ? (
                                 <img src={item.user.avatar} alt={userName} className="w-full h-full object-cover" />
                               ) : (
-                                <span className="text-[10px] font-black text-slate-700 flex items-center justify-center w-full h-full">{initials}</span>
+                                <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 flex items-center justify-center w-full h-full">{initials}</span>
                               )}
                             </div>
-                            <span className="text-sm font-black text-slate-900">{userName}</span>
+                            <span className="text-sm font-black text-slate-900 dark:text-white">{userName}</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.action}</span>
                           </div>
                           <span className="text-[10px] font-black text-slate-400 font-mono">{formatDateTime(item.created_at)}</span>
                         </div>
                         {fromStatus && toStatus && (
-                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
-                            <div className="flex items-center gap-2 text-slate-500 font-bold">
+                          <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-xs">
+                            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold">
                               <span className="line-through opacity-50">{fromStatus}</span>
                               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                               <span className="text-primary font-black uppercase tracking-widest">{toStatus}</span>
@@ -379,26 +379,26 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
           </div>
 
           {/* Sidebar (Right) */}
-          <div className="w-full md:w-[340px] bg-slate-50 flex flex-col flex-none border-l border-slate-100">
+          <div className="w-full md:w-[340px] bg-slate-50 dark:bg-slate-900 flex flex-col flex-none border-l border-slate-100 dark:border-slate-700">
             <div className="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Assignees</p>
-                <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
                   {task.assignee.avatar ? (
                     <div
                       className="size-10 rounded-full border-2 border-slate-50 shadow-sm bg-cover bg-center"
                       style={{ backgroundImage: `url(${task.assignee.avatar})` }}
                     ></div>
                   ) : (
-                    <div className="size-10 rounded-full border-2 border-slate-50 shadow-sm bg-slate-200 flex items-center justify-center text-[11px] font-black text-slate-600">
+                    <div className="size-10 rounded-full border-2 border-slate-50 shadow-sm bg-slate-200 flex items-center justify-center text-[11px] font-black text-slate-600 dark:text-slate-300">
                       {task.assignee.initials}
                     </div>
                   )}
                   <div className="overflow-hidden">
-                    <p className="text-sm font-black text-slate-900 truncate">{task.assignee.name}</p>
+                    <p className="text-sm font-black text-slate-900 dark:text-white truncate">{task.assignee.name}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Assignee</p>
                   </div>
-                  <button className="ml-auto w-8 h-8 rounded-full border border-dashed border-slate-300 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary transition-all">
+                  <button className="ml-auto w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary transition-all">
                     <span className="material-symbols-outlined text-[16px]">add</span>
                   </button>
                 </div>
@@ -407,9 +407,9 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Due Date</p>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-100 shadow-sm">
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
                     <span className="material-symbols-outlined text-[18px] text-slate-300">event</span>
-                    <span className="text-xs font-black text-slate-700">{task.date}</span>
+                    <span className="text-xs font-black text-slate-700 dark:text-slate-200">{task.date}</span>
                   </div>
                 </div>
                 <div>
@@ -451,7 +451,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
 
                     return (
                       <div key={comment.id} className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 border border-white shadow-sm shrink-0 flex items-center justify-center text-[10px] font-black text-slate-500 uppercase tracking-tighter overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 border border-white shadow-sm shrink-0 flex items-center justify-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter overflow-hidden">
                           {comment.user?.avatar ? (
                             <img src={comment.user.avatar} alt={userName} className="w-full h-full object-cover" />
                           ) : (
@@ -460,10 +460,10 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-baseline mb-1">
-                            <span className="text-[11px] font-black text-slate-900">{userName}</span>
+                            <span className="text-[11px] font-black text-slate-900 dark:text-white">{userName}</span>
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{timeAgo(comment.created_at)}</span>
                           </div>
-                          <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-xs text-slate-600 font-medium leading-relaxed whitespace-pre-line">
+                          <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed whitespace-pre-line">
                             <p>{comment.comment}</p>
                           </div>
                         </div>
@@ -475,10 +475,10 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
             </div>
 
             {/* Discussion Input */}
-            <div className="p-4 border-t border-slate-100 bg-white">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
               <div className="relative group">
                 <input
-                  className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                  className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
                   placeholder="Write a comment..."
                   type="text"
                   value={commentInput}
@@ -503,13 +503,13 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
         </div>
 
         {/* Footer Action Bar */}
-        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center z-10">
+        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center z-10">
           <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary hover:bg-red-50 text-[10px] font-black uppercase tracking-[0.2em] transition-all group">
             <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">delete</span>
             Delete Task
           </button>
           <div className="flex gap-3">
-            <button className="px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-sm">
+            <button className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm">
               Mark as Complete
             </button>
             <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-red-500/20 active:scale-95 group">

@@ -79,9 +79,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
       case 'On Progress': return 'bg-blue-50 text-blue-700 border-blue-100';
       case 'Completed': return 'bg-green-50 text-green-700 border-green-100';
       case 'Active': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-      case 'Expired': return 'bg-slate-50 text-slate-500 border-slate-200';
+      case 'Expired': return 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700';
       case 'Delayed': return 'bg-red-50 text-red-700 border-red-100';
-      default: return 'bg-slate-50 text-slate-700 border-slate-200';
+      default: return 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -104,7 +104,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
       case 'groups': return 'bg-orange-100 text-orange-600';
       case 'meeting': return 'bg-blue-100 text-blue-600';
       case 'project_update': return 'bg-emerald-100 text-emerald-600';
-      default: return 'bg-slate-100 text-slate-500';
+      default: return 'bg-slate-100 text-slate-500 dark:text-slate-400';
     }
   };
 
@@ -240,24 +240,24 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50">
+    <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <BackButton onClick={onBack} />
         {/* Profile Header Card */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center flex-1">
               <div 
-                className="bg-center bg-no-repeat bg-cover rounded-2xl size-24 shrink-0 border border-slate-100 shadow-sm" 
+                className="bg-center bg-no-repeat bg-cover rounded-2xl size-24 shrink-0 border border-slate-100 dark:border-slate-700 shadow-sm" 
                 style={{ backgroundImage: `url("${client.logo}")` }}
               ></div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h2 className="text-2xl font-black text-slate-900">{client.company_name}</h2>
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">{client.company_name}</h2>
                   <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
                     client.status === 'Aktif' 
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                      : 'bg-slate-100 text-slate-500 border-slate-200'
+                      : 'bg-slate-100 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                   }`}>
                     {client.status === 'Aktif' ? 'Active Client' : 'Inactive Client'}
                   </span>
@@ -268,7 +268,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                     </span>
                   )}
                 </div>
-                <p className="text-slate-500 text-sm font-medium">{client.industry || 'General Industry'} • ID: {client.code}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{client.industry || 'General Industry'} • ID: {client.code}</p>
                 <div className="flex items-center gap-4 mt-2 text-xs font-bold text-slate-400 flex-wrap uppercase tracking-tighter">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[18px]">location_on</span>
@@ -301,7 +301,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               </button>
               <button 
                 onClick={() => onEdit?.(client)}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm"
               >
                 <span className="material-symbols-outlined text-[18px]">edit</span>
                 Edit Profile
@@ -319,47 +319,47 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
 
         {/* Stats Grid */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
                 <span className="material-symbols-outlined">attach_money</span>
               </div>
             </div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Contract Value</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {stats ? `IDR ${Number(stats.total_contract_value).toLocaleString('id-ID')}` : '-'}
             </h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                 <span className="material-symbols-outlined">assignment</span>
               </div>
             </div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Projects</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {stats ? stats.active_projects : '-'} <span className="text-sm font-bold text-slate-300">/ {stats ? stats.total_projects : '-'} Total</span>
             </h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 rounded-xl bg-orange-50 text-orange-600 border border-orange-100">
                 <span className="material-symbols-outlined">receipt_long</span>
               </div>
             </div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending Invoices</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {stats ? `IDR ${Number(stats.pending_invoices).toLocaleString('id-ID')}` : '-'}
             </h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-all">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
                 <span className="material-symbols-outlined">calendar_month</span>
               </div>
             </div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Client Since</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">{stats ? stats.client_since : '-'}</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-1">{stats ? stats.client_since : '-'}</h3>
           </div>
         </section>
 
@@ -368,9 +368,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
           <div className="xl:col-span-2 flex flex-col gap-6">
             
             {/* Riwayat Kontrak Section (Mapped from Projects for now) */}
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-black text-slate-900">Riwayat Kontrak</h3>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Riwayat Kontrak</h3>
                 <button 
                   onClick={() => onNewProject?.(client)}
                   className="text-[11px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5 hover:underline transition-all"
@@ -382,7 +382,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-100">
+                    <tr className="border-b border-slate-100 dark:border-slate-700">
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Contract No.</th>
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Period</th>
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Value</th>
@@ -392,17 +392,17 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     {contractList.length > 0 ? contractList.map((project: any) => (
-                      <tr key={project.id} className="group hover:bg-slate-50/50 transition-colors">
+                      <tr key={project.id} className="group hover:bg-slate-50 dark:bg-slate-900/50 transition-colors">
                         <td className="py-5 px-2">
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-900">{project.code || project.title}</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white">{project.code || project.title}</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{project.project_type || 'General'}</span>
                           </div>
                         </td>
-                        <td className="py-5 px-2 text-xs font-bold text-slate-600">
+                        <td className="py-5 px-2 text-xs font-bold text-slate-600 dark:text-slate-300">
                           {project.start_date ? new Date(project.start_date).toLocaleDateString() : '-'} - {project.end_date ? new Date(project.end_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="py-5 px-2 text-sm font-black text-slate-900">
+                        <td className="py-5 px-2 text-sm font-black text-slate-900 dark:text-white">
                            {project.budget ? `IDR ${Number(project.budget).toLocaleString('id-ID')}` : '-'}
                         </td>
                         <td className="py-5 px-2">
@@ -427,9 +427,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
             </section>
 
             {/* Project History Section */}
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-black text-slate-900">Project History</h3>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Project History</h3>
                 <button
                   type="button"
                   onClick={openProjectHistoryModal}
@@ -441,7 +441,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-100">
+                    <tr className="border-b border-slate-100 dark:border-slate-700">
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Contract</th>
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Project</th>
                       <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
@@ -450,20 +450,20 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     {projectsHistory.length > 0 ? projectsHistory.map((item) => (
-                      <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
+                      <tr key={item.id} className="group hover:bg-slate-50 dark:bg-slate-900/50 transition-colors">
                         <td className="py-5 px-2">
-                          <p className="text-sm font-bold text-slate-900">{item.contract_code || item.project_title || '-'}</p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">{item.contract_code || item.project_title || '-'}</p>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                             {item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-'}
                           </p>
                         </td>
-                        <td className="py-5 px-2 text-xs font-bold text-slate-500 uppercase">{item.project_title || '-'}</td>
+                        <td className="py-5 px-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{item.project_title || '-'}</td>
                         <td className="py-5 px-2">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border ${getStatusBadge(item.project_status || 'Completed')}`}>
                             {item.project_status || 'Completed'}
                           </span>
                         </td>
-                        <td className="py-5 px-2 text-sm font-black text-slate-900 text-right">
+                        <td className="py-5 px-2 text-sm font-black text-slate-900 dark:text-white text-right">
                           {item.amount ? `IDR ${Number(item.amount).toLocaleString('id-ID')}` : '-'}
                         </td>
                       </tr>
@@ -479,9 +479,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
           </div>
 
           {/* Activity Timeline (Right Column) */}
-          <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm h-fit">
+          <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm h-fit">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-black text-slate-900">Recent Activity</h3>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">Recent Activity</h3>
               <div className="relative">
                 <button
                   type="button"
@@ -491,7 +491,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                 </button>
                 {recentMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-xl border border-slate-100 bg-white shadow-lg z-10">
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-10">
                     <button
                       type="button"
                       onClick={() => {
@@ -499,7 +499,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                         openActivityLogModal();
                         setIsAddingActivity(true);
                       }}
-                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 hover:bg-slate-50"
+                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
                     >
                       Tambah Aktivitas Manual
                     </button>
@@ -509,7 +509,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                         setRecentMenuOpen(false);
                         openActivityLogModal();
                       }}
-                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 hover:bg-slate-50"
+                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
                     >
                       Edit Aktivitas
                     </button>
@@ -545,12 +545,12 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                       <button
                         type="button"
                         onClick={() => setNoteActivity(activity)}
-                        className="text-left text-sm font-bold text-slate-900 leading-snug hover:text-primary"
+                        className="text-left text-sm font-bold text-slate-900 dark:text-white leading-snug hover:text-primary"
                       >
                         {title}
                       </button>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                        By <span className="text-slate-600 font-black">{by}</span>{time ? ` • ${time}` : ''}
+                        By <span className="text-slate-600 dark:text-slate-300 font-black">{by}</span>{time ? ` • ${time}` : ''}
                       </p>
                     </div>
                   </div>
@@ -571,9 +571,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
 
         {isProjectHistoryOpen && (
           <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
-            <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white shadow-2xl border border-slate-100 flex flex-col">
-              <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                <h3 className="text-sm md:text-base font-black text-slate-900 uppercase tracking-[0.18em]">Project History</h3>
+            <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 flex flex-col">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+                <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.18em]">Project History</h3>
                 <button
                   type="button"
                   onClick={() => setIsProjectHistoryOpen(false)}
@@ -591,7 +591,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-100">
+                        <tr className="border-b border-slate-100 dark:border-slate-700">
                           <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Contract</th>
                             <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Project</th>
                             <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
@@ -601,21 +601,21 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                       </thead>
                       <tbody className="divide-y divide-slate-50">
                         {historyList.length > 0 ? historyList.map((item: any) => (
-                          <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
+                          <tr key={item.id} className="group hover:bg-slate-50 dark:bg-slate-900/50 transition-colors">
                             <td className="py-3 px-2">
-                              <p className="text-sm font-bold text-slate-900">{item.contract_code || item.project_title || '-'}</p>
+                              <p className="text-sm font-bold text-slate-900 dark:text-white">{item.contract_code || item.project_title || '-'}</p>
                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{item.project_title || '-'}</p>
                             </td>
-                            <td className="py-3 px-2 text-xs font-bold text-slate-500 uppercase">{item.project_title || '-'}</td>
+                            <td className="py-3 px-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{item.project_title || '-'}</td>
                             <td className="py-3 px-2">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border ${getStatusBadge(item.project_status || 'Completed')}`}>
                                 {item.project_status || 'Completed'}
                               </span>
                             </td>
-                            <td className="py-3 px-2 text-xs font-bold text-slate-500">
+                            <td className="py-3 px-2 text-xs font-bold text-slate-500 dark:text-slate-400">
                               {item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-'}
                             </td>
-                            <td className="py-3 px-2 text-sm font-black text-slate-900 text-right">
+                            <td className="py-3 px-2 text-sm font-black text-slate-900 dark:text-white text-right">
                               {item.amount ? `IDR ${Number(item.amount).toLocaleString('id-ID')}` : '-'}
                             </td>
                           </tr>
@@ -635,9 +635,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
 
         {isActivityLogOpen && (
           <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
-            <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white shadow-2xl border border-slate-100 flex flex-col">
-              <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                <h3 className="text-sm md:text-base font-black text-slate-900 uppercase tracking-[0.18em]">Activity Log</h3>
+            <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 flex flex-col">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
+                <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.18em]">Activity Log</h3>
                 <button
                   type="button"
                   onClick={() => setIsActivityLogOpen(false)}
@@ -653,9 +653,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                    <div className="mb-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-500">Tambah Aktivitas Manual</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Tambah Aktivitas Manual</p>
                         <button
                           type="button"
                           onClick={() => setIsAddingActivity(!isAddingActivity)}
@@ -670,7 +670,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                             <div className="flex flex-col gap-1">
                               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Kategori</label>
                               <select
-                                className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30"
                                 value={newActivityCategory}
                                 onChange={(e) => setNewActivityCategory(e.target.value)}
                               >
@@ -683,7 +683,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                             <div className="flex flex-col gap-1 md:col-span-2">
                               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Project (Opsional)</label>
                               <select
-                                className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30"
                                 value={newActivityProjectId}
                                 onChange={(e) => setNewActivityProjectId(e.target.value)}
                               >
@@ -700,7 +700,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Judul Aktivitas</label>
                             <input
                               type="text"
-                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30"
                               placeholder="Contoh: Negosiasi berjalan lancar"
                               value={newActivityTitle}
                               onChange={(e) => setNewActivityTitle(e.target.value)}
@@ -709,7 +709,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                           <div className="flex flex-col gap-1">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Catatan Aktivitas</label>
                             <textarea
-                              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[60px]"
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[60px]"
                               placeholder="Contoh: Meeting negosiasi dengan klien terkait penawaran baru..."
                               value={newActivityContent}
                               onChange={(e) => setNewActivityContent(e.target.value)}
@@ -725,7 +725,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                 setNewActivityProjectId('');
                                 setNewActivityCategory('meeting');
                               }}
-                              className="px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 hover:text-slate-600"
+                              className="px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 hover:text-slate-600 dark:text-slate-300"
                             >
                               Batal
                             </button>
@@ -756,7 +756,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                           const canManage = act.source === 'activity' && act.activity_id;
 
                           return (
-                            <div key={act.id} className="flex gap-3 items-start border-b border-slate-100 pb-3 last:border-b-0">
+                            <div key={act.id} className="flex gap-3 items-start border-b border-slate-100 dark:border-slate-700 pb-3 last:border-b-0">
                               <div className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-4 ring-white shadow-sm ${getActivityColor(type)}`}>
                                 {getActivityIcon(type)}
                               </div>
@@ -765,7 +765,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                   <div className="flex-1 min-w-0">
                                     {isEditing ? (
                                       <textarea
-                                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[60px]"
+                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[60px]"
                                         value={editingActivityContent}
                                         onChange={(e) => setEditingActivityContent(e.target.value)}
                                       />
@@ -773,7 +773,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                       <button
                                         type="button"
                                         onClick={() => setNoteActivity(act)}
-                                        className="text-left text-sm font-bold text-slate-900 leading-snug hover:text-primary truncate"
+                                        className="text-left text-sm font-bold text-slate-900 dark:text-white leading-snug hover:text-primary truncate"
                                       >
                                         {title}
                                       </button>
@@ -784,11 +784,11 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                   )}
                                 </div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">
-                                  By <span className="text-slate-600 font-black">{by}</span>
+                                  By <span className="text-slate-600 dark:text-slate-300 font-black">{by}</span>
                                   {projectTitle && (
                                     <>
                                       <span className="mx-1">•</span>
-                                      <span className="text-slate-500">Project: {projectTitle}</span>
+                                      <span className="text-slate-500 dark:text-slate-400">Project: {projectTitle}</span>
                                     </>
                                   )}
                                 </p>
@@ -809,7 +809,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                           type="button"
                                           disabled={editingSubmitting}
                                           onClick={cancelEditActivity}
-                                          className="px-3 py-1 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900"
                                         >
                                           Batal
                                         </button>
@@ -820,7 +820,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                           type="button"
                                           disabled={editingSubmitting}
                                           onClick={() => startEditActivity(act)}
-                                          className="px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50"
+                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
                                         >
                                           Edit
                                         </button>
@@ -851,7 +851,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         
         {noteActivity && (
           <div className="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-100 p-5">
+            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Activity Detail</h4>
                 <button
@@ -862,10 +862,10 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                   <span className="material-symbols-outlined text-[18px]">close</span>
                 </button>
               </div>
-              <p className="text-sm font-black text-slate-900 mb-2">
+              <p className="text-sm font-black text-slate-900 dark:text-white mb-2">
                 {noteActivity?.title || noteActivity?.message || ''}
               </p>
-              <p className="text-[11px] font-medium text-slate-600 whitespace-pre-line bg-slate-50 border border-slate-100 rounded-xl p-3">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300 whitespace-pre-line bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl p-3">
                 {noteActivity?.note || noteActivity?.description || noteActivity?.content || '-'}
               </p>
             </div>

@@ -192,13 +192,13 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
   const endItem = Math.min(currentPage * 15, total);
 
   return (
-    <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50">
+    <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
         {/* Heading Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 mb-1">Daftar Klien</h1>
-            <p className="text-slate-500 text-sm">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-1">Daftar Klien</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
           </div>
           <button 
             onClick={onAddClient}
@@ -211,10 +211,10 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Total Klien Terdaftar</p>
-              <h3 className="text-2xl font-black text-slate-900">{counts.total}</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.total}</h3>
               {counts && (
                 <div className="flex items-center gap-1 mt-2">
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
@@ -234,10 +234,10 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Klien Aktif</p>
-              <h3 className="text-2xl font-black text-slate-900">{counts.active}</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.active}</h3>
               {counts && (
                 <div className="flex items-center gap-1 mt-2">
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
@@ -257,10 +257,10 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Klien Non-Aktif</p>
-              <h3 className="text-2xl font-black text-slate-900">{counts.inactive}</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.inactive}</h3>
               {counts && (
                 <div className="flex items-center gap-1 mt-2">
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
@@ -275,20 +275,20 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                 </div>
               )}
             </div>
-            <div className="h-10 w-10 bg-slate-50 text-slate-500 rounded-xl flex items-center justify-center border border-slate-200/50 shadow-inner">
+            <div className="h-10 w-10 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700/50 shadow-inner">
               <span className="material-symbols-outlined">pause_circle</span>
             </div>
           </div>
         </div>
 
         {/* Table & Filters Container */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden flex flex-col">
           {/* Toolbar */}
-          <div className="p-4 border-b border-slate-100 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
             <div className="relative w-full lg:max-w-md group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
               <input 
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary text-sm transition-all" 
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary text-sm transition-all" 
                 placeholder="Cari nama klien, kontak, atau perusahaan..." 
                 type="text"
                 value={searchQuery}
@@ -299,7 +299,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
               <select 
                 value={selectedType}
                 onChange={handleTypeChange}
-                className="bg-white border border-slate-200 text-slate-600 py-2.5 pl-3 pr-10 rounded-xl text-xs font-bold uppercase tracking-tight focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary cursor-pointer min-w-[140px] shadow-sm outline-none"
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 py-2.5 pl-3 pr-10 rounded-xl text-xs font-bold uppercase tracking-tight focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary cursor-pointer min-w-[140px] shadow-sm outline-none"
               >
                 <option>Semua Tipe</option>
                 <option>BUMN</option>
@@ -309,7 +309,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
               <select 
                 value={selectedStatus}
                 onChange={handleStatusChange}
-                className="bg-white border border-slate-200 text-slate-600 py-2.5 pl-3 pr-10 rounded-xl text-xs font-bold uppercase tracking-tight focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary cursor-pointer min-w-[140px] shadow-sm outline-none"
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 py-2.5 pl-3 pr-10 rounded-xl text-xs font-bold uppercase tracking-tight focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary cursor-pointer min-w-[140px] shadow-sm outline-none"
               >
                 <option>Semua Status</option>
                 <option>Aktif</option>
@@ -329,13 +329,13 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">domain</span>
-                  <p className="text-slate-500 text-sm">Tidak ada klien ditemukan</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm">Tidak ada klien ditemukan</p>
                 </div>
               </div>
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                  <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
                     <th className="px-6 py-4 font-black">Nama Perusahaan</th>
                     <th className="px-6 py-4 font-black">Kontak Person</th>
                     <th className="px-6 py-4 font-black">Tipe</th>
@@ -344,17 +344,17 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                     <th className="px-6 py-4 text-right font-black">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                <tbody className="divide-y divide-slate-100 text-sm text-slate-700 dark:text-slate-200">
                   {clients.map((client) => (
                     <tr 
                       key={client.id} 
-                      className="hover:bg-slate-50/50 transition-colors group cursor-pointer" 
+                      className="hover:bg-slate-50 dark:bg-slate-900/50 transition-colors group cursor-pointer" 
                       onClick={() => onSelectClient(client as ClientData)}
                     >
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           {client.logo ? (
-                            <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 shadow-sm">
+                            <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0 shadow-sm">
                               <img 
                                 src={client.logo} 
                                 alt={client.company_name} 
@@ -362,19 +362,19 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                               />
                             </div>
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 shadow-sm">
+                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">
                               <span className="material-symbols-outlined text-slate-400">domain</span>
                             </div>
                           )}
                           <div className="flex flex-col overflow-hidden">
-                            <span className="font-bold text-slate-900 group-hover:text-primary transition-colors truncate">{client.company_name}</span>
+                            <span className="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">{client.company_name}</span>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">ID: {client.code}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex flex-col">
-                          <span className="font-bold text-slate-700">{client.contact_person}</span>
+                          <span className="font-bold text-slate-700 dark:text-slate-200">{client.contact_person}</span>
                           {client.contact_role && (
                             <span className="text-[11px] font-medium text-slate-400">{client.contact_role}</span>
                           )}
@@ -393,7 +393,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${
                           client.status === 'Aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                           client.status === 'Suspended' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
-                          'bg-slate-50 text-slate-500 border-slate-200'
+                          'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${
                             client.status === 'Aktif' ? 'bg-emerald-500' : 
@@ -405,7 +405,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex flex-col text-[11px]">
-                          <span className="text-slate-700 font-bold">{client.email}</span>
+                          <span className="text-slate-700 dark:text-slate-200 font-bold">{client.email}</span>
                           <span className="text-slate-400 font-medium">{client.phone}</span>
                         </div>
                       </td>
@@ -432,15 +432,15 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
 
           {/* Pagination */}
           {total > 0 && (
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/30">
               <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block">
-                Menampilkan <span className="text-slate-900">{startItem}</span>-<span className="text-slate-900">{endItem}</span> dari <span className="text-slate-900">{total}</span> data
+                Menampilkan <span className="text-slate-900 dark:text-white">{startItem}</span>-<span className="text-slate-900 dark:text-white">{endItem}</span> dari <span className="text-slate-900 dark:text-white">{total}</span> data
               </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-slate-400 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
+                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
                 >
                   Sebelumnya
                 </button>
@@ -455,7 +455,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                         className={`h-9 w-9 flex items-center justify-center rounded-xl text-[11px] font-black transition-all ${
                           currentPage === page
                             ? 'bg-primary text-white shadow-sm shadow-primary/20'
-                            : 'text-slate-500 hover:bg-white hover:border hover:border-slate-200'
+                            : 'text-slate-500 dark:text-slate-400 hover:bg-white dark:bg-slate-800 hover:border hover:border-slate-200 dark:border-slate-700'
                         }`}
                       >
                         {page}
@@ -466,7 +466,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                 <button 
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
                 >
                   Selanjutnya
                 </button>

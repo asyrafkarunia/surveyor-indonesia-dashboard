@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@variant dark (&:where(.dark, .dark *));
 :root{
   --primary:#d33131;
   --primary-dark:#b91c1c;

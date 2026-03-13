@@ -33,14 +33,14 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data = [] }) => {
       };
       
       return (
-        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-          <p className="mb-2 text-xs font-bold text-slate-900">{label}</p>
+        <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 shadow-lg">
+          <p className="mb-2 text-xs font-bold text-slate-900 dark:text-white">{label}</p>
           <div className="space-y-1">
-            <p className="flex items-center gap-2 text-[11px] text-slate-600">
+            <p className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-300">
               <span className="h-2 w-2 rounded-full bg-slate-300"></span>
               Proyeksi: <span className="font-bold">{formatCurrency(payload[0].value)}</span>
             </p>
-            <p className="flex items-center gap-2 text-[11px] text-slate-600">
+            <p className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-300">
               <span className="h-2 w-2 rounded-full bg-primary"></span>
               Realisasi: <span className="font-bold text-primary">{formatCurrency(payload[1].value)}</span>
             </p>
@@ -61,7 +61,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data = [] }) => {
   if (data.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-sm text-slate-500">Tidak ada data untuk ditampilkan</div>
+        <div className="text-sm text-slate-500 dark:text-slate-400">Tidak ada data untuk ditampilkan</div>
       </div>
     );
   }

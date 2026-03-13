@@ -585,7 +585,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         </div>
 
         {/* Year Filter */}
-        <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-[#e5d2d2] shadow-sm w-fit">
+        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-xl border border-[#e5d2d2] shadow-sm w-fit">
           <button 
             onClick={() => scrollYears('left')}
             disabled={!canScrollLeft}
@@ -628,7 +628,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       {/* Quick Stats Grid */}
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#915555] text-xs font-bold uppercase tracking-wider">Total Proyek ({selectedYear})</p>
               <span className="material-symbols-outlined text-primary text-xl">folder_shared</span>
@@ -642,7 +642,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#915555] text-xs font-bold uppercase tracking-wider">Menunggu Persetujuan</p>
               <span className="material-symbols-outlined text-yellow-500 text-xl">pending_actions</span>
@@ -652,7 +652,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               <p className="text-[#915555] text-xs font-medium">{stats?.pendingPercent || 0}% total</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] border-l-4 border-l-blue-500 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] border-l-4 border-l-blue-500 shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#915555] text-xs font-bold uppercase tracking-wider">Sedang Berjalan</p>
               <span className="material-symbols-outlined text-blue-500 text-xl">rocket_launch</span>
@@ -666,7 +666,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#915555] text-xs font-bold uppercase tracking-wider">Selesai</p>
               <span className="material-symbols-outlined text-green-500 text-xl">verified</span>
@@ -687,7 +687,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribution Donut */}
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] shadow-sm">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] shadow-sm">
             <h3 className="text-[#1a0f0f] text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
               <span className="material-symbols-outlined text-primary text-lg">pie_chart</span>
               Distribusi Status Proyek {selectedYear}
@@ -801,7 +801,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
 
           {/* Portofolio Proyek Bar Chart */}
-          <div className="bg-white p-6 rounded-xl border border-[#e5d2d2] shadow-sm">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] shadow-sm">
             <h3 className="text-[#1a0f0f] text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
               <span className="material-symbols-outlined text-[#1a237e] text-lg">bar_chart</span>
               Portofolio Proyek {selectedYear}
@@ -842,7 +842,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Filter Toolbar */}
       <section className="px-8 py-2">
-        <div className="bg-white p-4 rounded-xl border border-[#e5d2d2] flex flex-col gap-3 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-[#e5d2d2] flex flex-col gap-3 shadow-sm">
           <div className="w-full">
             <div className="relative group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#915555] text-xl group-focus-within:text-primary transition-colors">search</span>
@@ -871,7 +871,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
                 <span className="material-symbols-outlined text-[16px] text-[#b5655f]">flag</span>
                 <select
                   value={statusFilter}
@@ -884,7 +884,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
                 <span className="material-symbols-outlined text-[16px] text-[#b5655f]">timeline</span>
                 <select
                   value={progressFilter}
@@ -899,7 +899,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   <option value="lte100">≤100%</option>
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] hover:border-[#d6bebe] cursor-pointer min-w-[140px]">
                 <span className="material-symbols-outlined text-[16px] text-[#b5655f]">description</span>
                 <select
                   value={contractFilter}
@@ -923,7 +923,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   setProgressFilter('');
                   setContractFilter('');
                 }}
-                className="inline-flex items-center justify-center px-4 py-2 bg-white rounded-lg text-[11px] font-semibold text-[#915555] border border-[#f2e9e9] hover:border-[#d6bebe] w-[120px] h-[36px] tracking-[0.12em] uppercase"
+                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-slate-800 rounded-lg text-[11px] font-semibold text-[#915555] border border-[#f2e9e9] hover:border-[#d6bebe] w-[120px] h-[36px] tracking-[0.12em] uppercase"
               >
                 Reset
               </button>
@@ -938,7 +938,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   <span className="material-symbols-outlined text-xs">expand_more</span>
                 </button>
                 {isExportMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white border border-[#e5d2d2] rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 border border-[#e5d2d2] rounded-lg shadow-xl z-50 overflow-hidden">
                     <button
                       onClick={() => {
                         handleExportExcel();
@@ -969,7 +969,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Projects Table */}
       <section className="px-8 py-6" ref={projectListRef}>
-        <div className="bg-white rounded-xl border border-[#e5d2d2] shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-[#e5d2d2] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -1067,7 +1067,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                               {getInitials(project.pic?.name || 'N/A')}
                             </span>
                           </div>
-                          <span className="text-xs font-bold text-slate-700">{project.pic?.name || 'N/A'}</span>
+                          <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{project.pic?.name || 'N/A'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-5">
@@ -1078,7 +1078,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col gap-1.5 w-full max-w-[140px]">
-                          <div className="flex justify-between items-center text-[10px] font-black text-slate-500">
+                          <div className="flex justify-between items-center text-[10px] font-black text-slate-500 dark:text-slate-400">
                             <span>{project.progress || 0}%</span>
                           </div>
                           <div className="w-full bg-[#f2e9e9] h-2 rounded-full overflow-hidden">
@@ -1106,7 +1106,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                         >
                           <span className="material-symbols-outlined text-2xl">more_vert</span>
                         </button>
-                        {actionMenuProjectId === projectId && (                          <div className="absolute right-4 mt-2 w-48 bg-white border border-[#e5d2d2] rounded-lg shadow-lg z-50">
+                        {actionMenuProjectId === projectId && (                          <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e5d2d2] rounded-lg shadow-lg z-50">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1153,7 +1153,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
           
           {/* Footer Table Info */}
-          <div className="px-6 py-4 border-t border-[#e5d2d2] flex items-center justify-between bg-slate-50/50">
+          <div className="px-6 py-4 border-t border-[#e5d2d2] flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
             <p className="text-xs font-black text-[#915555] uppercase tracking-widest">
               {pagination && !isFiltered ? (
                 <>Showing {((pagination.current_page - 1) * pagination.per_page) + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} results for Year {selectedYear}</>
@@ -1166,7 +1166,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={pagination.current_page === 1}
-                  className="px-4 py-1.5 border border-[#e5d2d2] rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] hover:bg-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 border border-[#e5d2d2] rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Prev
                 </button>
@@ -1188,7 +1188,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest ${
                         pagination.current_page === pageNum
                           ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                          : 'border border-[#e5d2d2] text-[#915555] hover:bg-white transition-all shadow-sm'
+                          : 'border border-[#e5d2d2] text-[#915555] hover:bg-white dark:bg-slate-800 transition-all shadow-sm'
                       }`}
                     >
                       {pageNum}
@@ -1198,7 +1198,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(pagination.last_page, prev + 1))}
                   disabled={pagination.current_page === pagination.last_page}
-                  className="px-4 py-1.5 border border-[#e5d2d2] rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] hover:bg-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 border border-[#e5d2d2] rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

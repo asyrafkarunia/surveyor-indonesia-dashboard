@@ -70,7 +70,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
   };
 
   return (
-    <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+    <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto flex flex-col gap-6 pb-20">
           
@@ -123,7 +123,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
           </div>
 
           {/* Template Table */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="flex flex-col rounded-xl border border-gray-200 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -145,7 +145,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
                       <tr key={tpl.id} className="group hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:text-slate-400">
                               <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>description</span>
                             </div>
                             <div className="flex flex-col">
@@ -186,7 +186,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
             </div>
             
             {/* Pagination */}
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white dark:bg-slate-800 px-4 py-3 sm:px-6">
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">

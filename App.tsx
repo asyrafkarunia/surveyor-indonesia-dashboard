@@ -135,8 +135,8 @@ const DashboardHome: React.FC<{
         {/* Welcome Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Selamat Datang, {user?.name || 'User'}</h3>
-            <p className="mt-1 text-sm text-slate-500">Here is the latest update for your projects.</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Selamat Datang, {user?.name || 'User'}</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Here is the latest update for your projects.</p>
           </div>
           <DateRangeSelector
             selectedStartMonth={startMonth}
@@ -182,27 +182,27 @@ const DashboardHome: React.FC<{
       {/* Charts and Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Chart */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm lg:col-span-2">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-          <h3 className="text-base font-bold text-slate-900">Nilai Kontrak vs Aktualisasi</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Aktualisasi</h3>
           <p className="text-xs text-slate-400">Nilai Kontrak = nilai proyek, Aktualisasi = nilai terserap</p>
             </div>
             <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-wider">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-slate-200"></span>
-                <span className="text-slate-500">Nilai Kontrak</span>
+                <span className="text-slate-500 dark:text-slate-400">Nilai Kontrak</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-primary"></span>
-                <span className="text-slate-500">Aktualisasi</span>
+                <span className="text-slate-500 dark:text-slate-400">Aktualisasi</span>
               </div>
             </div>
           </div>
           <div className="h-72 w-full">
             {loading ? (
               <div className="flex h-full items-center justify-center">
-                <div className="text-sm text-slate-500">Loading chart data...</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">Loading chart data...</div>
               </div>
             ) : (
               <RevenueChart data={revenueData} />
@@ -211,16 +211,16 @@ const DashboardHome: React.FC<{
         </div>
 
         {/* Activity Feed */}
-        <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
-          <h3 className="mb-8 text-base font-bold text-slate-900">Aktivitas Terbaru</h3>
+        <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm lg:col-span-1">
+          <h3 className="mb-8 text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h3>
           {loading ? (
             <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
           ) : recentActivities.length > 0 ? (
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
               {recentActivities.map((activity) => (
                 <div key={activity.id} className="text-sm">
-                  <p className="font-medium text-slate-900">{activity.user}</p>
-                  <p className="text-slate-600">{activity.action}</p>
+                  <p className="font-medium text-slate-900 dark:text-white">{activity.user}</p>
+                  <p className="text-slate-600 dark:text-slate-300">{activity.action}</p>
                   <p className="text-xs text-slate-400">{activity.time}</p>
                 </div>
               ))}
@@ -238,9 +238,9 @@ const DashboardHome: React.FC<{
       </div>
 
       {/* Projects Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 p-6">
-          <h3 className="text-base font-bold text-slate-900">Monitoring Project (Top 5)</h3>
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Monitoring Project (Top 5)</h3>
           <button
             onClick={() => onNavigate?.('monitoring')}
             className="text-sm font-bold text-primary hover:underline"
@@ -249,7 +249,7 @@ const DashboardHome: React.FC<{
           </button>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-sm text-slate-500">Loading projects...</div>
+          <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">Loading projects...</div>
         ) : (
           <ProjectTable projects={topProjects} onSelectProjectId={(id) => onOpenProject?.(id)} />
         )}
@@ -303,9 +303,9 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-slate-50">
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-slate-900">
         <div className="text-center">
-          <div className="mb-2 text-lg font-medium text-slate-600">Loading System...</div>
+          <div className="mb-2 text-lg font-medium text-slate-600 dark:text-slate-300">Loading System...</div>
           <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-200">
             <div className="h-full w-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-slate-200 via-emerald-400 to-slate-200" style={{ backgroundSize: '200% 100%' }}></div>
           </div>
@@ -621,7 +621,7 @@ const AppContent: React.FC = () => {
         
         {/* Custom Breadcrumb for Sub-Screens */}
         {activeTab !== 'dashboard' && (
-           <header className="flex h-12 w-full items-center border-b border-slate-200 bg-white px-6 py-2 lg:px-10 shrink-0">
+           <header className="flex h-12 w-full items-center border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2 lg:px-10 shrink-0">
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
               {breadcrumbs.map((crumb, idx) => (
                 <React.Fragment key={`${crumb.id}-${idx}`}>
@@ -657,7 +657,7 @@ const AppContent: React.FC = () => {
                         setActiveTab('settings'); // Fallback for admin group crumbs
                       }
                     }} 
-                    className={`${idx === breadcrumbs.length - 1 ? 'text-slate-900' : 'hover:text-primary transition-colors'}`}
+                    className={`${idx === breadcrumbs.length - 1 ? 'text-slate-900 dark:text-white' : 'hover:text-primary transition-colors'}`}
                   >
                     {crumb.label}
                   </button>

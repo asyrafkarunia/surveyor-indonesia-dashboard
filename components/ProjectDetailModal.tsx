@@ -164,36 +164,36 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8 max-w-3xl w-full mx-4"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 md:p-8 max-w-3xl w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 mb-6">
           <div className="min-w-0">
-            <h3 className="text-xl md:text-2xl font-black text-slate-900 truncate">{header}</h3>
+            <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white truncate">{header}</h3>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
               {project?.client?.company_name ? `Client: ${project.client.company_name}` : 'Client: N/A'}
             </p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 dark:text-slate-200 transition-colors">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-sm font-bold text-slate-500">Memuat detail proyek...</div>
+          <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">Memuat detail proyek...</div>
         ) : !project ? (
-          <div className="py-16 text-center text-sm font-bold text-slate-500">Detail proyek tidak tersedia.</div>
+          <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">Detail proyek tidak tersedia.</div>
         ) : (
           <div className="space-y-6">
             {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</p>
                 {isEdit ? (
                   <select
                     value={form.status}
                     onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900"
+                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
                   >
                     <option value="PENDING">PENDING</option>
                     <option value="RUNNING">RUNNING</option>
@@ -201,11 +201,11 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     <option value="REJECTED">REJECTED</option>
                   </select>
                 ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900">{project.status}</p>
+                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{project.status}</p>
                 )}
               </div>
 
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</p>
                 {isEdit ? (
                   <div className="mt-2 flex items-center gap-3">
@@ -223,13 +223,13 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                       max={100}
                       value={form.progress}
                       onChange={(e) => setForm((p) => ({ ...p, progress: Number(e.target.value) }))}
-                      className="w-20 h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-900"
+                      className="w-20 h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-black text-slate-900 dark:text-white"
                     />
                   </div>
                 ) : (
                   <div className="mt-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-black text-slate-900">{project.progress}%</p>
+                      <p className="text-sm font-black text-slate-900 dark:text-white">{project.progress}%</p>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{project.approval_status || 'N/A'}</p>
                     </div>
                     <div className="mt-2 w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -239,7 +239,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                 )}
               </div>
 
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nilai Kontrak</p>
                 {isEdit ? (
                   <input
@@ -250,30 +250,30 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                       setForm((p) => ({ ...p, budget: val }));
                     }}
                     placeholder="contoh: 150.000.000"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900"
+                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900">{formatCurrency(project.budget)}</p>
+                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{formatCurrency(project.budget)}</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Portofolio / Jenis Pekerjaan</p>
                 {isEdit ? (
                   <input
                     value={form.project_type as any}
                     onChange={(e) => setForm((p) => ({ ...p, project_type: e.target.value }))}
                     placeholder="contoh: Inspection"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900"
+                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900">{toPascalCase(project.project_type || 'Uncategorized')}</p>
+                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{toPascalCase(project.project_type || 'Uncategorized')}</p>
                 )}
               </div>
 
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aktualisasi (Terserap)</p>
                 {isEdit ? (
                   <input
@@ -284,10 +284,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                       setForm((p) => ({ ...p, actual_revenue: val }));
                     }}
                     placeholder="contoh: 50.000.000"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900"
+                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900">{formatCurrency(project.actual_revenue)}</p>
+                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{formatCurrency(project.actual_revenue)}</p>
                 )}
               </div>
             </div>
@@ -300,10 +300,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                   <input
                     value={form.title}
                     onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900"
+                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <div className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900 leading-snug break-words">
+                  <div className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white leading-snug break-words">
                     {project.title}
                   </div>
                 )}
@@ -311,7 +311,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
 
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">PIC</label>
-                <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900">
+                <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
                   {project?.pic?.name || project?.custom_pic_name || 'N/A'}
                 </div>
               </div>
@@ -323,10 +323,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     type="date"
                     value={form.start_date}
                     onChange={(e) => setForm((p) => ({ ...p, start_date: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900"
+                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900">
+                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
                     {formatDateForInput(project.start_date) || 'N/A'}
                   </div>
                 )}
@@ -339,10 +339,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     type="date"
                     value={form.end_date}
                     onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900"
+                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900">
+                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
                     {formatDateForInput(project.end_date) || 'N/A'}
                   </div>
                 )}
@@ -355,13 +355,13 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                 <textarea
                   value={form.description as any}
                   onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  className="w-full min-h-[110px] rounded-xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-900"
+                  className="w-full min-h-[110px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-sm font-bold text-slate-900 dark:text-white"
                 />
               ) : (
                 <textarea
                   readOnly
                   value={project.description || 'N/A'}
-                  className="w-full min-h-[110px] rounded-xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-900 resize-y focus:outline-none"
+                  className="w-full min-h-[110px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-sm font-bold text-slate-900 dark:text-white resize-y focus:outline-none"
                 />
               )}
             </div>
@@ -369,8 +369,8 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
             {/* Actions */}
             <div className="flex items-center justify-between pt-2">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Attachments: <span className="text-slate-900">{(project.attachments || []).length}</span> • Comments:{' '}
-                <span className="text-slate-900">{(project.comments || []).length}</span>
+                Attachments: <span className="text-slate-900 dark:text-white">{(project.attachments || []).length}</span> • Comments:{' '}
+                <span className="text-slate-900 dark:text-white">{(project.comments || []).length}</span>
               </div>
               <div className="flex items-center gap-2">
                 {!isEdit ? (
@@ -385,7 +385,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     )}
                     <button
                       onClick={onClose}
-                      className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+                      className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-all"
                     >
                       Tutup
                     </button>
@@ -415,7 +415,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                           description: project?.description ?? '',
                         });
                       }}
-                      className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       Batal
                     </button>

@@ -295,7 +295,7 @@ const PermissionsScreen: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-6 items-end">
             {/* User/Role Dropdown */}
             <div className="flex flex-col w-full md:w-1/3 gap-2">
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pilih Pengguna</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Pilih Pengguna</span>
               <div className="relative">
                 <select 
                   value={selectedUserId || ''}
@@ -309,7 +309,7 @@ const PermissionsScreen: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 dark:text-slate-500">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   <span className="material-symbols-outlined text-[20px]">expand_more</span>
                 </div>
               </div>
@@ -325,10 +325,10 @@ const PermissionsScreen: React.FC = () => {
             
             {/* Search Permissions */}
             <div className="flex flex-col w-full md:flex-1 gap-2">
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Cari Izin</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Cari Izin</span>
               <div className="relative w-full group">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors text-[20px]">search</span>
+                  <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">search</span>
                 </div>
                 <input 
                   value={searchQuery}
@@ -344,7 +344,7 @@ const PermissionsScreen: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-slate-400 dark:text-slate-500 text-sm font-bold">Memuat izin...</div>
+            <div className="text-slate-400 dark:text-slate-500 dark:text-slate-400 text-sm font-bold">Memuat izin...</div>
           </div>
         ) : (
           <>
@@ -360,14 +360,14 @@ const PermissionsScreen: React.FC = () => {
             <div className="flex flex-col gap-8">
               {filteredCategories.map((category) => (
                 <div key={category.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                  <div className="bg-slate-50/50 dark:bg-slate-700/50 px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 dark:bg-slate-700/50 px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <div className="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl text-primary border border-red-100 dark:border-red-900/50 shadow-sm">
                         <span className="material-symbols-outlined fill">{category.icon}</span>
                       </div>
                       <div>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">{category.title}</h3>
-                        <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-tighter">{category.description}</p>
+                        <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-tighter">{category.description}</p>
                       </div>
                     </div>
                     {selectedUserId && (
@@ -382,7 +382,7 @@ const PermissionsScreen: React.FC = () => {
                   
                   <div className="divide-y divide-slate-50 dark:divide-slate-700">
                     {category.permissions.map((perm) => (
-                      <div key={perm.id} className="px-8 py-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                      <div key={perm.id} className="px-8 py-6 flex items-center justify-between hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 transition-colors">
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-bold text-slate-900 dark:text-white">{perm.name}</span>
                           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{perm.description}</span>
@@ -398,7 +398,7 @@ const PermissionsScreen: React.FC = () => {
                           role="switch"
                           aria-checked={perm.isEnabled}
                         >
-                          <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${perm.isEnabled ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                          <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-800 shadow ring-0 transition duration-200 ease-in-out ${perm.isEnabled ? 'translate-x-5' : 'translate-x-0'}`}></span>
                         </button>
                       </div>
                     ))}
@@ -411,9 +411,9 @@ const PermissionsScreen: React.FC = () => {
       </div>
 
       {/* Sticky Footer Action Bar */}
-      <div className="fixed bottom-0 left-72 right-0 bg-white/95 dark:bg-slate-800/95 border-t border-slate-200 dark:border-slate-700 px-10 py-5 backdrop-blur-sm z-30 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+      <div className="fixed bottom-0 left-72 right-0 bg-white dark:bg-slate-800/95 dark:bg-slate-800/95 border-t border-slate-200 dark:border-slate-700 px-10 py-5 backdrop-blur-sm z-30 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
         <div className="container mx-auto max-w-5xl flex items-center justify-between">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hidden lg:block">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 hidden lg:block">
             {lastModified ? (
               <>Terakhir diubah: <span className="text-slate-900 dark:text-white">{lastModified}</span> oleh {currentUser?.name || 'Administrator'}</>
             ) : (
@@ -423,7 +423,7 @@ const PermissionsScreen: React.FC = () => {
           <div className="flex gap-4 w-full lg:w-auto justify-end">
             <button 
               onClick={handleCancel}
-              className="px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none lg:w-auto w-1/2"
+              className="px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 transition-all focus:outline-none lg:w-auto w-1/2"
             >
               Batal
             </button>

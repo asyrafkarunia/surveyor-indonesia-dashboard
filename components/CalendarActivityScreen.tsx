@@ -211,10 +211,10 @@ const CalendarActivityScreen: React.FC = () => {
     }
 
     return (
-      <div className="grid grid-cols-7 bg-white min-w-[1000px]">
+      <div className="grid grid-cols-7 bg-white dark:bg-slate-800 min-w-[1000px]">
         {/* Days Header */}
         {dayNames.map(day => (
-          <div key={day} className="border-b border-r border-slate-100 py-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-50/50">
+          <div key={day} className="border-b border-r border-slate-100 dark:border-slate-700 py-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-50 dark:bg-slate-900/50">
             {day.substring(0, 3)}
           </div>
         ))}
@@ -231,8 +231,8 @@ const CalendarActivityScreen: React.FC = () => {
           return (
             <div
               key={idx}
-              className={`group relative min-h-[140px] border-b border-r border-slate-100 p-2 transition-colors hover:bg-slate-50/50 ${
-                !day ? 'bg-slate-50/30 text-slate-300' : 'text-slate-900'
+              className={`group relative min-h-[140px] border-b border-r border-slate-100 dark:border-slate-700 p-2 transition-colors hover:bg-slate-50 dark:bg-slate-900/50 ${
+                !day ? 'bg-slate-50 dark:bg-slate-900/30 text-slate-300' : 'text-slate-900 dark:text-white'
               }`}
             >
               {day && (
@@ -279,7 +279,7 @@ const CalendarActivityScreen: React.FC = () => {
                           case 'meeting': return 'border-purple-500 bg-purple-50 text-purple-900';
                           case 'deadline': return 'border-red-500 bg-red-50 text-red-900';
                           case 'activity': return 'border-blue-500 bg-blue-50 text-blue-900';
-                          default: return 'border-slate-400 bg-slate-50 text-slate-600';
+                          default: return 'border-slate-400 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300';
                         }
                       };
 
@@ -396,9 +396,9 @@ const CalendarActivityScreen: React.FC = () => {
     return (
       <div className="flex flex-col h-full">
         {/* Week Navigation */}
-        <div className="flex items-center justify-between border-b border-slate-200 p-4 bg-white">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800">
           <div className="flex items-center gap-4">
-            <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+            <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden shadow-sm">
               <button
                 onClick={() => navigateWeek('prev')}
                 className="p-1.5 hover:text-primary transition-colors"
@@ -408,7 +408,7 @@ const CalendarActivityScreen: React.FC = () => {
               </button>
               <button
                 onClick={goToToday}
-                className="border-l border-r border-slate-200 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 hover:text-primary transition-colors"
+                className="border-l border-r border-slate-200 dark:border-slate-700 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
               >
                 Today
               </button>
@@ -420,21 +420,21 @@ const CalendarActivityScreen: React.FC = () => {
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
             </div>
-            <h3 className="text-lg font-black text-slate-900">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">
               {weekStartStr} - {weekEndStr}
             </h3>
           </div>
         </div>
 
-        <div className="grid grid-cols-7 border-b border-slate-200">
+        <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700">
           {weekDays.map((date, idx) => {
             const isToday = date.toDateString() === new Date().toDateString();
             return (
-              <div key={idx} className="border-r border-slate-100 p-4 text-center">
+              <div key={idx} className="border-r border-slate-100 dark:border-slate-700 p-4 text-center">
                 <div className={`text-xs font-black uppercase ${isToday ? 'text-primary' : 'text-slate-400'}`}>
                   {['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][date.getDay()]}
                 </div>
-                <div className={`text-lg font-black mt-1 ${isToday ? 'text-primary' : 'text-slate-900'}`}>
+                <div className={`text-lg font-black mt-1 ${isToday ? 'text-primary' : 'text-slate-900 dark:text-white'}`}>
                   {date.getDate()}
                 </div>
               </div>
@@ -445,7 +445,7 @@ const CalendarActivityScreen: React.FC = () => {
           {weekDays.map((date, idx) => {
             const dayEvents = getEventsForDate(date);
             return (
-              <div key={idx} className="border-r border-b border-slate-100 p-2 min-h-[400px]">
+              <div key={idx} className="border-r border-b border-slate-100 dark:border-slate-700 p-2 min-h-[400px]">
                 <div className="space-y-2">
                   {dayEvents.map(event => {
                     const getColorClass = (type: string) => {
@@ -453,7 +453,7 @@ const CalendarActivityScreen: React.FC = () => {
                         case 'meeting': return 'border-purple-500 bg-purple-50 text-purple-900';
                         case 'deadline': return 'border-red-500 bg-red-50 text-red-900';
                         case 'activity': return 'border-blue-500 bg-blue-50 text-blue-900';
-                        default: return 'border-slate-400 bg-slate-50 text-slate-600';
+                        default: return 'border-slate-400 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300';
                       }
                     };
                     return (
@@ -509,9 +509,9 @@ const CalendarActivityScreen: React.FC = () => {
     return (
       <div className="flex flex-col h-full">
         {/* Day Navigation */}
-        <div className="flex items-center justify-between border-b border-slate-200 p-4 bg-white">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800">
           <div className="flex items-center gap-4">
-            <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+            <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden shadow-sm">
               <button
                 onClick={() => navigateDay('prev')}
                 className="p-1.5 hover:text-primary transition-colors"
@@ -521,7 +521,7 @@ const CalendarActivityScreen: React.FC = () => {
               </button>
               <button
                 onClick={goToToday}
-                className="border-l border-r border-slate-200 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 hover:text-primary transition-colors"
+                className="border-l border-r border-slate-200 dark:border-slate-700 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
               >
                 Today
               </button>
@@ -537,7 +537,7 @@ const CalendarActivityScreen: React.FC = () => {
               currentDate={currentDate}
               onDateSelect={handleDayDateSelect}
             />
-            <h3 className="text-lg font-black text-slate-900">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">
               {currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </h3>
           </div>
@@ -558,11 +558,11 @@ const CalendarActivityScreen: React.FC = () => {
                     setSelectedEvent(event);
                     setIsDetailModalOpen(true);
                   }}
-                  className="cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all"
+                  className="cursor-pointer rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all"
                 >
-                <h4 className="font-black text-slate-900">{event.title}</h4>
+                <h4 className="font-black text-slate-900 dark:text-white">{event.title}</h4>
                 {event.description && (
-                  <p className="text-sm text-slate-600 mt-2 line-clamp-2">{event.description}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-2">{event.description}</p>
                 )}
                 {event.start_time && event.end_time && (
                   <p className="text-xs text-slate-400 mt-2">
@@ -592,7 +592,7 @@ const CalendarActivityScreen: React.FC = () => {
                       <div className="size-6 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-black">
                         {event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-xs font-bold text-slate-600">{event.user.name}</span>
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{event.user.name}</span>
                     </div>
                   )}
                 </div>
@@ -605,17 +605,17 @@ const CalendarActivityScreen: React.FC = () => {
   };
 
   return (
-    <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden bg-slate-50 custom-scrollbar">
+    <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="flex flex-1 flex-col gap-6 p-6 lg:p-10">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Kalender Aktivitas</h2>
-            <p className="mt-2 text-base text-slate-500 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Kalender Aktivitas</h2>
+            <p className="mt-2 text-base text-slate-500 dark:text-slate-400 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
           </div>
           <div className="flex items-center gap-3">
             <button 
               onClick={handleExport}
-              className="group flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition-colors hover:border-primary hover:text-primary shadow-sm"
+              className="group flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors hover:border-primary hover:text-primary shadow-sm"
             >
               <span className="material-symbols-outlined text-[20px]">file_download</span>
               <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Export</span>
@@ -634,9 +634,9 @@ const CalendarActivityScreen: React.FC = () => {
         </div>
 
         {/* Calendar Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-100 p-4 gap-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-100 dark:border-slate-700 p-4 gap-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+            <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden shadow-sm">
               <button
                 onClick={() => navigateMonth('prev')}
                 className="p-1.5 hover:text-primary transition-colors"
@@ -645,7 +645,7 @@ const CalendarActivityScreen: React.FC = () => {
               </button>
               <button
                 onClick={goToToday}
-                className="border-l border-r border-slate-200 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 hover:text-primary transition-colors"
+                className="border-l border-r border-slate-200 dark:border-slate-700 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
               >
                 Today
               </button>
@@ -660,14 +660,14 @@ const CalendarActivityScreen: React.FC = () => {
               currentDate={currentDate}
               onDateSelect={handleDateSelect}
             />
-            <h3 className="text-xl font-black text-slate-900">{formatMonthYear(currentDate)}</h3>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white">{formatMonthYear(currentDate)}</h3>
           </div>
-          <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+          <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-1">
             <button
               onClick={() => setViewMode('month')}
               className={`rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${
                 viewMode === 'month'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-100'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700'
                   : 'text-slate-400 hover:text-primary'
               }`}
             >
@@ -677,7 +677,7 @@ const CalendarActivityScreen: React.FC = () => {
               onClick={() => setViewMode('week')}
               className={`rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${
                 viewMode === 'week'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-100'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700'
                   : 'text-slate-400 hover:text-primary'
               }`}
             >
@@ -687,7 +687,7 @@ const CalendarActivityScreen: React.FC = () => {
               onClick={() => setViewMode('day')}
               className={`rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors ${
                 viewMode === 'day'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-100'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700'
                   : 'text-slate-400 hover:text-primary'
               }`}
             >
@@ -697,8 +697,8 @@ const CalendarActivityScreen: React.FC = () => {
         </div>
 
         {/* Calendar Content */}
-        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex-1 overflow-auto bg-slate-50/20 custom-scrollbar">
+        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+          <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900/20 custom-scrollbar">
             {loading ? (
               <div className="flex items-center justify-center h-96">
                 <div className="text-slate-400">Loading...</div>
@@ -778,7 +778,7 @@ const DayDatePicker: React.FC<{
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+        className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-900"
       >
         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
         <span>{selectedDay} {months[selectedMonth - 1]} {selectedYear}</span>
@@ -786,15 +786,15 @@ const DayDatePicker: React.FC<{
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
+        <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-2 block text-xs font-semibold text-slate-700">Bulan</label>
+                <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Bulan</label>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {months.map((month, index) => (
                     <option key={index} value={index + 1}>
@@ -804,11 +804,11 @@ const DayDatePicker: React.FC<{
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-xs font-semibold text-slate-700">Tahun</label>
+                <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Tahun</label>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {years.map((year) => (
                     <option key={year} value={year}>
@@ -819,7 +819,7 @@ const DayDatePicker: React.FC<{
               </div>
             </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">Tanggal</label>
+              <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Tanggal</label>
               <div className="grid grid-cols-7 gap-1 max-h-48 overflow-y-auto">
                 {days.map((day) => (
                   <button
@@ -829,7 +829,7 @@ const DayDatePicker: React.FC<{
                     className={`rounded-lg py-2 text-xs font-bold transition-colors ${
                       selectedDay === day
                         ? 'bg-primary text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        : 'bg-slate-100 text-slate-700 dark:text-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     {day}
@@ -837,11 +837,11 @@ const DayDatePicker: React.FC<{
                 ))}
               </div>
             </div>
-            <div className="flex gap-2 pt-2 border-t border-slate-200">
+            <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>
@@ -885,7 +885,7 @@ const DatePicker: React.FC<{
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+        className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-900"
       >
         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
         <span>{months[selectedMonth - 1]} {selectedYear}</span>
@@ -893,14 +893,14 @@ const DatePicker: React.FC<{
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
+        <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">Bulan</label>
+              <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Bulan</label>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {months.map((month, index) => (
                   <option key={index} value={index + 1}>
@@ -910,11 +910,11 @@ const DatePicker: React.FC<{
               </select>
             </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">Tahun</label>
+              <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Tahun</label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {years.map((year) => (
                   <option key={year} value={year}>
@@ -923,10 +923,10 @@ const DatePicker: React.FC<{
                 ))}
               </select>
             </div>
-            <div className="flex gap-2 pt-2 border-t border-slate-200">
+            <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-200"
               >
                 Batal
               </button>

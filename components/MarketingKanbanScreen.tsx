@@ -49,7 +49,7 @@ const TaskCard: React.FC<{
       <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug mb-1">
         {card.title}
       </h4>
-      <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mb-4">{card.client}</p>
+      <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-4">{card.client}</p>
       
       <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50">
         <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
@@ -57,7 +57,7 @@ const TaskCard: React.FC<{
           {card.date}
         </div>
         <div className="flex items-center">
-           <div className="size-6 rounded-full bg-slate-100 border border-white shadow-sm flex items-center justify-center text-[9px] font-black text-slate-500 uppercase">
+           <div className="size-6 rounded-full bg-slate-100 border border-white shadow-sm flex items-center justify-center text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase">
              {card.assignee.initials}
            </div>
         </div>
@@ -229,7 +229,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
               <input 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-bold w-48 md:w-64 focus:bg-white dark:focus:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
+                className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 dark:border-slate-600 rounded-lg text-xs font-bold w-48 md:w-64 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400" 
                 placeholder="Cari kegiatan..." 
                 type="text"
               />
@@ -249,7 +249,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
       <div className="flex-1 overflow-x-auto p-6 md:p-10 custom-scrollbar">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-slate-400 dark:text-slate-500 text-sm font-bold">Memuat data...</div>
+            <div className="text-slate-400 dark:text-slate-500 dark:text-slate-400 text-sm font-bold">Memuat data...</div>
           </div>
         ) : (
           <div className="flex gap-6 h-full min-w-max">
@@ -298,7 +298,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
                     
                     <button 
                       onClick={onAddTask}
-                      className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-500 hover:text-primary hover:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 group"
+                      className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary/50 transition-all text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 group"
                     >
                       <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">add</span>
                       Add Card

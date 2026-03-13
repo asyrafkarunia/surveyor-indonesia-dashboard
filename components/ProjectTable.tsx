@@ -19,7 +19,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects = [], onSelectProj
       case 'Completed': return 'bg-green-100 text-green-800';
       case 'Delayed': return 'bg-red-100 text-red-800';
       case 'Pending': return 'bg-amber-100 text-amber-800';
-      default: return 'bg-slate-100 text-slate-800';
+      default: return 'bg-slate-100 text-slate-800 dark:text-slate-200';
     }
   };
 
@@ -35,7 +35,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects = [], onSelectProj
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+        <thead className="bg-slate-50 dark:bg-slate-900 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           <tr>
             <th className="px-6 py-4">Project Name</th>
             <th className="px-6 py-4">Client</th>
@@ -47,7 +47,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects = [], onSelectProj
         <tbody className="divide-y divide-slate-100">
           {projects.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-500">
+              <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
                 Tidak ada data proyek
               </td>
             </tr>
@@ -55,13 +55,13 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects = [], onSelectProj
             projects.map((project) => (
             <tr
               key={project.id}
-              className={`transition-colors hover:bg-slate-50 ${onSelectProjectId ? 'cursor-pointer' : ''}`}
+              className={`transition-colors hover:bg-slate-50 dark:bg-slate-900 ${onSelectProjectId ? 'cursor-pointer' : ''}`}
               onClick={() => onSelectProjectId?.(project.id)}
             >
-              <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-900">
+              <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-900 dark:text-white">
                 {project.name}
               </td>
-              <td className="px-6 py-4 text-slate-600">{project.client}</td>
+              <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{project.client}</td>
               <td className="px-6 py-4">
                 <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${getStatusStyle(project.status)}`}>
                   {project.status}
@@ -75,11 +75,11 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects = [], onSelectProj
                       style={{ width: `${project.progress}%` }}
                     ></div>
                   </div>
-                  <span className="text-[11px] font-semibold text-slate-600">{project.progress}%</span>
+                  <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">{project.progress}%</span>
                 </div>
               </td>
               <td className="px-6 py-4 text-right">
-                <button className="text-slate-400 hover:text-slate-600">
+                <button className="text-slate-400 hover:text-slate-600 dark:text-slate-300">
                   <span className="material-symbols-outlined text-[20px]">more_vert</span>
                 </button>
               </td>

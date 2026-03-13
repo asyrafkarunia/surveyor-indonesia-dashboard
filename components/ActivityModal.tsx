@@ -141,11 +141,11 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all border border-slate-100">
+      <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
         <form onSubmit={handleSubmit}>
           {/* Modal Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-white">
-            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Tambah Aktivitas Baru</h3>
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-5 bg-white dark:bg-slate-800">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Tambah Aktivitas Baru</h3>
             <button
               type="button"
               onClick={onClose}
@@ -166,7 +166,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none"
                 placeholder="Contoh: Rapat Koordinasi Mingguan"
                 type="text"
               />
@@ -178,7 +178,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none"
                 placeholder="Tambahkan deskripsi aktivitas..."
                 rows={3}
               />
@@ -195,7 +195,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all"
                     type="date"
                   />
                 </div>
@@ -204,13 +204,13 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                 <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
                   {durationUnit === 'Hari' ? 'Durasi (Hari)' : 'Rentang Waktu'}
                 </label>
-                <div className="flex items-center rounded-xl border border-slate-200 bg-red-50/20 overflow-hidden focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all min-h-[50px]">
+                <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 overflow-hidden focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all min-h-[50px]">
                   {durationUnit === 'Hari' ? (
                     <input
                       required
                       value={durationDays}
                       onChange={(e) => setDurationDays(Number(e.target.value))}
-                      className="w-full bg-transparent py-3.5 px-4 text-sm font-bold text-slate-900 focus:outline-none"
+                      className="w-full bg-transparent py-3.5 px-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none"
                       type="number"
                       min="1"
                       max="365"
@@ -221,14 +221,14 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                         type="time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 focus:ring-0 text-center"
+                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 text-center"
                       />
                       <span className="text-slate-300 font-bold">-</span>
                       <input
                         type="time"
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 focus:ring-0 text-center"
+                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 text-center"
                       />
                     </div>
                   )}
@@ -236,7 +236,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                   <select
                     value={durationUnit}
                     onChange={(e) => setDurationUnit(e.target.value as 'Hari' | 'Jam')}
-                    className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-500 focus:ring-0 cursor-pointer pr-8 pl-2"
+                    className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 focus:ring-0 cursor-pointer pr-8 pl-2"
                   >
                     <option value="Hari">Hari</option>
                     <option value="Jam">Jam</option>
@@ -251,7 +251,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-slate-200 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none cursor-pointer pr-10"
+                className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none cursor-pointer pr-10"
               >
                 <option value="activity">Aktivitas</option>
                 <option value="meeting">Meeting</option>
@@ -266,7 +266,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
               <select
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-slate-200 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none cursor-pointer pr-10"
+                className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none cursor-pointer pr-10"
               >
                 <option value="">Pilih Proyek</option>
                 {projects.map(project => (
@@ -285,7 +285,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                     <span className="material-symbols-outlined text-[24px]">update</span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest leading-none">Aktivitas Berulang</h4>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none">Aktivitas Berulang</h4>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1.5">Jadwalkan aktivitas ini secara otomatis</p>
                   </div>
                 </div>
@@ -296,7 +296,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                     onChange={(e) => setIsRecurring(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
 
@@ -310,7 +310,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                         <select
                           value={recurringFrequency}
                           onChange={(e) => setRecurringFrequency(e.target.value)}
-                          className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-700 focus:border-primary focus:ring-0 outline-none shadow-sm"
+                          className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 outline-none shadow-sm"
                         >
                           <option value="daily">Harian</option>
                           <option value="weekly">Mingguan</option>
@@ -326,11 +326,11 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                         <input
                           value={recurringInterval}
                           onChange={(e) => setRecurringInterval(Number(e.target.value))}
-                          className="w-20 rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-black text-slate-900 focus:border-primary focus:ring-0 outline-none shadow-sm"
+                          className="w-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-xs font-black text-slate-900 dark:text-white focus:border-primary focus:ring-0 outline-none shadow-sm"
                           type="number"
                           min="1"
                         />
-                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                        <span className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-widest">
                           {recurringFrequency === 'daily' ? 'Hari' : recurringFrequency === 'weekly' ? 'Minggu' : recurringFrequency === 'monthly' ? 'Bulan' : 'Tahun'}
                         </span>
                       </div>
@@ -338,7 +338,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                   </div>
 
                   {/* End Condition Section */}
-                  <div className="pt-4 border-t border-slate-100 space-y-4">
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-700 space-y-4">
                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] block">Berakhir Pada</label>
                     <div className="flex flex-col gap-4">
                       <label className="flex items-center gap-3 cursor-pointer group">
@@ -347,9 +347,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           name="end-condition"
                           checked={recurringEndType === 'never'}
                           onChange={() => setRecurringEndType('never')}
-                          className="size-4 border-slate-300 text-primary focus:ring-primary/20 bg-white"
+                          className="size-4 border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 bg-white dark:bg-slate-800"
                         />
-                        <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Selamanya</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Selamanya</span>
                       </label>
                       <label className="flex items-center gap-3 cursor-pointer group">
                         <input
@@ -357,15 +357,15 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           name="end-condition"
                           checked={recurringEndType === 'date'}
                           onChange={() => setRecurringEndType('date')}
-                          className="size-4 border-slate-300 text-primary focus:ring-primary/20 bg-white"
+                          className="size-4 border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 bg-white dark:bg-slate-800"
                         />
-                        <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Tanggal Tertentu</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Tanggal Tertentu</span>
                         {recurringEndType === 'date' && (
                           <input
                             required={recurringEndType === 'date'}
                             value={recurringEndDate}
                             onChange={(e) => setRecurringEndDate(e.target.value)}
-                            className="ml-auto w-40 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 focus:border-primary focus:ring-0 transition-all outline-none shadow-sm"
+                            className="ml-auto w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-black text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 transition-all outline-none shadow-sm"
                             type="date"
                           />
                         )}
@@ -376,16 +376,16 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           name="end-condition"
                           checked={recurringEndType === 'count'}
                           onChange={() => setRecurringEndType('count')}
-                          className="size-4 border-slate-300 text-primary focus:ring-primary/20 bg-white"
+                          className="size-4 border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 bg-white dark:bg-slate-800"
                         />
-                        <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Setelah</span>
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">Setelah</span>
                         {recurringEndType === 'count' && (
                           <div className="ml-auto flex items-center gap-3">
                             <input
                               required={recurringEndType === 'count'}
                               value={recurringCount}
                               onChange={(e) => setRecurringCount(Number(e.target.value))}
-                              className="w-16 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 focus:border-primary focus:ring-0 outline-none shadow-sm"
+                              className="w-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-black text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 outline-none shadow-sm"
                               type="number"
                               min="1"
                             />
@@ -401,11 +401,11 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
           </div>
 
           {/* Modal Footer */}
-          <div className="flex items-center justify-center gap-4 border-t border-slate-100 px-8 py-6 bg-slate-50/50">
+          <div className="flex items-center justify-center gap-4 border-t border-slate-100 dark:border-slate-700 px-8 py-6 bg-slate-50 dark:bg-slate-900/50">
             <button
               type="button"
               onClick={onClose}
-              className="px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 transition-colors"
+              className="px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors"
             >
               Batal
             </button>

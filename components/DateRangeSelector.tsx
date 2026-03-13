@@ -141,7 +141,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+        className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-900"
       >
         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
         <span>{formatDisplay()}</span>
@@ -151,16 +151,16 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-96 rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-2 w-96 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
           <div className="space-y-4">
             {/* Start Date */}
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">Dari</label>
+              <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Dari</label>
               <div className="flex gap-2">
                 <select
                   value={tempStartMonth}
                   onChange={(e) => handleStartMonthChange(Number(e.target.value))}
-                  className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {months.map((month, index) => (
                     <option key={index} value={index + 1}>
@@ -171,7 +171,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
                 <select
                   value={tempStartYear}
                   onChange={(e) => handleStartYearChange(Number(e.target.value))}
-                  className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {years.map((year) => (
                     <option key={year} value={year}>
@@ -184,12 +184,12 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
             {/* End Date */}
             <div>
-              <label className="mb-2 block text-xs font-semibold text-slate-700">Sampai</label>
+              <label className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">Sampai</label>
               <div className="flex gap-2">
                 <select
                   value={tempEndMonth}
                   onChange={(e) => handleEndMonthChange(Number(e.target.value))}
-                  className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {months.map((month, index) => (
                     <option key={index} value={index + 1}>
@@ -200,7 +200,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
                 <select
                   value={tempEndYear}
                   onChange={(e) => handleEndYearChange(Number(e.target.value))}
-                  className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   {years.map((year) => (
                     <option key={year} value={year}>
@@ -212,14 +212,14 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             </div>
 
             {/* Quick Actions */}
-            <div className="flex gap-2 border-t border-slate-200 pt-3">
+            <div className="flex gap-2 border-t border-slate-200 dark:border-slate-700 pt-3">
               <button
                 onClick={() => {
                   const currentYear = new Date().getFullYear();
                   onChange(1, currentYear, 12, currentYear);
                   setIsOpen(false);
                 }}
-                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-200"
               >
                 Tahun Ini
               </button>
@@ -229,7 +229,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
                   onChange(1, lastYear, 12, lastYear);
                   setIsOpen(false);
                 }}
-                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-200"
               >
                 Tahun Lalu
               </button>

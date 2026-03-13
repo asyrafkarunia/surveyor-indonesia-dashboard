@@ -254,11 +254,11 @@ const ActivityLogScreen: React.FC = () => {
         <div className="max-w-6xl mx-auto flex flex-col gap-8 pb-20">
           
           {/* Breadcrumbs */}
-          <div className="flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          <div className="flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">
             <span className="hover:text-primary transition-colors cursor-pointer">Dashboard</span>
-            <span className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="text-slate-300 dark:text-slate-600 dark:text-slate-300">/</span>
             <span className="hover:text-primary transition-colors cursor-pointer">Settings</span>
-            <span className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="text-slate-300 dark:text-slate-600 dark:text-slate-300">/</span>
             <span className="text-slate-900 dark:text-white">Activity Log</span>
           </div>
 
@@ -270,7 +270,7 @@ const ActivityLogScreen: React.FC = () => {
             </div>
             <button 
               onClick={handleExportCSV}
-              className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-6 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95 font-black text-[10px] uppercase tracking-widest"
+              className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-6 py-3 rounded-xl hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95 font-black text-[10px] uppercase tracking-widest"
             >
               <span className="material-symbols-outlined text-[20px]">download</span>
               <span>Export CSV</span>
@@ -282,22 +282,22 @@ const ActivityLogScreen: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-end">
               {/* Search */}
               <div className="flex-1 min-w-[250px] w-full">
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Cari Log</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Cari Log</label>
                 <div className="relative group flex items-center">
                   <input 
-                    className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-11 transition-all text-slate-900 dark:text-white" 
+                    className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary text-sm font-bold placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 pl-11 transition-all text-slate-900 dark:text-white" 
                     placeholder="Cari berdasarkan ID, Nama, atau Kata Kunci..." 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors">search</span>
+                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors">search</span>
                 </div>
               </div>
               
               {/* User Filter */}
               <div className="w-full lg:w-1/4 min-w-[200px]">
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Filter Pengguna</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Filter Pengguna</label>
                 <div className="relative group flex items-center">
                   <select
                     className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary text-sm font-bold pl-11 pr-3 transition-all text-slate-900 dark:text-white cursor-pointer"
@@ -309,13 +309,13 @@ const ActivityLogScreen: React.FC = () => {
                       <option key={user.id} value={user.id}>{user.name}</option>
                     ))}
                   </select>
-                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors">person</span>
+                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors">person</span>
                 </div>
               </div>
               
               {/* Date Range */}
               <div className="w-full lg:w-1/4 min-w-[200px]">
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Rentang Tanggal</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Rentang Tanggal</label>
                 <div className="relative group flex items-center">
                   <input 
                     className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary text-sm font-bold pl-11 transition-all text-slate-900 dark:text-white" 
@@ -324,13 +324,13 @@ const ActivityLogScreen: React.FC = () => {
                     value={dateRange}
                     onChange={(e) => setDateRange(e.target.value)}
                   />
-                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 group-focus-within:text-primary transition-colors">calendar_month</span>
+                  <span className="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors">calendar_month</span>
                 </div>
               </div>
               
               {/* Action Type Multi-Select */}
               <div className="w-full lg:w-1/3 min-w-[280px]">
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Kategori Tipe Aksi (Multi-Select)</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Kategori Tipe Aksi (Multi-Select)</label>
                 <div className="relative z-50">
                   <button
                     type="button"
@@ -342,7 +342,7 @@ const ActivityLogScreen: React.FC = () => {
                         ? 'Pilih Kategori Aksi...' 
                         : `${selectedActionTypes.length} kategori dipilih`}
                     </span>
-                    <span className="material-symbols-outlined text-slate-400 dark:text-slate-500">
+                    <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       {showActionTypeDropdown ? 'expand_less' : 'expand_more'}
                     </span>
                   </button>
@@ -375,7 +375,7 @@ const ActivityLogScreen: React.FC = () => {
                             </div>
                             <button
                               onClick={() => setSelectedActionTypes([])}
-                              className="text-[10px] font-black text-slate-400 dark:text-slate-500 hover:text-primary uppercase tracking-widest transition-colors"
+                              className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary uppercase tracking-widest transition-colors"
                             >
                               Hapus Semua
                             </button>
@@ -391,7 +391,7 @@ const ActivityLogScreen: React.FC = () => {
                           return (
                             <div key={categoryName} className="space-y-2">
                               <div className="flex items-center justify-between">
-                                <label className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                                <label className="text-xs font-black text-slate-700 dark:text-slate-200 dark:text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                   <input
                                     type="checkbox"
                                     checked={allSelected}
@@ -408,7 +408,7 @@ const ActivityLogScreen: React.FC = () => {
                                 {actions.map((action) => (
                                   <label
                                     key={action}
-                                    className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 cursor-pointer py-1"
+                                    className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 dark:text-slate-400 hover:text-slate-900 dark:text-white dark:hover:text-slate-200 cursor-pointer py-1"
                                   >
                                     <input
                                       type="checkbox"
@@ -440,7 +440,7 @@ const ActivityLogScreen: React.FC = () => {
                 </button>
                 <button 
                   onClick={handleResetFilters}
-                  className="h-12 px-4 bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl transition-all flex items-center justify-center shadow-sm" 
+                  className="h-12 px-4 bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 border border-slate-100 dark:border-slate-700 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-300 rounded-xl transition-all flex items-center justify-center shadow-sm" 
                   title="Reset Filters"
                 >
                   <span className="material-symbols-outlined text-[22px]">restart_alt</span>
@@ -454,13 +454,13 @@ const ActivityLogScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap w-48">Timestamp</th>
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap w-64">Pengguna</th>
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">Deskripsi Aksi</th>
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap w-40">Modul</th>
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap w-32">Status</th>
-                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap w-20 text-center">Detail</th>
+                  <tr className="bg-slate-50 dark:bg-slate-900/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap w-48">Timestamp</th>
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap w-64">Pengguna</th>
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">Deskripsi Aksi</th>
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap w-40">Modul</th>
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap w-32">Status</th>
+                    <th className="p-6 text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap w-20 text-center">Detail</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -474,17 +474,17 @@ const ActivityLogScreen: React.FC = () => {
                     </tr>
                   ) : (
                     filteredLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors group">
+                      <tr key={log.id} className="hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50 transition-colors group">
                       <td className="p-6 whitespace-nowrap">
                         <div className="flex flex-col">
                             <span className="text-sm font-black text-slate-900 dark:text-white">{log.date}</span>
-                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{log.time}</span>
+                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-tight">{log.time}</span>
                         </div>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-3">
                           {log.adminAvatar ? (
-                              <img src={log.adminAvatar} className="size-9 rounded-full object-cover border border-slate-200 dark:border-slate-600 shadow-sm" alt={log.adminName} />
+                              <img src={log.adminAvatar} className="size-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 dark:border-slate-600 shadow-sm" alt={log.adminName} />
                           ) : (
                               <div className="size-9 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-primary text-xs font-black border border-red-100 dark:border-red-800 shadow-sm">
                                 {log.adminInitials || log.adminName.split(' ').map(n => n[0]).join('')}
@@ -492,7 +492,7 @@ const ActivityLogScreen: React.FC = () => {
                           )}
                           <div className="flex flex-col overflow-hidden">
                               <span className="text-sm font-black text-slate-900 dark:text-white truncate">{log.adminName}</span>
-                              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate">{log.adminId}</span>
+                              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest truncate">{log.adminId}</span>
                           </div>
                         </div>
                       </td>
@@ -507,7 +507,7 @@ const ActivityLogScreen: React.FC = () => {
                             log.moduleColor === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
                             log.moduleColor === 'orange' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-100 dark:border-orange-800' :
                             log.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-800' :
-                            'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                            'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 dark:border-slate-600'
                         }`}>
                           <span className="material-symbols-outlined text-[16px]">{log.moduleIcon}</span>
                           {log.module}
@@ -530,7 +530,7 @@ const ActivityLogScreen: React.FC = () => {
                       <td className="p-6 text-center">
                           <button 
                             onClick={() => handleViewDetails(log)}
-                            className="p-2 text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100 shadow-sm border border-transparent hover:border-red-100 dark:hover:border-red-800"
+                            className="p-2 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100 shadow-sm border border-transparent hover:border-red-100 dark:hover:border-red-800"
                           >
                           <span className="material-symbols-outlined text-[22px]">visibility</span>
                         </button>
@@ -543,15 +543,15 @@ const ActivityLogScreen: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-6 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/30 dark:bg-slate-900/30">
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50 dark:bg-slate-900/30 dark:bg-slate-900/30">
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 Menampilkan <span className="text-slate-900 dark:text-white">{(currentPage - 1) * 10 + 1}</span> sampai <span className="text-slate-900 dark:text-white">{Math.min(currentPage * 10, totalResults)}</span> dari <span className="text-slate-900 dark:text-white">{totalResults}</span> hasil
               </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-300 dark:text-slate-600 font-black text-[10px] uppercase tracking-widest cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed enabled:text-slate-600 enabled:dark:text-slate-300 enabled:hover:bg-slate-50 enabled:dark:hover:bg-slate-700 enabled:cursor-pointer enabled:transition-all"
+                  className="px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-300 dark:text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed enabled:text-slate-600 dark:text-slate-300 enabled:dark:text-slate-300 enabled:hover:bg-slate-50 dark:bg-slate-900 enabled:dark:hover:bg-slate-700 enabled:cursor-pointer enabled:transition-all"
                 >
                   Previous
                 </button>
@@ -565,7 +565,7 @@ const ActivityLogScreen: React.FC = () => {
                         className={`size-9 flex items-center justify-center rounded-xl text-[11px] font-black transition-all ${
                           currentPage === page
                             ? 'bg-primary text-white shadow-lg shadow-red-500/20'
-                            : 'border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-white dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary'
+                            : 'border border-transparent hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary'
                         }`}
                       >
                         {page}
@@ -576,7 +576,7 @@ const ActivityLogScreen: React.FC = () => {
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
@@ -602,21 +602,21 @@ const ActivityLogScreen: React.FC = () => {
               <h3 className="text-xl font-black text-slate-900 dark:text-white">Detail Log Aktivitas</h3>
               <button 
                 onClick={() => setShowDetailModal(false)}
-                className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-300"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
             <div className="flex flex-col gap-6">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Timestamp</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Timestamp</label>
                 <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedLog.date} {selectedLog.time}</p>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Pengguna</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Pengguna</label>
                 <div className="flex items-center gap-3">
                   {selectedLog.adminAvatar ? (
-                    <img src={selectedLog.adminAvatar} className="size-12 rounded-full object-cover border border-slate-200 dark:border-slate-600" alt={selectedLog.adminName} />
+                    <img src={selectedLog.adminAvatar} className="size-12 rounded-full object-cover border border-slate-200 dark:border-slate-700 dark:border-slate-600" alt={selectedLog.adminName} />
                   ) : (
                     <div className="size-12 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-primary text-sm font-black border border-red-100 dark:border-red-800">
                       {selectedLog.adminInitials || selectedLog.adminName.split(' ').map(n => n[0]).join('')}
@@ -624,29 +624,29 @@ const ActivityLogScreen: React.FC = () => {
                   )}
                   <div>
                     <p className="text-base font-black text-slate-900 dark:text-white">{selectedLog.adminName}</p>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{selectedLog.adminId}</p>
+                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">{selectedLog.adminId}</p>
                   </div>
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Aksi</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Aksi</label>
                 <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedLog.action} {selectedLog.actionTarget && <span className="text-primary">{selectedLog.actionTarget}</span>}</p>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Modul</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Modul</label>
                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-tight border ${
                   selectedLog.moduleColor === 'purple' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-800' :
                   selectedLog.moduleColor === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
                   selectedLog.moduleColor === 'orange' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-100 dark:border-orange-800' :
                   selectedLog.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-800' :
-                  'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                  'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 dark:border-slate-600'
                 }`}>
                   <span className="material-symbols-outlined text-[18px]">{selectedLog.moduleIcon}</span>
                   {selectedLog.module}
                 </span>
               </div>
               <div>
-                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Status</label>
+                <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Status</label>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter ${
                   selectedLog.status === 'Success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800' :
                   selectedLog.status === 'Warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-800' :

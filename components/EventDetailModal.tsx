@@ -130,7 +130,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
       case 'meeting': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'deadline': return 'bg-red-100 text-red-700 border-red-200';
       case 'activity': return 'bg-blue-100 text-blue-700 border-blue-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      default: return 'bg-slate-100 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -142,11 +142,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all border border-slate-100">
+      <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
         {/* Modal Header */}
         <div className={`flex items-center justify-between border-b-4 px-6 py-5 ${getTypeColor(event.type)}`}>
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-white/50 border-2 border-current">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-white dark:bg-slate-800/50 border-2 border-current">
               <span className="material-symbols-outlined text-[24px]">
                 {event.type === 'meeting' ? 'groups' : event.type === 'deadline' ? 'event' : 'event_note'}
               </span>
@@ -162,7 +162,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-current/70 hover:bg-white/50 hover:text-current transition-all active:scale-90"
+            className="rounded-full p-1.5 text-current/70 hover:bg-white dark:bg-slate-800/50 hover:text-current transition-all active:scale-90"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
@@ -173,18 +173,18 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           {/* Activity Title */}
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Nama Aktivitas</label>
-            <h2 className="text-xl font-black text-slate-900 leading-tight">{event.title}</h2>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">{event.title}</h2>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Deskripsi Aktivitas</label>
             {event.description ? (
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">{event.description}</p>
               </div>
             ) : (
-              <div className="p-4 rounded-xl bg-slate-50/50 border border-slate-200 border-dashed">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 border-dashed">
                 <p className="text-sm text-slate-400 italic">Tidak ada deskripsi yang ditambahkan</p>
               </div>
             )}
@@ -194,16 +194,16 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           {event.user && (
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">PIC (Person In Charge)</label>
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
                 <div className="size-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center shrink-0">
                   <span className="text-sm font-black text-primary">
                     {event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-slate-900 truncate">{event.user.name}</p>
+                  <p className="text-sm font-black text-slate-900 dark:text-white truncate">{event.user.name}</p>
                   {event.user.email && (
-                    <p className="text-xs text-slate-500 truncate">{event.user.email}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{event.user.email}</p>
                   )}
                   {event.user.division && (
                     <p className="text-xs text-slate-400 mt-0.5">{event.user.division}</p>
@@ -219,14 +219,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
             
             {/* Date Range */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-symbols-outlined text-primary text-[18px]">event</span>
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tanggal Mulai</span>
                 </div>
-                <p className="text-sm font-black text-slate-900">{formatDate(event.date)}</p>
+                <p className="text-sm font-black text-slate-900 dark:text-white">{formatDate(event.date)}</p>
                 {!hasTimeRange && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     {new Date(event.date).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -237,13 +237,13 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
               </div>
 
               {isMultiDay && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-primary text-[18px]">event_available</span>
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tanggal Selesai</span>
                   </div>
-                  <p className="text-sm font-black text-slate-900">{formatDate(event.end_date)}</p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-sm font-black text-slate-900 dark:text-white">{formatDate(event.end_date)}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     {new Date(event.end_date).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -290,11 +290,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
                   <span className="material-symbols-outlined text-primary text-[18px]">calendar_view_week</span>
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">Durasi</span>
                 </div>
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-sm font-black text-slate-900 dark:text-white">
                   {duration} {duration === 1 ? 'Hari' : 'Hari'}
                 </p>
                 {isMultiDay && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Aktivitas berlangsung dari {formatDate(event.date)} hingga {formatDate(event.end_date)}
                   </p>
                 )}
@@ -306,9 +306,9 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           {event.project && (event.project.code || event.project.title) ? (
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Proyek Terkait</label>
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                {event.project.code && <p className="text-sm font-black text-slate-900">{event.project.code}</p>}
-                {event.project.title && <p className="text-xs text-slate-600 mt-1">{event.project.title}</p>}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                {event.project.code && <p className="text-sm font-black text-slate-900 dark:text-white">{event.project.code}</p>}
+                {event.project.title && <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">{event.project.title}</p>}
               </div>
             </div>
           ) : null}
@@ -356,7 +356,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between gap-4 border-t border-slate-100 px-8 py-6 bg-slate-50/50">
+        <div className="flex items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-700 px-8 py-6 bg-slate-50 dark:bg-slate-900/50">
           {isOwner && (
             <button
               onClick={handleDelete}
@@ -369,7 +369,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           )}
           <button
             onClick={onClose}
-            className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 transition-colors ${!isOwner ? 'mx-auto' : 'ml-auto'}`}
+            className={`px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors ${!isOwner ? 'mx-auto' : 'ml-auto'}`}
           >
             Tutup
           </button>
