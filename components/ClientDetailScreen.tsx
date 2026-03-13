@@ -426,6 +426,51 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               </div>
             </section>
 
+            {/* Status Tagihan / Termin Pembayaran Section */}
+            <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Status Tagihan / Termin Pembayaran</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 dark:border-slate-700">
+                      <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Project</th>
+                      <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Termin</th>
+                      <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Jatuh Tempo</th>
+                      <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Nominal</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                    {contractList.flatMap((p: any) => (p.payment_terms || []).map((term: any) => ({ ...term, project: p }))).length > 0 ? (
+                      contractList.flatMap((p: any) => (p.payment_terms || []).map((term: any) => ({ ...term, project: p }))).map((term: any) => (
+                        <tr key={term.id} className="group hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                          <td className="py-5 px-2">
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-slate-900 dark:text-white">{term.project.title || term.project.code}</span>
+                            </div>
+                          </td>
+                          <td className="py-5 px-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            Termin {term.term_number} ({term.percentage}%)
+                          </td>
+                          <td className="py-5 px-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            {term.term_date ? new Date(term.term_date).toLocaleDateString('id-ID') : '-'}
+                          </td>
+                          <td className="py-5 px-2 text-sm font-black text-slate-900 dark:text-white text-right">
+                             {term.amount ? `IDR ${Number(term.amount).toLocaleString('id-ID')}` : '-'}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                       <tr>
+                         <td colSpan={4} className="py-5 text-center text-sm text-slate-400">Belum ada termin pembayaran</td>
+                       </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
             {/* Project History Section */}
             <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
@@ -570,7 +615,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         </div>
 
         {isProjectHistoryOpen && (
-          <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
             <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 flex flex-col">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
                 <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.18em]">Project History</h3>
@@ -634,7 +679,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         )}
 
         {isActivityLogOpen && (
-          <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 md:p-8 backdrop-blur-sm">
             <div className="relative w-full max-w-[70vw] max-h-[85vh] rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 flex flex-col">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-6 py-4">
                 <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.18em]">Activity Log</h3>
@@ -850,7 +895,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         )}
         
         {noteActivity && (
-          <div className="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/40 p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
             <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 p-5">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Activity Detail</h4>

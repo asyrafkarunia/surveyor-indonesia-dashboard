@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\AudiensiLetter;
 use App\Models\AudiensiTemplate;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class AudiensiController extends Controller
             'is_new_application' => 'nullable|boolean',
         ]);
 
-        $letter = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+        $letter = DB::transaction(function () use ($validated, $request) {
             $year = date('Y');
             $month = date('n');
             // Lock existing rows to prevent race condition on numbering
@@ -259,7 +260,7 @@ class AudiensiController extends Controller
             $letter->load(['client', 'template', 'creator']);
 
             // Ensure we have carbon objects for dates
-            $letterDate = $letter->date instanceof \Carbon\Carbon ? $letter->date : \Carbon\Carbon::parse($letter->date);
+            $letterDate = $letter->date instanceof Carbon ? $letter->date : Carbon::parse($letter->date);
 
             if ($letter->template && $letter->template->template_content) {
                 // Generate PDF from dynamic template content

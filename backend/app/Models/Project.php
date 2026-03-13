@@ -36,6 +36,10 @@ class Project extends Model
         'compliance_requirements',
         'quality_standard',
         'target_compliance',
+        'is_tender',
+        'pic_marketing_id',
+        'team_members',
+        'locations',
     ];
 
     protected $casts = [
@@ -47,6 +51,8 @@ class Project extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'target_margin' => 'decimal:2',
+        'team_members' => 'array',
+        'locations' => 'array',
     ];
 
     public function client()
@@ -57,6 +63,11 @@ class Project extends Model
     public function pic()
     {
         return $this->belongsTo(User::class, 'pic_id');
+    }
+
+    public function marketingPic()
+    {
+        return $this->belongsTo(User::class, 'pic_marketing_id');
     }
 
     public function approver()
@@ -77,5 +88,10 @@ class Project extends Model
     public function activities()
     {
         return $this->hasMany(Activity::class);
+    }
+
+    public function paymentTerms()
+    {
+        return $this->hasMany(PaymentTerm::class)->orderBy('term_number');
     }
 }

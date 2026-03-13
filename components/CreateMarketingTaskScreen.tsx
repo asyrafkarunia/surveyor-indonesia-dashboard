@@ -149,13 +149,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
             </li>
             <li>
               <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 text-[18px]">chevron_right</span>
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 text-[18px]">chevron_right</span>
                 <button onClick={onCancel} className="ml-1 md:ml-2 hover:text-primary transition-colors">Kanban Board</button>
               </div>
             </li>
             <li aria-current="page">
               <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 text-[18px]">chevron_right</span>
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 text-[18px]">chevron_right</span>
                 <span className="ml-1 md:ml-2 text-slate-900 dark:text-white font-bold uppercase text-[10px] tracking-widest">Tambah Kegiatan</span>
               </div>
             </li>
@@ -184,7 +184,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               </div>
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">
                     Judul Kegiatan <span className="text-primary">*</span>
                   </label>
                   <input 
@@ -198,7 +198,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">
                     Deskripsi Lengkap
                   </label>
                   <textarea 
@@ -208,7 +208,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                     className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-primary/20 focus:border-primary min-h-[140px] px-4 py-3 resize-none" 
                     placeholder="Jelaskan detail tujuan, target audience, dan deliverables dari kegiatan ini..."
                   ></textarea>
-                  <p className="mt-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right uppercase tracking-widest">
+                  <p className="mt-2 text-[10px] font-bold text-slate-400 dark:text-slate-400 text-right uppercase tracking-widest">
                     {(form.description || '').length}/500 karakter
                   </p>
                 </div>
@@ -225,9 +225,9 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Ditugaskan Ke</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Ditugaskan Ke</label>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">person</span>
                     </span>
                     <select 
@@ -242,13 +242,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                         <option key={u.id} value={u.id}>{u.name}</option>
                       ))}
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">expand_more</span>
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Klien / Proyek Terkait</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Klien / Proyek Terkait</label>
                   <div className="grid grid-cols-1 gap-3">
                     <div className="relative group">
                       <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
@@ -269,7 +269,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                           <option key={c.id} value={c.id}>{c.company_name || c.companyName}</option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                         <span className="material-symbols-outlined text-[20px]">expand_more</span>
                       </span>
                     </div>
@@ -288,7 +288,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                           <option key={p.id} value={p.id}>{p.title || p.name}</option>
                         ))}
                       </select>
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                         <span className="material-symbols-outlined text-[20px]">expand_more</span>
                       </span>
                     </div>
@@ -308,7 +308,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Prioritas</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Prioritas</label>
                   <div className="relative">
                     <select 
                       name="priority"
@@ -320,13 +320,13 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                       <option value="Medium">Sedang (Medium)</option>
                       <option value="Low">Rendah (Low)</option>
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">expand_more</span>
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Tenggat Waktu</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Tenggat Waktu</label>
                   <div className="relative">
                     <input 
                       name="date"
@@ -339,7 +339,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Status Awal (Kolom Kanban)</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Status Awal (Kolom Kanban)</label>
                   <div className="relative">
                     <select 
                       name="status"
@@ -353,7 +353,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                       <option value="berjalan">Sedang Berjalan</option>
                       <option value="selesai">Selesai</option>
                     </select>
-                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
                       <span className="material-symbols-outlined text-[20px]">view_column</span>
                     </span>
                   </div>

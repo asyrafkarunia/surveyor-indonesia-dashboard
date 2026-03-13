@@ -141,7 +141,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
   const isMultiDay = duration > 1;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
         {/* Modal Header */}
         <div className={`flex items-center justify-between border-b-4 px-6 py-5 ${getTypeColor(event.type)}`}>
@@ -209,6 +209,28 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
                     <p className="text-xs text-slate-400 mt-0.5">{event.user.division}</p>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Team Members Information */}
+          {event.team_member_users && event.team_member_users.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Anggota Tim Terlibat</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {event.team_member_users.map((member: any) => (
+                  <div key={member.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                    <div className="size-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                        {member.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{member.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{member.email}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

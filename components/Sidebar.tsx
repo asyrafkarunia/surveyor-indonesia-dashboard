@@ -177,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                 console.error('Logout error:', error);
               }
             }}
-            className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"
+            className="text-slate-400 dark:text-slate-400 hover:text-primary transition-colors"
             title="Logout"
           >
             <span className="material-symbols-outlined text-[20px]">logout</span>

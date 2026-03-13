@@ -295,7 +295,7 @@ const PermissionsScreen: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-6 items-end">
             {/* User/Role Dropdown */}
             <div className="flex flex-col w-full md:w-1/3 gap-2">
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Pilih Pengguna</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Pilih Pengguna</span>
               <div className="relative">
                 <select 
                   value={selectedUserId || ''}
@@ -309,7 +309,7 @@ const PermissionsScreen: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 dark:text-slate-400">
                   <span className="material-symbols-outlined text-[20px]">expand_more</span>
                 </div>
               </div>
@@ -325,10 +325,10 @@ const PermissionsScreen: React.FC = () => {
             
             {/* Search Permissions */}
             <div className="flex flex-col w-full md:flex-1 gap-2">
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Cari Izin</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Cari Izin</span>
               <div className="relative w-full group">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">search</span>
+                  <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">search</span>
                 </div>
                 <input 
                   value={searchQuery}
@@ -344,7 +344,7 @@ const PermissionsScreen: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-slate-400 dark:text-slate-500 dark:text-slate-400 text-sm font-bold">Memuat izin...</div>
+            <div className="text-slate-400 dark:text-slate-400 text-sm font-bold">Memuat izin...</div>
           </div>
         ) : (
           <>
@@ -367,7 +367,7 @@ const PermissionsScreen: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">{category.title}</h3>
-                        <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-tighter">{category.description}</p>
+                        <p className="text-[11px] font-medium text-slate-400 dark:text-slate-400 uppercase tracking-tighter">{category.description}</p>
                       </div>
                     </div>
                     {selectedUserId && (
@@ -413,7 +413,7 @@ const PermissionsScreen: React.FC = () => {
       {/* Sticky Footer Action Bar */}
       <div className="fixed bottom-0 left-72 right-0 bg-white dark:bg-slate-800/95 dark:bg-slate-800/95 border-t border-slate-200 dark:border-slate-700 px-10 py-5 backdrop-blur-sm z-30 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
         <div className="container mx-auto max-w-5xl flex items-center justify-between">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 hidden lg:block">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 hidden lg:block">
             {lastModified ? (
               <>Terakhir diubah: <span className="text-slate-900 dark:text-white">{lastModified}</span> oleh {currentUser?.name || 'Administrator'}</>
             ) : (

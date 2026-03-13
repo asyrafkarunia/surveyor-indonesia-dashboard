@@ -37,6 +37,22 @@ const formatNumberInput = (value: string | number) => {
   return new Intl.NumberFormat('id-ID').format(num);
 };
 
+const getTimelineText = (project: any) => {
+  if (!project.start_date) return '';
+  const isDone = project.progress >= 100 || project.status === 'DONE';
+  const start = new Date(project.start_date);
+  const end = project.end_date ? new Date(project.end_date) : new Date();
+  const compareDate = isDone ? end : new Date();
+  
+  let months = (compareDate.getFullYear() - start.getFullYear()) * 12 + compareDate.getMonth() - start.getMonth();
+  months = Math.max(0, months);
+  
+  if (isDone) {
+    return `Selesai dalam ${months} bulan`;
+  }
+  return `Berjalan ${months} bulan`;
+};
+
 const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOpen, onClose, onUpdated }) => {
   const auth = useAuth();
   const isMarketing = auth?.isMarketing || (() => false);
@@ -229,7 +245,14 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                 ) : (
                   <div className="mt-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-black text-slate-900 dark:text-white">{project.progress}%</p>
+                      <p className="text-sm font-black text-slate-900 dark:text-white">
+                        {project.progress}%
+                        {project.start_date && (
+                          <span className={`ml-2 text-xs font-bold ${project.progress >= 100 || project.status === 'DONE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-primary dark:text-slate-400'}`}>
+                            • {getTimelineText(project)}
+                          </span>
+                        )}
+                      </p>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{project.approval_status || 'N/A'}</p>
                     </div>
                     <div className="mt-2 w-full bg-slate-200 h-2 rounded-full overflow-hidden">
@@ -303,7 +326,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
                   />
                 ) : (
-                  <div className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white leading-snug break-words">
+                  <div className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white leading-snug break-all">
                     {project.title}
                   </div>
                 )}

@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\ActivityLog;
+use App\Models\Activity;
+use Illuminate\Support\Facades\DB;
+use App\Models\CalendarEvent;
 use App\Models\Client;
 use App\Helpers\LogActivity;
 use Illuminate\Http\Request;
@@ -50,7 +55,7 @@ class ClientController extends Controller
         $suspended = Client::where('status', 'Suspended')->count();
 
         // Calculate trends (compare with last month)
-        $lastMonth = \Carbon\Carbon::now()->subMonth();
+        $lastMonth = Carbon::now()->subMonth();
         $totalLastMonth = Client::where('created_at', '<', $lastMonth)->count();
         $activeLastMonth = Client::where('status', 'Aktif')
             ->where('created_at', '<', $lastMonth)
@@ -91,7 +96,7 @@ class ClientController extends Controller
             'logo' => 'nullable|string',
         ]);
 
-        $client = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+        $client = DB::transaction(function () use ($validated) {
             // Lock existing rows to prevent race condition on code numbering
             $count = Client::lockForUpdate()->count() + 1;
             $validated['code'] = 'CLI-' . str_pad($count, 5, '0', STR_PAD_LEFT);
@@ -108,7 +113,7 @@ class ClientController extends Controller
 
     public function show($id)
     {
-        $client = Client::with(['projects', 'sph'])->findOrFail($id);
+        $client = Client::with(['projects.paymentTerms', 'sph'])->findOrFail($id);
 
         $totalContractValue = $client->projects->sum('budget');
 
@@ -134,7 +139,7 @@ class ClientController extends Controller
             $lastProject = $client->projects()->orderBy('end_date', 'desc')->first();
             
             if ($lastProject && $lastProject->end_date) {
-                $diffInYears = \Carbon\Carbon::parse($lastProject->end_date)->diffInYears(now());
+                $diffInYears = Carbon::parse($lastProject->end_date)->diffInYears(now());
                 if ($diffInYears >= 2) {
                     $isInactiveSuggestion = true;
                 }
@@ -145,7 +150,7 @@ class ClientController extends Controller
 
         $projectIds = $client->projects->pluck('id');
 
-        $activities = \App\Models\Activity::whereIn('project_id', $projectIds)
+        $activities = Activity::whereIn('project_id', $projectIds)
                         ->with('user')
                         ->latest()
                         ->take(5)
@@ -163,7 +168,7 @@ class ClientController extends Controller
                             ];
                         });
 
-        $projectsHistory = \App\Models\ActivityLog::where('module', 'Projects')
+        $projectsHistory = ActivityLog::where('module', 'Projects')
             ->where('action', 'Project Actualization Updated')
             ->where('metadata->client_id', $client->id)
             ->latest()
@@ -259,7 +264,7 @@ class ClientController extends Controller
     {
         $client = Client::findOrFail($id);
 
-        $projectsHistory = \App\Models\ActivityLog::where('module', 'Projects')
+        $projectsHistory = ActivityLog::where('module', 'Projects')
             ->where('action', 'Project Actualization Updated')
             ->where('metadata->client_id', $client->id)
             ->latest()
@@ -290,7 +295,7 @@ class ClientController extends Controller
 
         $projectIds = $client->projects->pluck('id');
 
-        $activityItems = \App\Models\Activity::whereIn('project_id', $projectIds)
+        $activityItems = Activity::whereIn('project_id', $projectIds)
             ->with(['user', 'project'])
             ->latest()
             ->get()
@@ -310,7 +315,7 @@ class ClientController extends Controller
                 ];
             });
 
-        $calendarItems = \App\Models\CalendarEvent::whereIn('project_id', $projectIds)
+        $calendarItems = CalendarEvent::whereIn('project_id', $projectIds)
             ->with(['user', 'project'])
             ->orderBy('date', 'desc')
             ->get()

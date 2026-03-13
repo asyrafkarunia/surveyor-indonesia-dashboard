@@ -201,6 +201,23 @@ class ApiService {
     return `${API_BASE_URL}/projects/${projectId}/attachments/${attachmentId}/download`;
   }
 
+  async downloadProjectAttachment(projectId: string, attachmentId: string): Promise<Blob> {
+    const token = this.token;
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}/attachments/${attachmentId}/download`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Download failed' }));
+      throw new Error(error.message || 'Download failed');
+    }
+
+    return response.blob();
+  }
+
   async getEssentialDocuments(params?: { search?: string }) {
     const query = new URLSearchParams();
     if (params?.search) query.append('search', params.search);

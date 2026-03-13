@@ -257,9 +257,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
       case 'general_manager':
         return 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800';
       case 'common':
-        return 'bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 dark:border-slate-600';
+        return 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700';
       default:
-        return 'bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 dark:border-slate-600';
+        return 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -327,7 +327,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 <p className="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-tight">
                   {user?.role === 'marketing' ? 'Administrator' : user?.role === 'approver' ? 'Approver' : 'Umum'}
                 </p>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 mt-1 uppercase tracking-widest">
                   ID Karyawan: {users.find(u => u.isCurrentUser)?.employeeId || user?.id || 'N/A'}
                 </p>
               </div>
@@ -344,7 +344,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
             </h3>
             <form onSubmit={handleProfileUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Nama Lengkap</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Nama Lengkap</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   type="text" 
@@ -354,9 +354,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Alamat Email</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Alamat Email</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[20px]">mail</span>
                   </span>
                   <input 
@@ -366,10 +366,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                     value={user?.email || ''}
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium italic">Email perusahaan tidak dapat diubah secara mandiri.</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium italic">Email perusahaan tidak dapat diubah secara mandiri.</p>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Nomor Telepon</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Nomor Telepon</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   type="tel" 
@@ -378,7 +378,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Divisi</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Divisi</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   type="text" 
@@ -405,16 +405,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest text-sm">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest">
                   <span className="material-symbols-outlined text-primary fill">manage_accounts</span>
                   Manajemen Peran Pengguna
                 </h3>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Kelola akses dan peran pengguna dalam sistem internal PT SI.</p>
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Kelola akses dan peran pengguna dalam sistem internal PT SI.</p>
               </div>
               <div className="flex gap-3 w-full md:w-auto">
                 <button 
                   onClick={() => onManagePermissions()}
-                  className="px-6 py-2.5 bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 dark:border-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2 shadow-sm"
+                  className="px-6 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
                   Konfigurasi Izin
@@ -431,7 +431,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
-                  <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">
                     <th className="px-6 py-4">Identitas Pengguna</th>
                     <th className="px-6 py-4">Peran (Role)</th>
                     <th className="px-6 py-4">Divisi</th>
@@ -459,7 +459,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                           key={userItem.id} 
                           className={`transition-colors group ${
                             isGreyedOut 
-                              ? 'opacity-50 bg-slate-50 dark:bg-slate-900/30 dark:bg-slate-800/30' 
+                              ? 'opacity-50 bg-slate-50 dark:bg-slate-900/30' 
                               : 'hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700/50'
                           }`}
                         >
@@ -469,12 +469,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                                 <div className={`w-9 h-9 rounded-full bg-cover bg-center border ${
                                   isGreyedOut 
                                     ? 'border-slate-300 dark:border-slate-600 opacity-50' 
-                                    : 'border-slate-200 dark:border-slate-700 dark:border-slate-600'
+                                    : 'border-slate-200 dark:border-slate-700'
                                 }`} style={{ backgroundImage: `url("${userItem.avatar}")` }}></div>
                           ) : (
                                 <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black border text-xs ${
                                   isGreyedOut
-                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-600 opacity-50'
+                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-400 border-slate-300 dark:border-slate-600 opacity-50'
                                     : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                                 }`}>
                                   {userItem.name.split(' ').map(n => n[0]).join('')}
@@ -483,17 +483,17 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                           <div>
                                 <p className={`font-bold text-sm ${
                                   isGreyedOut 
-                                    ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400' 
+                                    ? 'text-slate-400 dark:text-slate-400' 
                                     : 'text-slate-900 dark:text-white'
                                 }`}>
                                   {userItem.name} 
                                   {userItem.isCurrentUser && <span className="text-[9px] font-black text-primary bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded ml-1 uppercase tracking-widest">(Anda)</span>}
-                                  {isGreyedOut && <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded ml-1 uppercase tracking-widest">(Protected)</span>}
+                                  {isGreyedOut && <span className="text-[9px] font-black text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded ml-1 uppercase tracking-widest">(Protected)</span>}
                                 </p>
                                 <p className={`text-[11px] font-medium ${
                                   isGreyedOut 
-                                    ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400' 
-                                    : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'
+                                    ? 'text-slate-400 dark:text-slate-400' 
+                                    : 'text-slate-400 dark:text-slate-400'
                                 }`}>{userItem.email}</p>
                           </div>
                         </div>
@@ -509,14 +509,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                         </span>
                               <span className={`text-[10px] font-bold ${
                                 isGreyedOut 
-                                  ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400' 
-                                  : 'text-slate-600 dark:text-slate-300 dark:text-slate-400'
+                                  ? 'text-slate-400 dark:text-slate-400' 
+                                  : 'text-slate-600 dark:text-slate-300'
                               }`}>{userItem.roleName}</span>
                             </div>
                       </td>
                           <td className={`px-6 py-4 font-bold text-xs ${
                             isGreyedOut 
-                              ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400' 
+                              ? 'text-slate-400 dark:text-slate-400' 
                               : 'text-slate-600 dark:text-slate-300'
                           }`}>
                             {userItem.division}
@@ -525,9 +525,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                         <span className={`inline-flex items-center gap-1.5 font-black text-[10px] uppercase tracking-tighter ${
                               userItem.status === 'Aktif' 
                                 ? isGreyedOut 
-                                  ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400' 
+                                  ? 'text-slate-400 dark:text-slate-400' 
                                   : 'text-green-600 dark:text-green-400'
-                                : 'text-slate-400 dark:text-slate-500 dark:text-slate-400'
+                                : 'text-slate-400 dark:text-slate-400'
                         }`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${
                                 userItem.status === 'Aktif' 
@@ -546,8 +546,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                           <button 
                                 className={`p-1.5 rounded-lg transition-colors ${
                                   canModify
-                                    ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20'
-                                    : 'text-slate-300 dark:text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                                    ? 'text-slate-400 dark:text-slate-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20'
+                                    : 'text-slate-300 dark:text-slate-400 cursor-not-allowed'
                                 }`}
                                 disabled={!canModify}
                                 title={canModify ? 'Edit Role' : isAdministrator ? 'Administrator tidak dapat diubah' : 'Tidak dapat mengubah akun sendiri'}
@@ -564,8 +564,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                               <button 
                                 className={`p-1.5 rounded-lg transition-colors ${
                                   canModify
-                                    ? 'text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-                                    : 'text-slate-300 dark:text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                                    ? 'text-slate-400 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
+                                    : 'text-slate-300 dark:text-slate-400 cursor-not-allowed'
                                 }`}
                                 disabled={!canModify}
                                 title={canModify ? 'Hapus User' : isAdministrator ? 'Administrator tidak dapat dihapus' : 'Tidak dapat menghapus akun sendiri'}
@@ -588,8 +588,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 </tbody>
               </table>
             </div>
-            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/30 dark:bg-slate-900/30">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">Menampilkan {users.length} dari {users.length} pengguna</span>
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/30">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">Menampilkan {users.length} dari {users.length} pengguna</span>
             </div>
           </div>
         )}
@@ -605,7 +605,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
             </h3>
             <form onSubmit={handlePasswordChange} className="flex flex-col gap-6 flex-1">
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Kata Sandi Saat Ini</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Kata Sandi Saat Ini</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   placeholder="••••••••" 
@@ -616,7 +616,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Kata Sandi Baru</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Kata Sandi Baru</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   placeholder="Minimal 8 karakter" 
@@ -628,7 +628,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Konfirmasi Kata Sandi Baru</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Konfirmasi Kata Sandi Baru</label>
                 <input 
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
                   placeholder="Ulangi kata sandi baru" 
@@ -642,7 +642,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
               <button 
                 type="submit"
                 disabled={securityLoading}
-                className="w-full py-3 bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 dark:border-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors shadow-sm disabled:opacity-50 mt-auto"
+                className="w-full py-3 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors shadow-sm disabled:opacity-50 mt-auto"
               >
                 {securityLoading ? 'Memperbarui...' : 'Perbarui Keamanan'}
               </button>
@@ -656,10 +656,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
               Preferensi & Notifikasi
             </h3>
               <div className="flex flex-col gap-6">
-                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-1">Tampilan</h4>
+                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-[0.2em] mb-1">Tampilan</h4>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest">Mode Tampilan</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Mode Tampilan</label>
                   <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                     <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Dark Mode</span>
                     <button
@@ -713,7 +713,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
               </div>
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
                   <input
                     type="text"
                     value={newUser.name}
@@ -723,7 +723,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Email</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Email</label>
                   <input
                     type="email"
                     value={newUser.email}
@@ -733,7 +733,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Role Utama</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Role Utama</label>
                   <select
                     value={newUser.role === 'head_section' ? 'marketing' : newUser.role}
                     onChange={(e) => {
@@ -752,7 +752,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Nama Role</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Nama Role</label>
                   <select
                     value={newUser.roleName}
                     onChange={(e) => {
@@ -811,7 +811,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">ID Karyawan</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">ID Karyawan</label>
                   <input
                     type="text"
                     value={newUser.employeeId}
@@ -821,7 +821,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Divisi</label>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Divisi</label>
                   <input
                     type="text"
                     value={newUser.division}
@@ -834,7 +834,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowAddUserModal(false)}
-                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 dark:border-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
                 >
                   Batal
                 </button>
@@ -850,7 +850,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
         )}
 
         <footer className="pt-4 pb-8 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-600 dark:text-slate-300">© 2024 PT Surveyor Indonesia. All rights reserved.</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-400">© 2024 PT Surveyor Indonesia. All rights reserved.</p>
         </footer>
       </div>
     </main>

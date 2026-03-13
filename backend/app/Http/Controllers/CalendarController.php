@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Activity;
 use App\Models\CalendarEvent;
 use Illuminate\Http\Request;
 
@@ -37,6 +41,18 @@ class CalendarController extends Controller
 
         $events = $query->get();
 
+        $allUsers = User::all()->keyBy('id');
+        $events->transform(function ($event) use ($allUsers) {
+            if (!empty($event->team_members)) {
+                $event->team_member_users = collect($event->team_members)->map(function ($id) use ($allUsers) {
+                    return $allUsers->get($id);
+                })->filter()->values();
+            } else {
+                $event->team_member_users = [];
+            }
+            return $event;
+        });
+
         return response()->json($events);
     }
 
@@ -59,13 +75,15 @@ class CalendarController extends Controller
             'recurring_end_type' => 'nullable|in:never,date,count',
             'recurring_end_date' => 'nullable|date|after:date',
             'recurring_count' => 'nullable|integer|min:1',
+            'team_members' => 'nullable|array',
+            'team_members.*' => 'exists:users,id',
         ]);
 
         $validated['user_id'] = $request->user()->id;
         
         // Calculate end_date if duration_days is provided
         if (isset($validated['duration_days']) && !isset($validated['end_date'])) {
-            $startDate = \Carbon\Carbon::parse($validated['date']);
+            $startDate = Carbon::parse($validated['date']);
             $validated['end_date'] = $startDate->copy()->addDays($validated['duration_days'] - 1)->format('Y-m-d');
         }
 
@@ -74,13 +92,34 @@ class CalendarController extends Controller
         // Auto-create feed activity for meetings
         if ($event->type === 'meeting') {
             $timeString = $event->start_time ? " Pukul " . substr($event->start_time, 0, 5) : "";
-            \App\Models\Activity::create([
+            Activity::create([
                 'type' => 'meeting',
-                'content' => "Rapat Terjadwal: {$event->title}\nTanggal: " . \Carbon\Carbon::parse($event->date)->translatedFormat('l, d F Y') . $timeString,
+                'content' => "Rapat Terjadwal: {$event->title}\nTanggal: " . Carbon::parse($event->date)->translatedFormat('l, d F Y') . $timeString,
                 'user_id' => $request->user()->id,
                 'project_id' => $event->project_id,
             ]);
         }
+
+        // Notify team members
+        if (!empty($validated['team_members'])) {
+            foreach ($validated['team_members'] as $memberId) {
+                // Don't notify the creator
+                if ($memberId != $request->user()->id) {
+                    Notification::create([
+                        'user_id' => $memberId,
+                        'title' => 'Aktivitas Baru',
+                        'message' => "Anda telah ditandai dalam aktivitas: {$event->title}",
+                        'type' => 'assignment',
+                        'is_read' => false,
+                    ]);
+                }
+            }
+        }
+
+        // Attach team_member_users to the response
+        $event->team_member_users = collect($event->team_members)->map(function ($id) {
+            return User::find($id);
+        })->filter()->values();
 
         return response()->json($event->load(['user', 'project']), 201);
     }
@@ -101,9 +140,31 @@ class CalendarController extends Controller
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i|after:start_time',
             'type' => 'sometimes|in:meeting,deadline,activity,other',
+            'team_members' => 'nullable|array',
+            'team_members.*' => 'exists:users,id',
         ]);
 
         $event->update($validated);
+
+        // Notify team members if they were updated
+        if (isset($validated['team_members']) && !empty($validated['team_members'])) {
+            foreach ($validated['team_members'] as $memberId) {
+                if ($memberId != $request->user()->id) {
+                    // Create notification (ideally we would only notify new members, but for simplicity we notify on update too, or maybe use a specific message)
+                    Notification::create([
+                        'user_id' => $memberId,
+                        'title' => 'Pembaruan Aktivitas',
+                        'content' => "Ada pembaruan pada aktivitas: {$event->title}",
+                        'type' => 'assignment',
+                        'is_read' => false,
+                    ]);
+                }
+            }
+        }
+
+        $event->team_member_users = collect($event->team_members)->map(function ($id) {
+            return User::find($id);
+        })->filter()->values();
 
         return response()->json($event->load(['user', 'project']));
     }

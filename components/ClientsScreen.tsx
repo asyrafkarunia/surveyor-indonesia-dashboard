@@ -225,7 +225,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                     }`}>trending_up</span>
                     {Math.abs(counts.trends.total)}%
                   </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">vs bulan lalu</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
                 </div>
               )}
             </div>
@@ -248,7 +248,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                     }`}>trending_up</span>
                     {Math.abs(counts.trends.active)}%
                   </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">vs bulan lalu</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
                 </div>
               )}
             </div>
@@ -271,7 +271,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                     }`}>trending_down</span>
                     {Math.abs(counts.trends.inactive)}%
                   </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">vs bulan lalu</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
                 </div>
               )}
             </div>

@@ -16,7 +16,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['client', 'pic']);
+        $query = Project::with(['client', 'pic', 'marketingPic']);
 
         // Filters
         if ($request->has('status')) {
@@ -144,6 +144,7 @@ class ProjectController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'pic_id' => 'nullable|exists:users,id',
+            'pic_marketing_id' => 'nullable|exists:users,id',
             'custom_pic_name' => 'nullable|string|max:255',
             'custom_team_notes' => 'nullable|string',
             'budget' => 'nullable|numeric|min:0',
@@ -158,6 +159,18 @@ class ProjectController extends Controller
             'compliance_requirements' => 'nullable|string',
             'quality_standard' => 'nullable|string',
             'target_compliance' => 'nullable|string',
+            'is_tender' => 'required|boolean',
+            'payment_terms' => 'nullable|array',
+            'payment_terms.*.percentage' => 'nullable|numeric',
+            'payment_terms.*.amount' => 'nullable|numeric',
+            'payment_terms.*.term_date' => 'nullable|date',
+            'payment_terms.*.pic_name' => 'nullable|string',
+            'team_members' => 'nullable|array',
+            'team_members.*' => 'nullable|integer|exists:users,id',
+            'locations' => 'nullable|array',
+            'locations.*.address' => 'required|string',
+            'locations.*.latitude' => 'required|numeric',
+            'locations.*.longitude' => 'required|numeric',
         ]);
 
         $validated['progress'] = 0;
@@ -182,8 +195,22 @@ class ProjectController extends Controller
                 $seq = intval(end($parts));
             }
             $data = $validated;
+            unset($data['payment_terms']);
             $data['code'] = $prefix . str_pad($seq + 1, 3, '0', STR_PAD_LEFT);
-            return Project::create($data);
+            $newProject = Project::create($data);
+
+            if (!empty($validated['payment_terms'])) {
+                foreach ($validated['payment_terms'] as $index => $term) {
+                    $newProject->paymentTerms()->create([
+                        'term_number' => $index + 1,
+                        'term_date' => $term['term_date'] ?? null,
+                        'percentage' => $term['percentage'] ?? null,
+                        'amount' => $term['amount'] ?? null,
+                        'pic_name' => $term['pic_name'] ?? null,
+                    ]);
+                }
+            }
+            return $newProject;
         });
         
         // Log project creation
@@ -207,13 +234,21 @@ class ProjectController extends Controller
             ]);
         }
 
-        return response()->json($project->load(['client', 'pic']), 201);
+        return response()->json($project->load(['client', 'pic', 'marketingPic']), 201);
     }
 
     public function show($id)
     {
-        $project = Project::with(['client', 'pic', 'attachments', 'comments.user'])
+        $project = Project::with(['client', 'pic', 'marketingPic', 'attachments', 'comments.user', 'paymentTerms'])
             ->findOrFail($id);
+            
+        if (!empty($project->team_members)) {
+            $project->team_member_users = collect($project->team_members)->map(function ($userId) {
+                return User::find($userId);
+            })->filter()->values();
+        } else {
+            $project->team_member_users = [];
+        }
 
         return response()->json($project);
     }
@@ -250,6 +285,21 @@ class ProjectController extends Controller
             'compliance_requirements' => 'nullable|string',
             'quality_standard' => 'nullable|string',
             'target_compliance' => 'nullable|string',
+            'is_tender' => 'sometimes|boolean',
+            'pic_id' => 'nullable|exists:users,id',
+            'pic_marketing_id' => 'nullable|exists:users,id',
+            'custom_pic_name' => 'nullable|string|max:255',
+            'payment_terms' => 'nullable|array',
+            'payment_terms.*.percentage' => 'nullable|numeric',
+            'payment_terms.*.amount' => 'nullable|numeric',
+            'payment_terms.*.term_date' => 'nullable|date',
+            'payment_terms.*.pic_name' => 'nullable|string',
+            'team_members' => 'nullable|array',
+            'team_members.*' => 'nullable|integer|exists:users,id',
+            'locations' => 'nullable|array',
+            'locations.*.address' => 'required|string',
+            'locations.*.latitude' => 'required|numeric',
+            'locations.*.longitude' => 'required|numeric',
         ]);
 
         $oldActual = null;
@@ -265,7 +315,32 @@ class ProjectController extends Controller
             }
         }
 
-        $project->update($validated);
+        // Handle PIC conflicts in update
+        if (array_key_exists('custom_pic_name', $validated) && !empty($validated['custom_pic_name'])) {
+            $validated['pic_id'] = null;
+        } elseif (array_key_exists('pic_id', $validated) && !empty($validated['pic_id'])) {
+            $validated['custom_pic_name'] = null;
+        }
+
+
+        $dataToUpdate = $validated;
+        unset($dataToUpdate['payment_terms']);
+        $project->update($dataToUpdate);
+        
+        if (array_key_exists('payment_terms', $validated)) {
+            $project->paymentTerms()->delete();
+            if (!empty($validated['payment_terms'])) {
+                foreach ($validated['payment_terms'] as $index => $term) {
+                    $project->paymentTerms()->create([
+                        'term_number' => $index + 1,
+                        'term_date' => $term['term_date'] ?? null,
+                        'percentage' => $term['percentage'] ?? null,
+                        'amount' => $term['amount'] ?? null,
+                        'pic_name' => $term['pic_name'] ?? null,
+                    ]);
+                }
+            }
+        }
         
         $changes = [];
         foreach ($validated as $key => $value) {

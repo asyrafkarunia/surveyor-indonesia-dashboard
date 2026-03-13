@@ -39,15 +39,24 @@ interface User {
   email: string;
 }
 
+interface ProjectLocation {
+  address: string;
+  latitude: number | string;
+  longitude: number | string;
+}
+
 const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onSave, initialClientId }) => {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<number[]>([]);
+  const [locations, setLocations] = useState<ProjectLocation[]>([]);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [searchLocation, setSearchLocation] = useState('');
   const [useCustomPic, setUseCustomPic] = useState(false);
   const [customTeamNotes, setCustomTeamNotes] = useState('');
+  const [teamSearchTerm, setTeamSearchTerm] = useState('');
+  const [isTeamDropdownOpen, setIsTeamDropdownOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -68,7 +77,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     quality_standard: '',
     target_compliance: '',
     compliance_requirements: '',
+    is_tender: false,
+    pic_marketing_id: '',
   });
+
+  const [paymentTerms, setPaymentTerms] = useState<any[]>([
+    { term_date: '', percentage: '', amount: '', pic_name: '' }
+  ]);
 
   // Map state
   const [mapCenter, setMapCenter] = useState<[number, number]>([-6.2088, 106.8456]); // Jakarta default
@@ -118,7 +133,49 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
       return;
     }
 
+    if (name === 'is_tender') {
+      setFormData(prev => ({ ...prev, [name]: value === 'true' }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePaymentTermChange = (index: number, field: string, value: string) => {
+    const updated = [...paymentTerms];
+    
+    if (field === 'amount') {
+      updated[index][field] = value.replace(/\D/g, '');
+    } else {
+      updated[index][field] = value;
+    }
+    
+    setPaymentTerms(updated);
+  };
+
+  const calculateRemainingPercentage = () => {
+    const total = paymentTerms.reduce((sum, term) => sum + (parseFloat(term.percentage) || 0), 0);
+    return Math.max(0, 100 - total);
+  };
+
+  const calculateRemainingAmount = () => {
+    const budget = parseFloat(formData.budget) || 0;
+    const total = paymentTerms.reduce((sum, term) => sum + (parseFloat(term.amount) || 0), 0);
+    return Math.max(0, budget - total);
+  };
+
+  const addPaymentTerm = () => {
+    setPaymentTerms([...paymentTerms, { term_date: '', percentage: '', amount: '', pic_name: '' }]);
+  };
+
+  const removePaymentTerm = (index: number) => {
+    const updated = [...paymentTerms];
+    updated.splice(index, 1);
+    // Ensure at least one empty row remains
+    if (updated.length === 0) {
+      updated.push({ term_date: '', percentage: '', amount: '', pic_name: '' });
+    }
+    setPaymentTerms(updated);
   };
 
   const handleMapClick = (e: any) => {
@@ -176,13 +233,50 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     }
   };
 
+  const handleAddLocation = () => {
+    if (!formData.location_address || !formData.latitude || !formData.longitude) {
+      alert('Tentukan alamat, latitude, dan longitude terlebih dahulu dari peta atau pencarian.');
+      return;
+    }
+    
+    // Check for duplicates based on lat/lng (with slight rounding)
+    const isDuplicate = locations.some(loc => 
+      Number(loc.latitude).toFixed(4) === Number(formData.latitude).toFixed(4) && 
+      Number(loc.longitude).toFixed(4) === Number(formData.longitude).toFixed(4)
+    );
+
+    if (isDuplicate) {
+      alert('Lokasi ini sudah ada dalam daftar.');
+      return;
+    }
+
+    setLocations(prev => [...prev, {
+      address: formData.location_address,
+      latitude: formData.latitude,
+      longitude: formData.longitude
+    }]);
+
+    // Optional: clear current formulation so they can pick another
+    setFormData(prev => ({
+      ...prev,
+      location_address: '',
+      latitude: '',
+      longitude: ''
+    }));
+    setMarkerPosition(null);
+  };
+
+  const handleRemoveLocation = (index: number) => {
+    setLocations(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     Array.from(files).forEach((file: File) => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`File ${file.name} terlalu besar. Maksimal 10MB`);
+      if (file.size > 20 * 1024 * 1024) {
+        alert(`File ${file.name} terlalu besar. Maksimal 20MB`);
         return;
       }
 
@@ -226,14 +320,23 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
         target_margin: formData.target_margin ? parseFloat(formData.target_margin) : null,
         pic_id: useCustomPic ? null : (formData.pic_id ? parseInt(formData.pic_id) : null),
         custom_pic_name: useCustomPic ? (formData.custom_pic_name || null) : null,
-        location_address: formData.location_address || null,
-        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+        // Since we can have multiple locations, we still provide main location fields 
+        // to maintain backward auth compatibility (we'll just use the first location in the array)
+        location_address: locations.length > 0 ? locations[0].address : (formData.location_address || null),
+        latitude: locations.length > 0 ? parseFloat(String(locations[0].latitude)) : (formData.latitude ? parseFloat(formData.latitude) : null),
+        longitude: locations.length > 0 ? parseFloat(String(locations[0].longitude)) : (formData.longitude ? parseFloat(formData.longitude) : null),
         quality_standard: formData.quality_standard || null,
         target_compliance: formData.target_compliance || null,
         compliance_requirements: formData.compliance_requirements || null,
+        is_tender: formData.is_tender,
         team_members: selectedTeamMembers,
+        locations: locations.length > 0 ? locations : (formData.location_address ? [{
+          address: formData.location_address,
+          latitude: formData.latitude,
+          longitude: formData.longitude
+        }] : []),
         custom_team_notes: customTeamNotes || null,
+        payment_terms: paymentTerms.filter(pt => pt.percentage || pt.amount || pt.term_date || pt.pic_name),
       };
 
       // Remove team_members if empty or not needed
@@ -328,6 +431,54 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   />
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
+                    PIC Marketing <span className="text-primary">*</span>
+                  </label>
+                  <select
+                    name="pic_marketing_id"
+                    value={formData.pic_marketing_id}
+                    onChange={handleInputChange}
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
+                    required
+                  >
+                    <option value="">Pilih PIC Marketing</option>
+                    {users.map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} ({user.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
+                    Kategori Pengadaan <span className="text-primary">*</span>
+                  </label>
+                  <div className="flex gap-4 items-center h-11 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-700 dark:text-slate-200">
+                      <input
+                        type="radio"
+                        name="is_tender"
+                        value="true"
+                        checked={formData.is_tender === true}
+                        onChange={handleInputChange}
+                        className="text-primary focus:ring-primary h-4 w-4"
+                      />
+                      Proyek Tender
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-700 dark:text-slate-200">
+                      <input
+                        type="radio"
+                        name="is_tender"
+                        value="false"
+                        checked={formData.is_tender === false}
+                        onChange={handleInputChange}
+                        className="text-primary focus:ring-primary h-4 w-4"
+                      />
+                      Non-Tender
+                    </label>
+                  </div>
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Deskripsi Proyek</label>
                   <textarea
                     name="description"
@@ -369,7 +520,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
               <div className="space-y-6">
                 <div className="relative w-full aspect-video rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden" style={{ minHeight: '400px' }}>
                   {/* Search Box */}
-                  <div className="absolute top-4 left-4 z-[1000] w-full max-w-md">
+                  <div className="absolute top-4 left-4 z-50 w-full max-w-md">
                     <div className="flex items-center bg-white dark:bg-slate-800 rounded-md shadow-md border border-slate-100 dark:border-slate-700 overflow-hidden">
                       <input
                         className="border-none text-xs px-3 py-2 flex-1 focus:ring-0 text-slate-900 dark:text-white"
@@ -413,7 +564,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
 
                   {/* Coordinates Display */}
                   {markerPosition && (
-                    <div className="absolute bottom-3 left-3 bg-white dark:bg-slate-800/90 backdrop-blur-sm px-3 py-1.5 rounded text-[10px] text-slate-600 dark:text-slate-300 font-mono border border-white/50 shadow-sm z-[1000]">
+                    <div className="absolute bottom-3 left-3 bg-white dark:bg-slate-800/90 backdrop-blur-sm px-3 py-1.5 rounded text-[10px] text-slate-600 dark:text-slate-300 font-mono border border-white/50 shadow-sm z-50">
                       {formData.latitude}° N, {formData.longitude}° E
                     </div>
                   )}
@@ -464,6 +615,54 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       />
                     </div>
                   </div>
+
+                  <div className="md:col-span-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleAddLocation}
+                      disabled={!formData.location_address || !formData.latitude || !formData.longitude}
+                      className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add_location</span>
+                      Tambahkan ke Daftar Lokasi
+                    </button>
+                  </div>
+
+                  {locations.length > 0 && (
+                    <div className="md:col-span-2 space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                      <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
+                        Lokasi Tersimpan ({locations.length})
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {locations.map((loc, index) => (
+                          <div key={index} className="flex items-start justify-between gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 relative group">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2" title={loc.address}>
+                                {loc.address}
+                              </p>
+                              <p className="text-[10px] text-slate-500 font-mono mt-1">
+                                {Number(loc.latitude).toFixed(4)}, {Number(loc.longitude).toFixed(4)}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveLocation(index)}
+                              className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                              title="Hapus Lokasi"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                            {index === 0 && (
+                              <div className="absolute -top-2.5 -left-2.5 bg-primary text-white text-[8px] font-black tracking-wider px-2 py-0.5 rounded-full uppercase">
+                                Lokasi Utama
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
@@ -621,33 +820,106 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 />
               )}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Anggota Tim</label>
-                  <select
-                    multiple
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer min-h-[100px]"
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions, (option: HTMLOptionElement) => parseInt(option.value));
-                      setSelectedTeamMembers(selected);
-                    }}
-                  >
-                    {users.map(user => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Pilih beberapa anggota dengan menahan Ctrl (Windows) atau Cmd (Mac)</p>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Catatan anggota tim (tulis manual)</label>
-                <textarea
-                  value={customTeamNotes}
-                  onChange={(e) => setCustomTeamNotes(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
-                  rows={3}
-                  placeholder="Tuliskan nama anggota tim manual atau keterangan lainnya"
-                />
-              </div>
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Anggota Tim Berdasarkan Akun</label>
+                  
+                  {/* Selected Chips */}
+                  {selectedTeamMembers.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {selectedTeamMembers.map(userId => {
+                        const user = users.find(u => u.id === userId);
+                        if (!user) return null;
+                        return (
+                          <div key={userId} className="flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1.5 rounded-lg border border-primary/20">
+                            <div className="size-4 rounded-full bg-white/50 flex items-center justify-center text-[8px] font-black">
+                              {user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                            </div>
+                            <span className="text-xs font-bold leading-none">{user.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedTeamMembers(prev => prev.filter(id => id !== userId))}
+                              className="ml-1 opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center"
+                            >
+                              <span className="material-symbols-outlined text-[14px]">close</span>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Searchable Input */}
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="material-symbols-outlined text-[18px] text-slate-400">search</span>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Cari dan tambah anggota tim..."
+                      className="w-full appearance-none rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                      value={teamSearchTerm}
+                      onChange={(e) => {
+                        setTeamSearchTerm(e.target.value);
+                        if (!isTeamDropdownOpen) setIsTeamDropdownOpen(true);
+                      }}
+                      onFocus={() => setIsTeamDropdownOpen(true)}
+                      onBlur={() => setTimeout(() => setIsTeamDropdownOpen(false), 200)}
+                    />
+
+                    {/* Dropdown Options */}
+                    {isTeamDropdownOpen && (
+                      <div className="absolute z-50 mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl max-h-[200px] overflow-y-auto custom-scrollbar">
+                        {users.filter(u => 
+                          !selectedTeamMembers.includes(u.id) &&
+                          (u.name.toLowerCase().includes(teamSearchTerm.toLowerCase()) || 
+                          u.email.toLowerCase().includes(teamSearchTerm.toLowerCase()))
+                        ).length > 0 ? (
+                          users.filter(u => 
+                            !selectedTeamMembers.includes(u.id) &&
+                            (u.name.toLowerCase().includes(teamSearchTerm.toLowerCase()) || 
+                            u.email.toLowerCase().includes(teamSearchTerm.toLowerCase()))
+                          ).map((u) => (
+                            <div
+                              key={u.id}
+                              className="flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                              onMouseDown={() => {
+                                setSelectedTeamMembers((prev) => [...prev, u.id]);
+                                setTeamSearchTerm('');
+                              }}
+                            >
+                              <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                                  {u.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{u.name}</span>
+                                <span className="text-[10px] font-medium text-slate-500">{u.email}</span>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center">
+                            <span className="text-xs text-slate-400 font-medium">
+                              {users.length === 0 ? "Memuat anggota tim..." : "Tidak ada anggota tim yang cocok"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Anggota Tim Tambahan (Ketik Manual)</label>
+                    <textarea
+                      value={customTeamNotes}
+                      onChange={(e) => setCustomTeamNotes(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
+                      rows={2}
+                      placeholder="Pisahkan dengan koma jika lebih dari satu. Contoh: Budi Santoso, Andi Setiawan"
+                    />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tuliskan nama anggota tim yang belum memiliki akun pada sistem.</p>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -690,6 +962,109 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   />
                 </div>
               </div>
+            </div>            {/* Pengaturan Termin Pembayaran Section */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">payments</span>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Pengaturan Termin Pembayaran</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={addPaymentTerm}
+                  className="flex items-center gap-1.5 text-xs font-black text-primary hover:text-red-700 uppercase tracking-widest transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  Tambah Termin
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-2">
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                    Sisa Persentase: <span className={calculateRemainingPercentage() === 0 ? "text-emerald-500" : "text-amber-500"}>{calculateRemainingPercentage().toFixed(2)}%</span>
+                  </div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                    Sisa Nominal: <span className={calculateRemainingAmount() === 0 ? "text-emerald-500" : "text-amber-500"}>Rp {calculateRemainingAmount().toLocaleString('id-ID')}</span>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-700">
+                        <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 w-16">Termin</th>
+                        <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 min-w-[130px]">Tanggal</th>
+                        <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 w-24">Besaran (%)</th>
+                        <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 min-w-[150px]">Nominal (Rp)</th>
+                        <th className="py-3 px-2 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 min-w-[150px]">PIC (Opsional)</th>
+                        <th className="py-3 px-2 w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {paymentTerms.map((term, index) => (
+                        <tr key={index} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="py-3 px-2">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-xs font-black text-slate-700 dark:text-slate-300">
+                              {index + 1}
+                            </div>
+                          </td>
+                          <td className="py-3 px-2">
+                            <input
+                              type="date"
+                              value={term.term_date}
+                              onChange={(e) => handlePaymentTermChange(index, 'term_date', e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                            />
+                          </td>
+                          <td className="py-3 px-2">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              value={term.percentage}
+                              onChange={(e) => handlePaymentTermChange(index, 'percentage', e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                              placeholder="%"
+                            />
+                          </td>
+                          <td className="py-3 px-2">
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                              <input
+                                type="text"
+                                value={term.amount ? Number(term.amount).toLocaleString('id-ID') : ''}
+                                onChange={(e) => handlePaymentTermChange(index, 'amount', e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 pl-8 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                                placeholder="0"
+                              />
+                            </div>
+                          </td>
+                          <td className="py-3 px-2">
+                            <input
+                              type="text"
+                              value={term.pic_name}
+                              onChange={(e) => handlePaymentTermChange(index, 'pic_name', e.target.value)}
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                              placeholder="Nama PIC"
+                            />
+                          </td>
+                          <td className="py-3 px-2">
+                            <button
+                              type="button"
+                              onClick={() => removePaymentTerm(index)}
+                              className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             {/* Lampiran & Dokumen Section */}
@@ -707,14 +1082,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     <span className="material-symbols-outlined text-[28px]">cloud_upload</span>
                   </div>
                   <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Klik untuk upload atau tarik file ke sini</p>
-                  <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">PDF, DOCX, XLSX atau Gambar (Max. 10MB)</p>
+                  <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Hanya Dokumen Kontrak. PDF, DOCX (Max. 20MB)</p>
                   <input
                     ref={fileInputRef}
                     type="file"
                     className="hidden"
                     multiple
                     onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                    accept=".pdf,.doc,.docx"
                   />
                 </div>
 
@@ -733,10 +1108,10 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                         </div>
                         <button
                           onClick={() => removeAttachment(index)}
-                          className="p-1.5 text-slate-300 hover:text-primary transition-colors"
+                          className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
                           type="button"
                         >
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                          <span className="material-symbols-outlined text-[18px]">close</span>
                         </button>
                       </div>
                     ))}

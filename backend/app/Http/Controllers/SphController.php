@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use Illuminate\Support\Facades\DB;
 use App\Models\Sph;
 use App\Helpers\LogActivity;
 use Illuminate\Http\Request;
@@ -57,7 +59,7 @@ class SphController extends Controller
             'terms_conditions' => 'nullable|string',
         ]);
 
-        $sph = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+        $sph = DB::transaction(function () use ($validated, $request) {
             $year = date('Y');
             // Lock existing rows to prevent race condition on numbering
             $count = Sph::whereYear('created_at', $year)->lockForUpdate()->count() + 1;
@@ -124,17 +126,17 @@ class SphController extends Controller
             'terms_conditions' => 'nullable|string',
         ]);
 
-        $client = \App\Models\Client::find($validated['client_id']);
+        $client = Client::find($validated['client_id']);
         
         // Create a temporary object for the view
         $sph = (object)[
             'sph_no' => 'SPH-PREVIEW/PTSI/' . date('Y'),
             'project_name' => $validated['project_name'],
             'value' => $validated['value'],
-            'date_created' => \Carbon\Carbon::parse($validated['date_created']),
+            'date_created' => Carbon::parse($validated['date_created']),
             'description' => $validated['description'],
             'items' => $validated['items'],
-            'validity_period' => \Carbon\Carbon::parse($validated['validity_period']),
+            'validity_period' => Carbon::parse($validated['validity_period']),
             'time_period' => $validated['time_period'] ?? null,
             'term_payment' => $validated['term_payment'] ?? null,
             'bank_name' => $validated['bank_name'] ?? 'PT Surveyor Indonesia',
@@ -147,10 +149,10 @@ class SphController extends Controller
 
         $idSurveyLogoPath = null;
         $ptsiLogoPath = null;
-        if (\Illuminate\Support\Facades\Storage::disk('public')->exists('assets/logo-idsurvey.png')) {
+        if (Storage::disk('public')->exists('assets/logo-idsurvey.png')) {
             $idSurveyLogoPath = storage_path('app/public/assets/logo-idsurvey.png');
         }
-        if (\Illuminate\Support\Facades\Storage::disk('public')->exists('assets/logo-ptsi.png')) {
+        if (Storage::disk('public')->exists('assets/logo-ptsi.png')) {
             $ptsiLogoPath = storage_path('app/public/assets/logo-ptsi.png');
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Activity;
 use App\Models\ActivityAttachment;
 use App\Models\ActivityLike;
@@ -108,7 +109,7 @@ class ActivityController extends Controller
             
             // Create notifications for mentioned users
             foreach ($validated['mentions'] as $userId) {
-                \App\Models\Notification::create([
+                Notification::create([
                     'user_id' => $userId,
                     'type' => 'comment',
                     'title' => 'Anda disebutkan dalam aktivitas',

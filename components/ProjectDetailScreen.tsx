@@ -27,6 +27,22 @@ const toPascalCase = (str: string) => {
   return str.replace(/(\w)(\w*)/g, (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase());
 };
 
+const getTimelineText = (project: any) => {
+  if (!project.start_date) return '';
+  const isDone = project.progress >= 100 || project.status === 'DONE';
+  const start = new Date(project.start_date);
+  const end = project.end_date ? new Date(project.end_date) : new Date();
+  const compareDate = isDone ? end : new Date();
+  
+  let months = (compareDate.getFullYear() - start.getFullYear()) * 12 + compareDate.getMonth() - start.getMonth();
+  months = Math.max(0, months);
+  
+  if (isDone) {
+    return `Selesai dalam ${months} bulan`;
+  }
+  return `Berjalan ${months} bulan`;
+};
+
 const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, onBack }) => {
   const auth = useAuth();
   const isMarketing = auth?.isMarketing || (() => false);
@@ -203,7 +219,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
             <>
               <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between mb-6">
                 <div className="min-w-0 space-y-1">
-                  <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white break-words">
+                  <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white break-all">
                     {project.title}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
@@ -229,6 +245,11 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                     </span>
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700">
                       Progress: {project.progress ?? 0}%
+                      {project.start_date && (
+                        <span className={`ml-1 ${project.progress >= 100 || project.status === 'DONE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-primary dark:text-slate-400'} lowercase`}>
+                          • {getTimelineText(project)}
+                        </span>
+                      )}
                     </span>
                     {project.approval_status && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700">
@@ -339,50 +360,66 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </p>
                         <p>{project.pic?.name || project.custom_pic_name || 'N/A'}</p>
                       </div>
-                      <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                          Lokasi
+                      <div className="md:col-span-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                          Lokasi Proyek
                         </p>
                         {isEditing ? (
-                          <textarea
-                            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
-                            rows={3}
-                            value={editData.location_address}
-                            onChange={(e) => setEditData((prev) => ({ ...prev, location_address: e.target.value }))}
-                          />
-                        ) : (
-                          <p className="whitespace-pre-line">
-                            {project.location_address || 'N/A'}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                          Koordinat
-                        </p>
-                        {isEditing ? (
-                          <div className="flex gap-2">
-                            <input
-                              type="number"
-                              placeholder="Latitude"
-                              className="w-1/2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
-                              value={editData.latitude}
-                              onChange={(e) => setEditData((prev) => ({ ...prev, latitude: e.target.value }))}
-                            />
-                            <input
-                              type="number"
-                              placeholder="Longitude"
-                              className="w-1/2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
-                              value={editData.longitude}
-                              onChange={(e) => setEditData((prev) => ({ ...prev, longitude: e.target.value }))}
+                          <div className="space-y-4">
+                            <p className="text-xs text-orange-500 font-bold bg-orange-50 dark:bg-orange-900/30 p-3 rounded-lg border border-orange-200 dark:border-orange-800">
+                              <span className="material-symbols-outlined text-[14px] align-middle mr-1">info</span>
+                              Perubahan multi-lokasi saat ini hanya dapat dilakukan melalui halaman edit utama atau tambah proyek baru.
+                            </p>
+                            <textarea
+                              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                              rows={3}
+                              value={editData.location_address}
+                              onChange={(e) => setEditData((prev) => ({ ...prev, location_address: e.target.value }))}
+                              disabled={true}
+                              title="Silakan edit via menu edit lengkap."
                             />
                           </div>
                         ) : (
-                          <p>
-                            {project.latitude && project.longitude
-                              ? `${project.latitude}, ${project.longitude}`
-                              : 'N/A'}
-                          </p>
+                          <>
+                            {project.locations && project.locations.length > 0 ? (
+                              <div className="flex flex-col gap-2">
+                                {project.locations.map((loc: any, idx: number) => (
+                                  <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50">
+                                    <div className="flex items-center gap-3">
+                                      <span className="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                                      <p className="text-sm font-bold text-slate-900 dark:text-white whitespace-pre-line leading-snug">
+                                        {loc.address}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col sm:items-end shrink-0 ml-8 sm:ml-0">
+                                      <p className="text-[10px] text-slate-500 font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                        Lat: {Number(loc.latitude).toFixed(4)}
+                                      </p>
+                                      <p className="text-[10px] text-slate-500 font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md mt-1">
+                                        Lng: {Number(loc.longitude).toFixed(4)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50">
+                                <p className="text-sm font-bold text-slate-900 dark:text-white whitespace-pre-line leading-relaxed">
+                                  {project.location_address || 'Tidak ada alamat tercatat.'}
+                                </p>
+                                {project.latitude && project.longitude && (
+                                  <div className="shrink-0 flex gap-2">
+                                    <span className="text-[10px] text-slate-500 font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                      {project.latitude}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                      {project.longitude}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                       <div>
@@ -456,6 +493,45 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                     </div>
                   </section>
 
+                  {/* Anggota Tim Section */}
+                  <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px] text-primary">group</span>
+                      Anggota Tim Proyek
+                    </h2>
+                    {(!project.team_member_users || project.team_member_users.length === 0) && !project.custom_team_notes ? (
+                      <p className="text-xs text-slate-400 font-medium italic">
+                        Belum ada anggota tim yang ditugaskan untuk proyek ini.
+                      </p>
+                    ) : (
+                      <div className="space-y-4">
+                        {project.team_member_users && project.team_member_users.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {project.team_member_users.map((user: any) => (
+                              <div key={user.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                                <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-sm shrink-0">
+                                  {user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
+                                  <p className="text-[10px] text-slate-500 font-medium truncate">{user.email}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {project.custom_team_notes && (
+                          <div className={project.team_member_users && project.team_member_users.length > 0 ? "pt-4 border-t border-slate-100 dark:border-slate-700 mt-4" : ""}>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Anggota Tim Tambahan (Manual)</p>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white whitespace-pre-line bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                              {project.custom_team_notes}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </section>
+
                   <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
                     <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-primary">
@@ -480,7 +556,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                           return (
                             <div
                               key={att.id}
-                              className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 transition-colors"
+                              className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 text-slate-400">
@@ -497,17 +573,86 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                                   </p>
                                 </div>
                               </div>
-                              <a
-                                href={href}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-[10px] font-black uppercase tracking-[0.18em] hover:bg-primary-dark transition-colors"
-                              >
-                                <span className="material-symbols-outlined text-[16px]">
-                                  {isLink ? 'open_in_new' : 'download'}
-                                </span>
-                                {isLink ? 'Buka Link' : 'Download'}
-                              </a>
+                              <div className="flex flex-nowrap items-center gap-1.5 shrink-0">
+                                {isLink ? (
+                                  <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
+                                    title="Buka Link"
+                                  >
+                                    <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                                  </a>
+                                ) : (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          const blob = await api.downloadProjectAttachment(String(project.id), String(att.id));
+                                          const url = window.URL.createObjectURL(blob);
+                                          window.open(url, '_blank');
+                                          setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+                                        } catch (err: any) {
+                                          console.error('Failed to preview', err);
+                                          alert('Gagal memuat preview dokumen.');
+                                        }
+                                      }}
+                                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors"
+                                      title="Preview Dokumen"
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          const blob = await api.downloadProjectAttachment(String(project.id), String(att.id));
+                                          const url = window.URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = att.file_name || `Dokumen_${att.id}`;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                          window.URL.revokeObjectURL(url);
+                                        } catch (err: any) {
+                                          console.error('Failed to download', err);
+                                          alert('Gagal mengunduh dokumen.');
+                                        }
+                                      }}
+                                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
+                                      title="Download Dokumen"
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">download</span>
+                                    </button>
+                                  </>
+                                )}
+                                {canEdit && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      if (confirm('Apakah Anda yakin ingin menghapus lampiran ini?')) {
+                                        try {
+                                          await api.deleteProjectAttachment(String(project.id), String(att.id));
+                                          setProject((prev: any) => ({
+                                            ...prev,
+                                            attachments: prev.attachments.filter((a: any) => a.id !== att.id)
+                                          }));
+                                        } catch (err: any) {
+                                          console.error('Failed to delete attachment', err);
+                                          alert(err?.message || 'Gagal menghapus lampiran');
+                                        }
+                                      }
+                                    }}
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                                    title="Hapus"
+                                  >
+                                    <span className="material-symbols-outlined text-[18px]">close</span>
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           );
                         })}

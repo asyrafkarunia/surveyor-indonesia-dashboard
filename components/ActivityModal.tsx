@@ -14,6 +14,10 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<number[]>([]);
+  const [teamSearchTerm, setTeamSearchTerm] = useState('');
+  const [isTeamDropdownOpen, setIsTeamDropdownOpen] = useState(false);
   
   // Form state
   const [title, setTitle] = useState('');
@@ -57,6 +61,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
       setStartTime('');
       setEndTime('');
       setProjectId('');
+      setSelectedTeam([]);
+      setTeamSearchTerm('');
+      setIsTeamDropdownOpen(false);
       setType('activity');
       setIsRecurring(false);
       setRecurringFrequency('weekly');
@@ -65,8 +72,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
       setRecurringEndDate('');
       setRecurringCount(10);
       
-      // Fetch projects
+      // Fetch projects and users
       fetchProjects();
+      fetchUsers();
     }
   }, [isOpen]);
 
@@ -80,14 +88,27 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
 
   const fetchProjects = async () => {
     try {
-      const data = await api.getProjects();
-      if (data.data) {
-        setProjects(data.data);
+      const response: any = await api.getProjects();
+      if (response.data) {
+        setProjects(response.data);
       } else {
-        setProjects(data);
+        setProjects(response || []);
       }
     } catch (error) {
       console.error('Failed to fetch projects:', error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const data: any = await (api as any).getUsers();
+      if (data.data) {
+        setUsers(data.data);
+      } else {
+        setUsers(data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
     }
   };
 
@@ -105,6 +126,10 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
         project_id: projectId || null,
         is_recurring: isRecurring,
       };
+
+      if (selectedTeam.length > 0) {
+        eventData.team_members = selectedTeam;
+      }
 
       if (durationUnit === 'Jam' && startTime && endTime) {
         eventData.start_time = startTime;
@@ -140,7 +165,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
         <form onSubmit={handleSubmit}>
           {/* Modal Header */}
@@ -275,6 +300,97 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Team Members Selection */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Pilih Anggota Tim (Opsional)</label>
+              
+              {/* Selected Chips */}
+              {selectedTeam.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {selectedTeam.map(userId => {
+                    const user = users.find(u => u.id === userId);
+                    if (!user) return null;
+                    return (
+                      <div key={userId} className="flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1.5 rounded-lg border border-primary/20">
+                        <div className="size-4 rounded-full bg-white/50 flex items-center justify-center text-[8px] font-black">
+                          {user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className="text-xs font-bold leading-none">{user.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTeam(prev => prev.filter(id => id !== userId))}
+                          className="ml-1 opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">close</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Searchable Input */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="material-symbols-outlined text-[18px] text-slate-400">search</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Cari dan tambah anggota tim..."
+                  className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-red-50/20 py-3.5 pl-10 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none"
+                  value={teamSearchTerm}
+                  onChange={(e) => {
+                    setTeamSearchTerm(e.target.value);
+                    if (!isTeamDropdownOpen) setIsTeamDropdownOpen(true);
+                  }}
+                  onFocus={() => setIsTeamDropdownOpen(true)}
+                  onBlur={() => setTimeout(() => setIsTeamDropdownOpen(false), 200)}
+                />
+
+                {/* Dropdown Options */}
+                {isTeamDropdownOpen && (
+                  <div className="absolute z-50 mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl max-h-[200px] overflow-y-auto custom-scrollbar">
+                    {users.filter(u => 
+                      !selectedTeam.includes(u.id) &&
+                      (u.name.toLowerCase().includes(teamSearchTerm.toLowerCase()) || 
+                      u.email.toLowerCase().includes(teamSearchTerm.toLowerCase()))
+                    ).length > 0 ? (
+                      users.filter(u => 
+                        !selectedTeam.includes(u.id) &&
+                        (u.name.toLowerCase().includes(teamSearchTerm.toLowerCase()) || 
+                        u.email.toLowerCase().includes(teamSearchTerm.toLowerCase()))
+                      ).map((u) => (
+                        <div
+                          key={u.id}
+                          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                          onMouseDown={() => {
+                            setSelectedTeam((prev) => [...prev, u.id]);
+                            setTeamSearchTerm('');
+                          }}
+                        >
+                          <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                              {u.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{u.name}</span>
+                            <span className="text-[10px] font-medium text-slate-500">{u.email}</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center">
+                        <span className="text-xs text-slate-400 font-medium">
+                          {users.length === 0 ? "Memuat anggota tim..." : "Tidak ada anggota tim yang cocok"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Recurring Switch Section */}

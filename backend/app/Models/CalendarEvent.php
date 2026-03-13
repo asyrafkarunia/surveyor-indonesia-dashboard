@@ -18,6 +18,7 @@ class CalendarEvent extends Model
         'start_time',
         'end_time',
         'user_id',
+        'team_members',
         'project_id',
         'type',
         'color',
@@ -33,6 +34,7 @@ class CalendarEvent extends Model
         'date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'team_members' => 'array',
     ];
 
     public function user()

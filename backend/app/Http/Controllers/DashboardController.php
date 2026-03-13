@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Sph;
 use App\Models\AudiensiLetter;
@@ -48,12 +49,20 @@ class DashboardController extends Controller
         $totalDecision = $acceptedAudiensi + $rejectedAudiensi;
         $winRate = $totalDecision > 0 ? round(($acceptedAudiensi / $totalDecision) * 100, 1) : 0;
 
-        // Running Projects (current running projects, not filtered by date range)
-        $runningProjects = Project::where('status', 'RUNNING')->count();
+        // Running Projects (current running projects, filtered by date range)
+        $runningProjects = Project::where('status', 'RUNNING')
+            ->where(function($q) use ($startDate, $endDate) {
+                $q->where('start_date', '<=', $endDate)
+                  ->where(function($q2) use ($startDate) {
+                      $q2->where('end_date', '>=', $startDate)
+                         ->orWhereNull('end_date');
+                  });
+            })
+            ->count();
 
-        // Calculate previous period for comparison
-        $prevStartDate = date('Y-m-01', strtotime($startDate . ' -1 month'));
-        $prevEndDate = date('Y-m-t', strtotime($endDate . ' -1 month'));
+        // Calculate previous period for comparison (Year over Year)
+        $prevStartDate = date('Y-m-01', strtotime($startDate . ' -1 year'));
+        $prevEndDate = date('Y-m-t', strtotime($endDate . ' -1 year'));
         
         $prevTotalBudget = Project::whereBetween('start_date', [$prevStartDate, $prevEndDate])
             ->sum('budget') ?? 0;
@@ -161,7 +170,7 @@ class DashboardController extends Controller
 
     public function recentActivities(Request $request)
     {
-        $activities = \App\Models\Activity::with(['user', 'project'])
+        $activities = Activity::with(['user', 'project'])
             ->latest()
             ->limit(5)
             ->get()
