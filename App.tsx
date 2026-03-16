@@ -272,6 +272,15 @@ const AppContent: React.FC = () => {
   const [preSelectedClientId, setPreSelectedClientId] = useState<number | null>(null);
   const [audiensiView, setAudiensiView] = useState<'list' | 'create' | 'manage' | 'add-template'>('list');
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
+  const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
+
+  // Expose setPendingCalendarEventId to window for deep linking from NotificationsScreen
+  useEffect(() => {
+    (window as any).setPendingCalendarEventId = setPendingCalendarEventId;
+    return () => {
+      delete (window as any).setPendingCalendarEventId;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -307,7 +316,7 @@ const AppContent: React.FC = () => {
         <div className="text-center">
           <div className="mb-2 text-lg font-medium text-slate-600 dark:text-slate-300">Loading System...</div>
           <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full w-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-slate-200 via-emerald-400 to-slate-200" style={{ backgroundSize: '200% 100%' }}></div>
+            <div className="h-full w-full animate-[shimmer_1.5s_infinite] bg-linear-to-r from-slate-200 via-emerald-400 to-slate-200" style={{ backgroundSize: '200% 100%' }}></div>
           </div>
         </div>
         <button 
@@ -411,11 +420,25 @@ const AppContent: React.FC = () => {
           />
         );
       case 'approval': return <ProjectApprovalScreen />;
-      case 'calendar': return <CalendarActivityScreen />;
+      case 'calendar': return (
+        <CalendarActivityScreen 
+          initialEventId={pendingCalendarEventId} 
+          onInitialEventHandled={() => setPendingCalendarEventId(null)} 
+        />
+      );
       case 'marketing_kanban': return <MarketingKanbanScreen onAddTask={() => setIsCreatingMarketingTask(true)} />;
       case 'essential_docs': return isAdmin ? <BerkasDokumenScreen /> : <DashboardHome />;
       case 'activity': return <FeedScreen />;
-      case 'notifications': return <NotificationsScreen onNavigate={(tab) => setActiveTab(tab)} />;
+      case 'notifications': return (
+        <NotificationsScreen 
+          onNavigate={(tab, data) => {
+            setActiveTab(tab);
+            if (tab === 'calendar' && data?.eventId) {
+              setPendingCalendarEventId(data.eventId);
+            }
+          }} 
+        />
+      );
       case 'clients': 
         if (selectedClient) {
           if (isEditingClient) {

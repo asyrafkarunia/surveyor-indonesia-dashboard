@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
+    public function __construct()
+    {
+        Carbon::setLocale('id');
+    }
+
     public function events(Request $request)
     {
         $query = CalendarEvent::with(['user', 'project']);
@@ -105,12 +110,21 @@ class CalendarController extends Controller
             foreach ($validated['team_members'] as $memberId) {
                 // Don't notify the creator
                 if ($memberId != $request->user()->id) {
+                    $dateRange = Carbon::parse($event->date)->translatedFormat('d M Y');
+                    if ($event->end_date && $event->end_date !== $event->date) {
+                        $dateRange .= ' - ' . Carbon::parse($event->end_date)->translatedFormat('d M Y');
+                    }
+                    
                     Notification::create([
                         'user_id' => $memberId,
-                        'title' => 'Aktivitas Baru',
-                        'message' => "Anda telah ditandai dalam aktivitas: {$event->title}",
+                        'title' => 'Tugas Baru (Calendar)',
+                        'content' => "Anda telah ditandai dalam aktivitas: {$event->title} ({$dateRange})",
                         'type' => 'assignment',
+                        'project_id' => $event->project_id ?? null,
+                        'project_name' => $event->project->title ?? 'Aktivitas Umum',
+                        'tag' => 'Calendar',
                         'is_read' => false,
+                        'data' => ['event_id' => $event->id, 'kind' => 'calendar_tag']
                     ]);
                 }
             }
@@ -150,13 +164,22 @@ class CalendarController extends Controller
         if (isset($validated['team_members']) && !empty($validated['team_members'])) {
             foreach ($validated['team_members'] as $memberId) {
                 if ($memberId != $request->user()->id) {
-                    // Create notification (ideally we would only notify new members, but for simplicity we notify on update too, or maybe use a specific message)
+                    $dateRange = Carbon::parse($event->date)->translatedFormat('d M Y');
+                    if ($event->end_date && $event->end_date !== $event->date) {
+                        $dateRange .= ' - ' . Carbon::parse($event->end_date)->translatedFormat('d M Y');
+                    }
+                    
+                    // Create notification
                     Notification::create([
                         'user_id' => $memberId,
                         'title' => 'Pembaruan Aktivitas',
-                        'content' => "Ada pembaruan pada aktivitas: {$event->title}",
+                        'content' => "Ada pembaruan pada aktivitas: {$event->title} ({$dateRange})",
                         'type' => 'assignment',
+                        'project_id' => $event->project_id ?? null,
+                        'project_name' => $event->project->title ?? 'Aktivitas Umum',
+                        'tag' => 'Calendar',
                         'is_read' => false,
+                        'data' => ['event_id' => $event->id, 'kind' => 'calendar_update']
                     ]);
                 }
             }

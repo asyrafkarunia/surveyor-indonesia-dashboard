@@ -439,7 +439,23 @@ class ProjectController extends Controller
         // Log project approval
         LogActivity::logProjectApproved($project->id, $project->title, $request->user()->id);
 
-        return response()->json($project->load(['client', 'pic', 'approver']));
+        // Notify Marketing PIC or creator
+        $recipientId = $project->pic_marketing_id ?: $project->created_by;
+        if ($recipientId) {
+            Notification::create([
+                'user_id' => $recipientId,
+                'project_id' => $project->id,
+                'type' => 'system',
+                'title' => 'Proyek Disetujui',
+                'content' => "Proyek '{$project->title}' telah DISETUJUI oleh Approver.",
+                'project_name' => $project->title,
+                'tag' => 'Project Approval',
+                'is_read' => false,
+                'data' => ['project_id' => $project->id, 'kind' => 'project_approved'],
+            ]);
+        }
+
+        return response()->json($project->load(['client', 'pic', 'marketingPic']));
     }
 
     public function reject(Request $request, $id)
@@ -458,6 +474,22 @@ class ProjectController extends Controller
             'rejection_reason' => $request->rejection_reason,
         ]);
 
-        return response()->json($project->load(['client', 'pic', 'approver']));
+        // Notify Marketing PIC or creator
+        $recipientId = $project->pic_marketing_id ?: $project->created_by;
+        if ($recipientId) {
+            Notification::create([
+                'user_id' => $recipientId,
+                'project_id' => $project->id,
+                'type' => 'alert',
+                'title' => 'Proyek Ditolak',
+                'content' => "Proyek '{$project->title}' telah DITOLAK. Alasan: " . substr($request->rejection_reason, 0, 100),
+                'project_name' => $project->title,
+                'tag' => 'Project Rejection',
+                'is_read' => false,
+                'data' => ['project_id' => $project->id, 'kind' => 'project_rejected'],
+            ]);
+        }
+
+        return response()->json($project->load(['client', 'pic', 'marketingPic']));
     }
 }

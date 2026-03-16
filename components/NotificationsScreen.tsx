@@ -24,6 +24,7 @@ interface Notification {
     code: string;
     title: string;
   };
+  data?: any;
 }
 
 interface Project {
@@ -143,7 +144,7 @@ const NotificationItem: React.FC<{
               </button>
               {item.project_id && (
                 <button 
-                  className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-white"
+                  className="text-xs font-bold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                   onClick={(e) => {
                     e.stopPropagation();
                     onClick(item);
@@ -197,7 +198,7 @@ const NotificationItem: React.FC<{
 };
 
 interface NotificationsScreenProps {
-  onNavigate?: (tab: string) => void;
+  onNavigate?: (tab: string, data?: any) => void;
 }
 
 const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate }) => {
@@ -345,6 +346,15 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
       handleMarkAsRead(notification.id);
     }
     
+    // Check for calendar deep link
+    const data = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
+    if (notification.tag === 'Calendar' && data?.event_id) {
+      if (onNavigate) {
+        onNavigate('calendar', { eventId: data.event_id });
+      }
+      return;
+    }
+    
     // Navigate based on type
     if (onNavigate) {
       switch (notification.type) {
@@ -366,7 +376,6 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
       }
     }
   };
-
   const groupNotificationsByDate = (notifications: Notification[]) => {
     const groups: { [key: string]: Notification[] } = {};
     const today = new Date();

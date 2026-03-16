@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\AudiensiLetter;
 use App\Models\AudiensiTemplate;
@@ -79,6 +81,22 @@ class AudiensiController extends Controller
 
             return AudiensiLetter::create($validated);
         });
+
+        // Notify relevant party
+        if ($letter->status === 'waiting_head_section') {
+            $headSections = User::where('role', 'head_section')->get();
+            foreach ($headSections as $approver) {
+                Notification::create([
+                    'user_id' => $approver->id,
+                    'type' => 'alert',
+                    'title' => 'Persetujuan Audiensi Dibutuhkan',
+                    'content' => "Surat Audiensi ({$letter->letter_number}) untuk '{$letter->company_name}' membutuhkan persetujuan Anda.",
+                    'tag' => 'Approval',
+                    'is_read' => false,
+                    'data' => ['audiensi_id' => $letter->id, 'kind' => 'audiensi_needs_approval'],
+                ]);
+            }
+        }
 
         return response()->json($letter->load(['client', 'template', 'creator']), 201);
     }
@@ -233,6 +251,38 @@ class AudiensiController extends Controller
                         'message' => 'Persetujuan berhasil, namun gagal memperbarui file PDF. Silakan generate ulang.',
                         'data' => $letter->fresh(['client', 'template', 'creator']),
                     ], 200); 
+                }
+                
+                // Notify next stage or final approval
+                $title = '';
+                $targetUsers = null;
+                
+                if ($letter->status === 'waiting_senior_manager') {
+                    $targetUsers = User::where('role', 'senior_manager')->get();
+                    $title = 'Persetujuan Audiensi (Senior Manager)';
+                } elseif ($letter->status === 'waiting_general_manager') {
+                    $targetUsers = User::where('role', 'general_manager')->get();
+                    $title = 'Persetujuan Audiensi (General Manager)';
+                } elseif ($letter->status === 'waiting_client') {
+                    $targetUsers = collect([$letter->creator]);
+                    $title = 'Audiensi Disetujui Internal';
+                }
+
+                if (isset($targetUsers)) {
+                    foreach ($targetUsers as $target) {
+                        if (!$target) continue;
+                        Notification::create([
+                            'user_id' => $target->id,
+                            'type' => $letter->status === 'waiting_client' ? 'system' : 'alert',
+                            'title' => $title,
+                            'content' => $letter->status === 'waiting_client' 
+                                ? "Surat Audiensi ({$letter->letter_number}) telah disetujui secara internal dan siap dikirim ke klien."
+                                : "Surat Audiensi ({$letter->letter_number}) membutuhkan persetujuan Anda.",
+                            'tag' => $letter->status === 'waiting_client' ? 'System' : 'Approval',
+                            'is_read' => false,
+                            'data' => ['audiensi_id' => $letter->id, 'kind' => $letter->status === 'waiting_client' ? 'audiensi_approved_internal' : 'audiensi_needs_approval'],
+                        ]);
+                    }
                 }
                 
                 return response()->json($letter->fresh(['client', 'template', 'creator']));
@@ -418,6 +468,19 @@ class AudiensiController extends Controller
             ]);
         }
 
+        // Notify creator about client decision
+        if ($letter->creator) {
+            Notification::create([
+                'user_id' => $letter->creator->id,
+                'type' => $request->decision === 'accepted' ? 'system' : 'alert',
+                'title' => $request->decision === 'accepted' ? 'Audiensi Diterima Klien' : 'Audiensi Ditolak Klien',
+                'content' => "Klien telah " . ($request->decision === 'accepted' ? "MENERIMA" : "MENOLAK") . " Surat Audiensi ({$letter->letter_number}).",
+                'tag' => 'Client Decision',
+                'is_read' => false,
+                'data' => ['audiensi_id' => $letter->id],
+            ]);
+        }
+
         return response()->json($letter->fresh());
     }
 
@@ -425,6 +488,20 @@ class AudiensiController extends Controller
     {
         $letter = AudiensiLetter::findOrFail($id);
         $letter->update(['status' => 'rejected']);
+
+        // Notify creator about rejection
+        if ($letter->creator) {
+            Notification::create([
+                'user_id' => $letter->creator->id,
+                'type' => 'alert',
+                'title' => 'Audiensi Ditolak Internal',
+                'content' => "Surat Audiensi ({$letter->letter_number}) telah DITOLAK oleh internal.",
+                'tag' => 'Rejection',
+                'is_read' => false,
+                'data' => ['audiensi_id' => $letter->id, 'kind' => 'audiensi_rejected'],
+            ]);
+        }
+
         return response()->json($letter);
     }
 

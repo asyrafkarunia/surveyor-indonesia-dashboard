@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Models\User;
 use App\Models\Client;
 use Illuminate\Support\Facades\DB;
 use App\Models\Sph;
@@ -72,6 +74,22 @@ class SphController extends Controller
         
         // Log SPH creation
         LogActivity::logSphCreated($sph->id, $sph->sph_no, $request->user()->id);
+
+        // Notify Head Section
+        $headSections = User::where('role', 'head_section')->get();
+        foreach ($headSections as $approver) {
+            Notification::create([
+                'user_id' => $approver->id,
+                'project_id' => $sph->project_id,
+                'type' => 'alert',
+                'title' => 'Persetujuan SPH Dibutuhkan',
+                'content' => "SPH Baru ({$sph->sph_no}) untuk proyek '{$sph->project_name}' membutuhkan persetujuan Anda.",
+                'project_name' => $sph->project_name,
+                'tag' => 'Approval',
+                'is_read' => false,
+                'data' => ['sph_id' => $sph->id, 'kind' => 'sph_needs_approval'],
+            ]);
+        }
 
         return response()->json($sph->load(['client', 'project', 'creator']), 201);
     }
@@ -252,6 +270,38 @@ class SphController extends Controller
                 $sph->save();
                 // Re-generate PDF with new signatures
                 $this->generatePDF($sph);
+
+                // Notify next stage or final approval
+                if ($sph->status === 'waiting_senior_manager') {
+                    $targetUsers = User::where('role', 'senior_manager')->get();
+                    $title = 'Persetujuan SPH (Senior Manager)';
+                } elseif ($sph->status === 'waiting_general_manager') {
+                    $targetUsers = User::where('role', 'general_manager')->get();
+                    $title = 'Persetujuan SPH (General Manager)';
+                } elseif ($sph->status === 'waiting_client') {
+                    $targetUsers = collect([$sph->creator]);
+                    $title = 'SPH Disetujui Internal';
+                }
+
+                if (isset($targetUsers)) {
+                    foreach ($targetUsers as $target) {
+                        if (!$target) continue;
+                        Notification::create([
+                            'user_id' => $target->id,
+                            'project_id' => $sph->project_id,
+                            'type' => $sph->status === 'waiting_client' ? 'system' : 'alert',
+                            'title' => $title,
+                            'content' => $sph->status === 'waiting_client' 
+                                ? "SPH ({$sph->sph_no}) telah disetujui secara internal dan siap dikirim ke klien."
+                                : "SPH ({$sph->sph_no}) membutuhkan persetujuan Anda.",
+                            'project_name' => $sph->project_name,
+                            'tag' => $sph->status === 'waiting_client' ? 'System' : 'Approval',
+                            'is_read' => false,
+                            'data' => ['sph_id' => $sph->id, 'kind' => $sph->status === 'waiting_client' ? 'sph_approved_internal' : 'sph_needs_approval'],
+                        ]);
+                    }
+                }
+
                 return response()->json($sph->load(['client', 'project', 'creator']));
             }
 
@@ -290,6 +340,21 @@ class SphController extends Controller
                 'rejected_at' => now(),
             ]);
         }
+
+        // Notify creator about client decision
+        if ($sph->creator) {
+            Notification::create([
+                'user_id' => $sph->creator->id,
+                'project_id' => $sph->project_id,
+                'type' => $request->decision === 'accepted' ? 'system' : 'alert',
+                'title' => $request->decision === 'accepted' ? 'SPH Diterima Klien' : 'SPH Ditolak Klien',
+                'content' => "Klien telah " . ($request->decision === 'accepted' ? "MENERIMA" : "MENOLAK") . " SPH ({$sph->sph_no}).",
+                'project_name' => $sph->project_name,
+                'tag' => 'Client Decision',
+                'is_read' => false,
+                'data' => ['sph_id' => $sph->id],
+            ]);
+        }
         
         return response()->json($sph);
     }
@@ -308,6 +373,21 @@ class SphController extends Controller
             'rejected_by' => $request->user()->id,
             'rejected_at' => now(),
         ]);
+
+        // Notify creator about rejection
+        if ($sph->creator) {
+            Notification::create([
+                'user_id' => $sph->creator->id,
+                'project_id' => $sph->project_id,
+                'type' => 'alert',
+                'title' => 'SPH Ditolak Internal',
+                'content' => "SPH ({$sph->sph_no}) telah DITOLAK. Alasan: " . substr($request->rejection_reason, 0, 100),
+                'project_name' => $sph->project_name,
+                'tag' => 'Rejection',
+                'is_read' => false,
+                'data' => ['sph_id' => $sph->id, 'kind' => 'sph_rejected'],
+            ]);
+        }
 
         return response()->json($sph);
     }

@@ -8,7 +8,15 @@ import * as XLSX from 'xlsx';
 
 type ViewMode = 'month' | 'week' | 'day';
 
-const CalendarActivityScreen: React.FC = () => {
+interface CalendarActivityScreenProps {
+  initialEventId?: number | null;
+  onInitialEventHandled?: () => void;
+}
+
+const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({ 
+  initialEventId, 
+  onInitialEventHandled 
+}) => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -19,6 +27,18 @@ const CalendarActivityScreen: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (initialEventId && !loading && events.length > 0) {
+      const event = events.find(e => e.id === initialEventId);
+      if (event) {
+        setSelectedEvent(event);
+        setIsDetailModalOpen(true);
+        if (onInitialEventHandled) {
+          onInitialEventHandled();
+        }
+      }
+    }
+  }, [initialEventId, loading, events]);
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
@@ -634,7 +654,7 @@ const CalendarActivityScreen: React.FC = () => {
         </div>
 
         {/* Calendar Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-100 dark:border-slate-700 p-4 gap-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4 gap-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden shadow-sm">
               <button
