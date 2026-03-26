@@ -180,10 +180,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 md:p-8 max-w-3xl w-full mx-4"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 mb-6">
+        <div className="flex items-start justify-between gap-4 p-6 md:px-8 md:pt-8 md:pb-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
           <div className="min-w-0">
             <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white truncate">{header}</h3>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -200,8 +200,9 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
         ) : !project ? (
           <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">Detail proyek tidak tersedia.</div>
         ) : (
-          <div className="space-y-6">
-            {/* Summary */}
+          <>
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-6 md:px-8 md:py-6 space-y-6">
+              {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</p>
@@ -389,8 +390,10 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
               )}
             </div>
 
+            </div>
+
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="p-4 md:px-8 md:py-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 shrink-0 flex items-center justify-between">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Attachments: <span className="text-slate-900 dark:text-white">{(project.attachments || []).length}</span> • Comments:{' '}
                 <span className="text-slate-900 dark:text-white">{(project.comments || []).length}</span>
@@ -446,7 +449,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                 )}
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>

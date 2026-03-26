@@ -170,7 +170,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
+        className="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
@@ -199,7 +199,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-hidden flex flex-col md:flex-row h-full">
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col md:flex-row">
           {/* Main Content (Left) */}
           <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white dark:bg-slate-800">
             <div className="mb-10">

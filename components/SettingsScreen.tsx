@@ -188,6 +188,38 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
     }
   };
 
+  const handleEditUser = async () => {
+    if (!editingUser) return;
+    setEditLoading(true);
+    try {
+      let mappedRoleName = editingUser.roleName;
+      if (editingUser.role === 'marketing') mappedRoleName = 'Admin';
+      else if (editingUser.role === 'head_section') mappedRoleName = 'Head Section';
+      else if (['approver', 'senior_manager', 'general_manager'].includes(editingUser.role)) mappedRoleName = 'Approver';
+      else if (editingUser.role === 'umum') mappedRoleName = 'Staff Umum';
+
+      const updateData = {
+        name: editingUser.name,
+        email: editingUser.email,
+        division: editingUser.division,
+        role: editingUser.role,
+        roleName: mappedRoleName,
+        status: editingUser.status
+      };
+
+      await api.updateUser(editingUser.id, updateData);
+      setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...updateData } : u));
+      alert('Peran dan profil pengguna berhasil diperbarui');
+      setShowEditUserModal(false);
+      setEditingUser(null);
+    } catch (error: any) {
+      console.error('Failed to update user:', error);
+      alert(error?.message || 'Gagal memperbarui pengguna');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const handleAddUser = async () => {
     if (!newUser.name || !newUser.email || !newUser.division || !newUser.roleName) {
       alert('Harap lengkapi semua field');
@@ -268,7 +300,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
   const loadInviteCodes = async () => {
     setInviteCodesLoading(true);
     try {
-      const response: any = await api.getInviteCodes();
+      const response: any = await api.listInviteCodes();
       const codes = response.data || response;
       if (Array.isArray(codes)) {
         setInviteCodes(codes);
@@ -283,8 +315,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
   const handleGenerateInviteCode = async () => {
     setGenerateLoading(true);
     try {
-      const response = await api.createInviteCode();
-      const codeData = response.data || response;
+      const response = await api.generateInviteCode();
+      const codeData: any = (response as any).data || response;
       alert(`Kode undangan berhasil dibuat: ${codeData.code || 'Buka tab kode untuk melihatnya'}`);
       loadInviteCodes();
     } catch (error) {

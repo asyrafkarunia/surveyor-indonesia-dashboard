@@ -142,7 +142,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
+      <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700">
         {/* Modal Header */}
         <div className={`flex items-center justify-between border-b-4 px-6 py-5 ${getTypeColor(event.type)}`}>
           <div className="flex items-center gap-3">
@@ -169,7 +169,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
         </div>
 
         {/* Modal Body */}
-        <div className="max-h-[80vh] overflow-y-auto px-8 py-6 custom-scrollbar space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 custom-scrollbar space-y-6">
           {/* Activity Title */}
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Nama Aktivitas</label>
