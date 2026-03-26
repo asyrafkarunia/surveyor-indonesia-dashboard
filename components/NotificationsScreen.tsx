@@ -172,7 +172,7 @@ const NotificationItem: React.FC<{
       <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex gap-2">
         {!item.is_read && (
           <button 
-            className="p-2 rounded-full bg-white dark:bg-slate-800 text-slate-400 hover:text-primary hover:bg-red-50 shadow-sm border border-slate-200 dark:border-slate-700" 
+            className="p-2 rounded-full bg-white dark:bg-slate-800 text-slate-400 hover:text-primary hover:bg-blue-50 shadow-sm border border-slate-200 dark:border-slate-700" 
             title="Tandai sudah dibaca"
             onClick={(e) => {
               e.stopPropagation();

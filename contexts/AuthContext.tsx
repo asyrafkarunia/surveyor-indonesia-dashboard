@@ -63,6 +63,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await api.login(email, password);
       console.log('Login response:', response);
       if (response && response.user) {
+        // Reset to dashboard on fresh login (best practice)
+        localStorage.setItem('activeTab', 'dashboard');
         setUser(response.user);
       } else {
         throw new Error('Invalid login response');

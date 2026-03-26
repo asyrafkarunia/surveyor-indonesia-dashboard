@@ -362,7 +362,7 @@ const PermissionsScreen: React.FC = () => {
                 <div key={category.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                   <div className="bg-slate-50 dark:bg-slate-900/50 dark:bg-slate-700/50 px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                      <div className="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl text-primary border border-red-100 dark:border-red-900/50 shadow-sm">
+                      <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-primary border border-blue-100 dark:border-red-900/50 shadow-sm">
                         <span className="material-symbols-outlined fill">{category.icon}</span>
                       </div>
                       <div>
@@ -430,7 +430,7 @@ const PermissionsScreen: React.FC = () => {
             <button 
               onClick={handleSave}
               disabled={!selectedUserId || saving}
-              className={`px-8 py-3 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 lg:w-auto w-1/2 ${
+              className={`px-8 py-3 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 lg:w-auto w-1/2 ${
                 !selectedUserId || saving ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >

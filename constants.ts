@@ -85,7 +85,7 @@ export const MONITORING_PROJECTS: MonitoringProjectItem[] = [
     picAvatar: '',
     icon: 'bolt',
     iconColor: 'text-red-600',
-    iconBg: 'bg-red-50',
+    iconBg: 'bg-blue-50',
     recentActivity: 'Project scope mismatch'
   }
 ];

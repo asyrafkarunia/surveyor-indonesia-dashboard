@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import LoginScreen from './components/LoginScreen';
+import { MarsIconLogo } from './components/LoginScreen';
 import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -36,6 +37,7 @@ import { api } from './services/api';
 import { ClientData } from './types';
 import ProjectDetailScreen from './components/ProjectDetailScreen';
 import BerkasDokumenScreen from './components/BerkasDokumenScreen';
+import PageTransition from './components/PageTransition';
 
 const DashboardHome: React.FC<{
   onNavigate?: (tab: string) => void;
@@ -216,12 +218,19 @@ const DashboardHome: React.FC<{
           {loading ? (
             <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
           ) : recentActivities.length > 0 ? (
-            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
               {recentActivities.map((activity) => (
-                <div key={activity.id} className="text-sm">
-                  <p className="font-medium text-slate-900 dark:text-white">{activity.user}</p>
-                  <p className="text-slate-600 dark:text-slate-300">{activity.action}</p>
-                  <p className="text-xs text-slate-400">{activity.time}</p>
+                <div key={activity.id} className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary dark:bg-primary/20">
+                    {activity.user.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center justify-between gap-1">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">{activity.user}</p>
+                      <p className="text-[10px] font-medium text-slate-400 whitespace-nowrap">{activity.time}</p>
+                    </div>
+                    <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">{activity.action}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -230,9 +239,10 @@ const DashboardHome: React.FC<{
           )}
           <button 
             onClick={() => onNavigate?.('activity')}
-            className="mt-6 w-full rounded-lg py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/5"
+            className="mt-6 flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-50 py-3 text-sm font-bold text-primary transition-all hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary"
           >
-            View All Activity
+            <span>View All Activity</span>
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
           </button>
         </div>
       </div>
@@ -312,21 +322,72 @@ const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-slate-900">
-        <div className="text-center">
-          <div className="mb-2 text-lg font-medium text-slate-600 dark:text-slate-300">Loading System...</div>
-          <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full w-full animate-[shimmer_1.5s_infinite] bg-linear-to-r from-slate-200 via-emerald-400 to-slate-200" style={{ backgroundSize: '200% 100%' }}></div>
+      <div
+        className="flex h-screen flex-col items-center justify-center bg-[#003868] relative overflow-hidden"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        {/* Dynamic Water Ripple Background */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Base gradient layer */}
+          <div className="absolute inset-0 opacity-60" style={{
+            background: 'radial-gradient(circle at 50% 50%, #005596 0%, #001d3d 100%)',
+          }} />
+
+          {/* Resonating Ripples (Expanding from center) */}
+          <div className="absolute top-1/2 left-1/2 w-0 h-0">
+             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/20" />
+             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/20" style={{ animationDelay: '2s' }} />
+             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/10" style={{ animationDelay: '4s' }} />
+             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/10" style={{ animationDelay: '6s' }} />
+          </div>
+
+          <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[#00B4AE] blur-[150px] animate-pulse opacity-10"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[#005596] blur-[120px] opacity-20"></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* MARS Logo Icon - Seamless and glowing */}
+          <div className="loading-logo-pulse loading-breathe mb-12 relative flex flex-col items-center justify-center">
+             <div className="absolute inset-0 bg-[#00B4AE] blur-[30px] opacity-40 rounded-full scale-[1.5] animate-pulse"></div>
+             <MarsIconLogo className="w-32 h-32 relative z-10 drop-shadow-[0_0_20px_rgba(0,180,174,0.6)]" color="white" />
+          </div>
+
+          {/* App name */}
+          <h1 className="text-3xl font-black text-white tracking-[0.2em] mb-2 uppercase drop-shadow-lg">MARS</h1>
+          <p className="text-[10px] tracking-[0.45em] text-cyan-400 font-bold uppercase mb-16 opacity-80">
+            Marketing Analysis Report System
+          </p>
+
+          {/* Progress Section */}
+          <div className="flex flex-col items-center w-64">
+            {/* Premium Progress bar */}
+            <div className="w-full h-1 rounded-full overflow-hidden mb-4 bg-white/5 backdrop-blur-sm">
+              <div
+                className="loading-progress-slide h-full rounded-full"
+                style={{
+                  width: '60%',
+                  background: 'linear-gradient(90deg, #003868, #00B4AE, #a5f3f2)',
+                  boxShadow: '0 0 15px rgba(0, 180, 174, 0.4)'
+                }}
+              />
+            </div>
+
+            {/* Status message */}
+            <p className="text-[13px] text-slate-300 font-medium tracking-wide">
+              Menyiapkan Dashboard<span className="loading-dot inline-block">.</span><span className="loading-dot-2 inline-block">.</span><span className="loading-dot-3 inline-block">.</span>
+            </p>
           </div>
         </div>
-        <button 
+
+        {/* Stuck button */}
+        <button
           onClick={() => {
             localStorage.removeItem('auth_token');
             window.location.reload();
           }}
-          className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors mt-8"
+          className="absolute bottom-8 text-xs text-slate-400 hover:text-red-500 transition-colors duration-300"
         >
-          Stuck? Click here to clear cache and reload
+          Stuck? Klik di sini untuk reset
         </button>
       </div>
     );
@@ -607,10 +668,8 @@ const AppContent: React.FC = () => {
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)} 
         activeId={activeTab === 'clients' && (selectedClient || isCreatingClient) ? 'clients' : activeTab}
-        user={user}
         isAdmin={isAdmin}
         isApprover={isApprover()}
-        onLogout={logout}
         onNavigate={(id) => {
           // Hide admin features from sidebar if not admin
           if ((id === 'permissions' || id === 'admin_log') && !isAdmin) return;
@@ -635,7 +694,17 @@ const AppContent: React.FC = () => {
           onNotificationClick={() => setActiveTab('notifications')}
           activeId={activeTab}
           user={user}
-          onProfileClick={() => setActiveTab('settings')}
+          isAdmin={isAdmin}
+          onNavigate={(id) => {
+            setActiveTab(id);
+            setSelectedClient(null);
+            setIsCreatingSph(false);
+            setIsCreatingClient(false);
+            setIsCreatingMarketingTask(false);
+            setAudiensiView('list');
+            setIsSidebarOpen(false);
+          }}
+          onLogout={logout}
           onProjectSearch={(query) => {
             setGlobalProjectSearch(query);
             setActiveTab('monitoring');
@@ -690,8 +759,12 @@ const AppContent: React.FC = () => {
           </header>
         )}
 
-        <div className="flex-1 overflow-hidden flex flex-col">
-          {renderContent()}
+        <div className="flex-1 overflow-hidden flex flex-col bg-slate-50/50 dark:bg-slate-900/50">
+          <PageTransition 
+            transitionKey={`${activeTab}-${selectedClient?.id || ''}-${isCreatingSph}-${isCreatingClient}-${isEditingClient}-${isCreatingMarketingTask}-${selectedProjectId || ''}-${audiensiView}`}
+          >
+            {renderContent()}
+          </PageTransition>
         </div>
       </div>
     </div>

@@ -98,7 +98,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
       case 'Approved': return 'bg-green-50 text-green-700 border-green-100';
       case 'Sent': return 'bg-blue-50 text-blue-700 border-blue-100';
       case 'Draft': return 'bg-gray-100 text-gray-700 border-gray-200';
-      case 'Rejected': return 'bg-red-50 text-red-700 border-red-100';
+      case 'Rejected': return 'bg-blue-50 text-blue-700 border-blue-100';
       default: return 'bg-gray-50 text-gray-500 border-gray-200';
     }
   };
@@ -127,7 +127,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
           </div>
           <button 
             onClick={onCreateClick}
-            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all active:scale-95"
+            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px]">add</span>
             Buat SPH Baru
@@ -231,7 +231,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                               </button>
                               <button
                                 onClick={() => handleDecision(sph.id.toString(), 'rejected')}
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-1.5 text-red-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 title="Ditolak Klien"
                               >
                                 <span className="material-symbols-outlined text-[20px]">cancel</span>
@@ -239,7 +239,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                             </>
                           )}
                           {sph.status === 'Draft' && !sph.is_new_application && (
-                            <button onClick={() => handleGenerate(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-red-50 rounded-lg transition-colors" title="Generate & Kirim ke Approver">
+                            <button onClick={() => handleGenerate(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Generate & Kirim ke Approver">
                               <span className="material-symbols-outlined text-[20px]">send</span>
                             </button>
                           )}

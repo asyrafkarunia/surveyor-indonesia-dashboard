@@ -279,7 +279,7 @@ const ActivityLogScreen: React.FC = () => {
 
           {/* Filters Section */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-6">
-            <div className="flex flex-col lg:flex-row gap-6 items-end">
+            <div className="flex flex-col lg:flex-row gap-4 items-end flex-wrap">
               {/* Search */}
               <div className="flex-1 min-w-[250px] w-full">
                 <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Cari Log</label>
@@ -329,7 +329,7 @@ const ActivityLogScreen: React.FC = () => {
               </div>
               
               {/* Action Type Multi-Select */}
-              <div className="w-full lg:w-1/3 min-w-[280px]">
+              <div className="w-full lg:w-1/4 min-w-[220px]">
                 <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Kategori Tipe Aksi (Multi-Select)</label>
                 <div className="relative z-50">
                   <button
@@ -430,10 +430,10 @@ const ActivityLogScreen: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 w-full lg:w-auto">
+              <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
                 <button 
                   onClick={handleFilter}
-                  className="h-12 px-8 bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-red-500/20 transition-all flex items-center gap-2 flex-1 lg:flex-none justify-center"
+                  className="h-12 px-8 bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2 flex-1 lg:flex-none justify-center"
                 >
                   <span className="material-symbols-outlined text-[20px]">filter_list</span>
                   <span>Filter</span>
@@ -486,7 +486,7 @@ const ActivityLogScreen: React.FC = () => {
                           {log.adminAvatar ? (
                               <img src={log.adminAvatar} className="size-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm" alt={log.adminName} />
                           ) : (
-                              <div className="size-9 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-primary text-xs font-black border border-red-100 dark:border-red-800 shadow-sm">
+                              <div className="size-9 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary text-xs font-black border border-blue-100 dark:border-blue-800 shadow-sm">
                                 {log.adminInitials || log.adminName.split(' ').map(n => n[0]).join('')}
                             </div>
                           )}
@@ -506,7 +506,7 @@ const ActivityLogScreen: React.FC = () => {
                             log.moduleColor === 'purple' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-800' :
                             log.moduleColor === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
                             log.moduleColor === 'orange' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-100 dark:border-orange-800' :
-                            log.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-800' :
+                            log.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-blue-100 dark:border-blue-800' :
                             'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                         }`}>
                           <span className="material-symbols-outlined text-[16px]">{log.moduleIcon}</span>
@@ -517,7 +517,7 @@ const ActivityLogScreen: React.FC = () => {
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${
                             log.status === 'Success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800' :
                             log.status === 'Warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-800' :
-                            'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-800'
+                            'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-blue-100 dark:border-blue-800'
                         }`}>
                           <span className={`size-1.5 rounded-full ${
                             log.status === 'Success' ? 'bg-emerald-500' :
@@ -530,7 +530,7 @@ const ActivityLogScreen: React.FC = () => {
                       <td className="p-6 text-center">
                           <button 
                             onClick={() => handleViewDetails(log)}
-                            className="p-2 text-slate-400 dark:text-slate-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100 shadow-sm border border-transparent hover:border-red-100 dark:hover:border-red-800"
+                            className="p-2 text-slate-400 dark:text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100 shadow-sm border border-transparent hover:border-blue-100 dark:hover:border-blue-800"
                           >
                           <span className="material-symbols-outlined text-[22px]">visibility</span>
                         </button>
@@ -564,7 +564,7 @@ const ActivityLogScreen: React.FC = () => {
                         onClick={() => setCurrentPage(page)}
                         className={`size-9 flex items-center justify-center rounded-xl text-[11px] font-black transition-all ${
                           currentPage === page
-                            ? 'bg-primary text-white shadow-lg shadow-red-500/20'
+                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
                             : 'border border-transparent hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary'
                         }`}
                       >
@@ -618,7 +618,7 @@ const ActivityLogScreen: React.FC = () => {
                   {selectedLog.adminAvatar ? (
                     <img src={selectedLog.adminAvatar} className="size-12 rounded-full object-cover border border-slate-200 dark:border-slate-700" alt={selectedLog.adminName} />
                   ) : (
-                    <div className="size-12 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-primary text-sm font-black border border-red-100 dark:border-red-800">
+                    <div className="size-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary text-sm font-black border border-blue-100 dark:border-blue-800">
                       {selectedLog.adminInitials || selectedLog.adminName.split(' ').map(n => n[0]).join('')}
                     </div>
                   )}
@@ -638,7 +638,7 @@ const ActivityLogScreen: React.FC = () => {
                   selectedLog.moduleColor === 'purple' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-800' :
                   selectedLog.moduleColor === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800' :
                   selectedLog.moduleColor === 'orange' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-100 dark:border-orange-800' :
-                  selectedLog.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-800' :
+                  selectedLog.moduleColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-blue-100 dark:border-blue-800' :
                   'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                 }`}>
                   <span className="material-symbols-outlined text-[18px]">{selectedLog.moduleIcon}</span>
@@ -650,7 +650,7 @@ const ActivityLogScreen: React.FC = () => {
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter ${
                   selectedLog.status === 'Success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800' :
                   selectedLog.status === 'Warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-800' :
-                  'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-800'
+                  'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-blue-100 dark:border-blue-800'
                 }`}>
                   <span className={`size-2 rounded-full ${
                     selectedLog.status === 'Success' ? 'bg-emerald-500' :
@@ -664,7 +664,7 @@ const ActivityLogScreen: React.FC = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg shadow-red-500/20"
+                className="px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
               >
                 Tutup
               </button>

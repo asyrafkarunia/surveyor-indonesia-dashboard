@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../services/api';
 import { KanbanCard, KanbanColumn } from '../types';
 import MarketingTaskDetail from './MarketingTaskDetail';
@@ -10,7 +10,7 @@ interface MarketingKanbanScreenProps {
 
 const PriorityBadge: React.FC<{ priority: KanbanCard['priority'] }> = ({ priority }) => {
   const styles = {
-    High: 'bg-red-50 text-red-700 border-red-100',
+    High: 'bg-blue-50 text-blue-700 border-blue-100',
     Medium: 'bg-amber-50 text-amber-700 border-amber-100',
     Low: 'bg-emerald-50 text-emerald-700 border-emerald-100'
   };
@@ -66,19 +66,53 @@ const TaskCard: React.FC<{
   );
 };
 
+/* ─── Skeleton Card for Loading State ─── */
+const SkeletonCard: React.FC = () => (
+  <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 animate-pulse">
+    <div className="flex justify-between items-start mb-3">
+      <div className="h-4 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
+      <div className="h-4 w-4 bg-slate-200 dark:bg-slate-700 rounded" />
+    </div>
+    <div className="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded mb-2" />
+    <div className="h-3 w-24 bg-slate-100 dark:bg-slate-700 rounded mb-4" />
+    <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+      <div className="h-3 w-20 bg-slate-100 dark:bg-slate-700 rounded" />
+      <div className="size-6 rounded-full bg-slate-200 dark:bg-slate-700" />
+    </div>
+  </div>
+);
+
+const SkeletonColumn: React.FC = () => (
+  <div className="w-80 flex flex-col gap-4">
+    <div className="flex items-center justify-between pb-3 mb-2 border-b-2 border-slate-200">
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+        <div className="h-5 w-6 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+      </div>
+      <div className="h-5 w-5 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+    </div>
+    <div className="flex flex-col gap-3">
+      <SkeletonCard />
+      <SkeletonCard />
+    </div>
+  </div>
+);
+
 const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask }) => {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [selectedTask, setSelectedTask] = useState<KanbanCard | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [draggedCard, setDraggedCard] = useState<{ card: KanbanCard; sourceColumn: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const retryCountRef = useRef(0);
+  const MAX_RETRIES = 2;
 
-  useEffect(() => {
-    fetchColumns();
-  }, []);
-
-  const fetchColumns = async () => {
-    setLoading(true);
+  const fetchColumns = useCallback(async (isRetry = false) => {
+    if (!isRetry) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const res: any = await api.getMarketingPlanColumns();
       const data = res.data || res;
@@ -88,19 +122,43 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             cards: Array.isArray(col.cards)
               ? col.cards.map((card: any) => ({
                   ...card,
-                  // Backend may send numeric id; normalize to string to match our types and comparisons
                   id: card?.id?.toString?.() ?? String(card?.id ?? ''),
                 }))
               : [],
           }))
         : [];
       setColumns(normalized);
-    } catch (e) {
-      console.error(e);
+      setError(null);
+      retryCountRef.current = 0;
+    } catch (e: any) {
+      console.error('Failed to fetch marketing plan columns:', e);
+      
+      // Auto-retry with exponential backoff
+      if (retryCountRef.current < MAX_RETRIES) {
+        retryCountRef.current += 1;
+        const delay = retryCountRef.current * 1500; // 1.5s, 3s
+        console.log(`Retrying... attempt ${retryCountRef.current}/${MAX_RETRIES} in ${delay}ms`);
+        setTimeout(() => fetchColumns(true), delay);
+        return;
+      }
+      
+      setError(e.message || 'Gagal memuat data Marketing Plan. Silakan coba lagi.');
       setColumns([]);
     } finally {
-      setLoading(false);
+      if (!isRetry || retryCountRef.current >= MAX_RETRIES) {
+        setLoading(false);
+      }
     }
+  }, []);
+
+  useEffect(() => {
+    retryCountRef.current = 0;
+    fetchColumns();
+  }, [fetchColumns]);
+
+  const handleRetry = () => {
+    retryCountRef.current = 0;
+    fetchColumns();
   };
 
   const handleDragStart = (e: React.DragEvent, card: KanbanCard, sourceColumn: string) => {
@@ -131,7 +189,6 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
     }
 
     try {
-      // Map column IDs to status values
       const statusMap: { [key: string]: string } = {
         'ide_baru': 'ide_baru',
         'review': 'review',
@@ -143,7 +200,6 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
       const newStatus = statusMap[targetColumnId] || targetColumnId;
       await api.moveMarketingTask(card.id.toString(), newStatus);
       
-      // Update local state
       setColumns(prev => {
         const newColumns = prev.map(col => {
           if (col.id === sourceColumn) {
@@ -236,7 +292,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             </div>
             <button 
               onClick={onAddTask}
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-red-500/20 transition-all active:scale-95 uppercase tracking-widest"
+              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 uppercase tracking-widest"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
               Tambah Kegiatan Baru
@@ -248,8 +304,49 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
       {/* Board Layout */}
       <div className="flex-1 overflow-x-auto p-6 md:p-10 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-slate-400 dark:text-slate-400 text-sm font-bold">Memuat data...</div>
+          /* ─── Skeleton Loading State ─── */
+          <div className="flex gap-6 h-full min-w-max">
+            {[1, 2, 3, 4].map((i) => (
+              <SkeletonColumn key={i} />
+            ))}
+          </div>
+        ) : error ? (
+          /* ─── Error State with Retry ─── */
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(0,56,104,0.08), rgba(0,180,174,0.08))' }}>
+              <span className="material-symbols-outlined text-3xl text-slate-400">cloud_off</span>
+            </div>
+            <div className="text-center">
+              <h3 className="text-base font-bold text-slate-700 dark:text-slate-300 mb-1">Gagal Memuat Data</h3>
+              <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs">{error}</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg active:scale-95"
+              style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)', boxShadow: '0 2px 10px rgba(0,56,104,0.2)' }}
+            >
+              <span className="material-symbols-outlined text-[18px]">refresh</span>
+              Coba Lagi
+            </button>
+          </div>
+        ) : columns.length === 0 ? (
+          /* ─── Empty State ─── */
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+              <span className="material-symbols-outlined text-3xl text-slate-300">view_kanban</span>
+            </div>
+            <div className="text-center">
+              <h3 className="text-base font-bold text-slate-700 dark:text-slate-300 mb-1">Belum Ada Data</h3>
+              <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs">Mulai buat kegiatan marketing pertama Anda.</p>
+            </div>
+            <button
+              onClick={onAddTask}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg active:scale-95"
+              style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)' }}
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Tambah Kegiatan Baru
+            </button>
           </div>
         ) : (
           <div className="flex gap-6 h-full min-w-max">

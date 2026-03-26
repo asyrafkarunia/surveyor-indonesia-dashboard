@@ -412,7 +412,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                       <td className="px-6 py-5 whitespace-nowrap text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button 
-                            className="p-1.5 text-slate-400 hover:text-primary hover:bg-red-50 rounded-lg transition-colors" 
+                            className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" 
                             title="Lihat Detail"
                             onClick={(e) => {
                               e.stopPropagation();

@@ -487,7 +487,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         if (cell) {
           cell.s = {
             font: { bold: true, color: { rgb: 'FFFFFFFF' } },
-            fill: { patternType: 'solid', fgColor: { rgb: 'FFEF4444' } },
+            fill: { patternType: 'solid', fgColor: { rgb: 'FF003868' } },
             alignment: { horizontal: 'center', vertical: 'center' },
             border: {
               top: { style: 'thin', color: { rgb: 'FFE5E7EB' } },
@@ -598,8 +598,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       <header className="p-8 pb-4">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[#1a0f0f] dark:text-white text-3xl font-black tracking-tight">Dashboard Monitoring Status Proyek</h2>
-            <p className="text-[#915555] dark:text-slate-300 text-sm font-normal uppercase tracking-wider">Integrated view of all assurance project stages across Indonesia</p>
+            <h2 className="text-[#0f172a] dark:text-white text-3xl font-black tracking-tight">Dashboard Monitoring Status Proyek</h2>
+            <p className="text-[#64748b] dark:text-slate-300 text-sm font-normal uppercase tracking-wider">Integrated view of all assurance project stages across Indonesia</p>
           </div>
           <div className="flex items-center gap-3">
             <button 
@@ -613,12 +613,12 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         </div>
 
         {/* Year Filter */}
-        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm w-fit">
+        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm w-fit">
           <button 
             onClick={() => scrollYears('left')}
             disabled={!canScrollLeft}
             className={`p-2 hover:bg-gray-100 rounded transition-colors ${
-              canScrollLeft ? 'text-[#915555] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'
+              canScrollLeft ? 'text-[#64748b] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'
             }`}
             title="Tahun sebelumnya"
           >
@@ -644,7 +644,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             onClick={() => scrollYears('right')}
             disabled={!canScrollRight}
             className={`p-2 hover:bg-gray-100 rounded transition-colors ${
-              canScrollRight ? 'text-[#915555] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'
+              canScrollRight ? 'text-[#64748b] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'
             }`}
             title="Tahun berikutnya"
           >
@@ -656,13 +656,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       {/* Quick Stats Grid */}
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[#915555] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Total Proyek ({selectedYear})</p>
+              <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Total Proyek ({selectedYear})</p>
               <span className="material-symbols-outlined text-primary text-xl">folder_shared</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <p className="text-[#1a0f0f] dark:text-white text-3xl font-black">{stats?.totalProjects || 0}</p>
+              <p className="text-[#0f172a] dark:text-white text-3xl font-black">{stats?.totalProjects || 0}</p>
               {stats?.totalTrend !== undefined && (
                 <p className={`text-xs font-bold ${stats.totalTrend >= 0 ? 'text-[#078807]' : 'text-red-600'}`}>
                   {stats.totalTrend >= 0 ? '+' : ''}{stats.totalTrend}%
@@ -670,23 +670,23 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[#915555] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Menunggu Persetujuan</p>
+              <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Menunggu Persetujuan</p>
               <span className="material-symbols-outlined text-yellow-500 text-xl">pending_actions</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <p className="text-[#1a0f0f] dark:text-white text-3xl font-black">{stats?.pendingProjects || 0}</p>
-              <p className="text-[#915555] dark:text-slate-300 text-xs font-medium">{stats?.pendingPercent || 0}% total</p>
+              <p className="text-[#0f172a] dark:text-white text-3xl font-black">{stats?.pendingProjects || 0}</p>
+              <p className="text-[#64748b] dark:text-slate-300 text-xs font-medium">{stats?.pendingPercent || 0}% total</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 border-l-4 border-l-blue-500 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 border-l-4 border-l-blue-500 shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[#915555] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Sedang Berjalan</p>
+              <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Sedang Berjalan</p>
               <span className="material-symbols-outlined text-blue-500 text-xl">rocket_launch</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <p className="text-[#1a0f0f] dark:text-white text-3xl font-black">{stats?.runningProjects || 0}</p>
+              <p className="text-[#0f172a] dark:text-white text-3xl font-black">{stats?.runningProjects || 0}</p>
               {stats?.runningTrend !== undefined && (
                 <p className={`text-xs font-bold ${stats.runningTrend >= 0 ? 'text-[#078807]' : 'text-red-600'}`}>
                   {stats.runningTrend >= 0 ? '+' : ''}{stats.runningTrend}%
@@ -694,13 +694,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[#915555] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Selesai</p>
+              <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Selesai</p>
               <span className="material-symbols-outlined text-green-500 text-xl">verified</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <p className="text-[#1a0f0f] dark:text-white text-3xl font-black">{stats?.doneProjects || 0}</p>
+              <p className="text-[#0f172a] dark:text-white text-3xl font-black">{stats?.doneProjects || 0}</p>
               {stats?.doneTrend !== undefined && (
                 <p className={`text-xs font-bold ${stats.doneTrend >= 0 ? 'text-[#078807]' : 'text-red-600'}`}>
                   {stats.doneTrend >= 0 ? '+' : ''}{stats.doneTrend}%
@@ -715,14 +715,14 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribution Donut */}
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm">
-            <h3 className="text-[#1a0f0f] dark:text-white text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm">
+            <h3 className="text-[#0f172a] dark:text-white text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
               <span className="material-symbols-outlined text-primary text-lg">pie_chart</span>
               Distribusi Status Proyek {selectedYear}
             </h3>
             {loading ? (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#915555] dark:text-slate-300">Loading...</div>
+                <div className="text-sm text-[#64748b] dark:text-slate-300">Loading...</div>
               </div>
             ) : stats ? (
               <div className="flex flex-col md:flex-row items-center gap-8">
@@ -778,8 +778,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                     )}
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-2xl font-black text-[#1a0f0f] dark:text-white">{stats.totalProjects || 0}</span>
-                    <span className="text-[10px] text-[#915555] dark:text-slate-300 font-bold uppercase tracking-widest">Total</span>
+                    <span className="text-2xl font-black text-[#0f172a] dark:text-white">{stats.totalProjects || 0}</span>
+                    <span className="text-[10px] text-[#64748b] dark:text-slate-300 font-bold uppercase tracking-widest">Total</span>
                   </div>
                 </div>
                 <div className="flex-1 space-y-3 w-full">
@@ -788,7 +788,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       <span className="w-3 h-3 rounded-full bg-blue-500"></span>
                       <span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Running</span>
                     </div>
-                    <span className="text-xs font-black text-[#1a0f0f] dark:text-white">
+                    <span className="text-xs font-black text-[#0f172a] dark:text-white">
                       {stats.runningProjects || 0} ({stats.runningPercent || 0}%)
                     </span>
                   </div>
@@ -797,7 +797,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
                       <span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Pending</span>
                     </div>
-                    <span className="text-xs font-black text-[#1a0f0f] dark:text-white">
+                    <span className="text-xs font-black text-[#0f172a] dark:text-white">
                       {stats.pendingProjects || 0} ({stats.pendingPercent || 0}%)
                     </span>
                   </div>
@@ -806,16 +806,16 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       <span className="w-3 h-3 rounded-full bg-green-500"></span>
                       <span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Done</span>
                     </div>
-                    <span className="text-xs font-black text-[#1a0f0f] dark:text-white">
+                    <span className="text-xs font-black text-[#0f172a] dark:text-white">
                       {stats.doneProjects || 0} ({stats.donePercent || 0}%)
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-primary"></span>
+                      <span className="w-3 h-3 rounded-full bg-red-500"></span>
                       <span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Rejected</span>
                     </div>
-                    <span className="text-xs font-black text-[#1a0f0f] dark:text-white">
+                    <span className="text-xs font-black text-[#0f172a] dark:text-white">
                       {stats.rejectedProjects || 0} ({stats.rejectedPercent || 0}%)
                     </span>
                   </div>
@@ -823,33 +823,33 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               </div>
             ) : (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#915555] dark:text-slate-300">Tidak ada data</div>
+                <div className="text-sm text-[#64748b] dark:text-slate-300">Tidak ada data</div>
               </div>
             )}
           </div>
 
           {/* Portofolio Proyek Bar Chart */}
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm">
-            <h3 className="text-[#1a0f0f] dark:text-white text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm">
+            <h3 className="text-[#0f172a] dark:text-white text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
               <span className="material-symbols-outlined text-[#1a237e] text-lg">bar_chart</span>
               Portofolio Proyek {selectedYear}
             </h3>
             {loading ? (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#915555] dark:text-slate-300">Loading...</div>
+                <div className="text-sm text-[#64748b] dark:text-slate-300">Loading...</div>
               </div>
             ) : stats?.portfolioData && stats.portfolioData.length > 0 ? (
               <div className="space-y-6">
                 {stats.portfolioData.map((item: any, index: number) => {
-                  const colors = ['#1a237e', '#4a5568', '#d33131'];
+                  const colors = ['#003868', '#4a5568', '#00B4AE'];
                   const color = colors[index % colors.length];
                   return (
                     <div key={index} className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.15em] text-[#915555] dark:text-slate-300">
+                      <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.15em] text-[#64748b] dark:text-slate-300">
                         <span>{item.category}</span>
                         <span>{item.count} Projects</span>
                       </div>
-                      <div className="w-full bg-[#f2e9e9] dark:bg-slate-700 h-6 rounded-lg overflow-hidden flex">
+                      <div className="w-full bg-[#f1f5f9] dark:bg-slate-700 h-6 rounded-lg overflow-hidden flex">
                         <div 
                           className="h-full transition-all duration-1000" 
                           style={{ width: `${item.percentage}%`, backgroundColor: color }}
@@ -861,7 +861,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               </div>
             ) : (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#915555] dark:text-slate-300">Tidak ada data</div>
+                <div className="text-sm text-[#64748b] dark:text-slate-300">Tidak ada data</div>
               </div>
             )}
           </div>
@@ -870,12 +870,12 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Filter Toolbar */}
       <section className="px-8 py-2">
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-[#e5d2d2] dark:border-slate-700 flex flex-col gap-3 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-[#e2e8f0] dark:border-slate-700 flex flex-col gap-3 shadow-sm">
           <div className="w-full">
             <div className="relative group">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#915555] dark:text-slate-300 text-xl group-focus-within:text-primary transition-colors">search</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748b] dark:text-slate-300 text-xl group-focus-within:text-primary transition-colors">search</span>
               <input 
-                className="w-full bg-[#f2e9e9] dark:bg-slate-700 border-none rounded-lg pl-10 pr-4 py-2.5 text-sm focus:ring-1 focus:ring-primary placeholder:text-[#915555] dark:text-slate-300 text-[#1a0f0f] dark:text-white font-medium" 
+                className="w-full bg-[#f1f5f9] dark:bg-slate-700 border-none rounded-lg pl-10 pr-4 py-2.5 text-sm focus:ring-1 focus:ring-primary placeholder:text-[#64748b] dark:text-slate-300 text-[#0f172a] dark:text-white font-medium" 
                 placeholder="Cari nama proyek atau ID..." 
                 type="text"
                 value={searchQuery}
@@ -885,9 +885,9 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 w-full">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs font-black text-[#b5655f] uppercase tracking-widest">Filter By:</span>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#fdf7f7] dark:bg-slate-800 rounded-lg border border-[#f3dcdc] dark:border-slate-700 hover:border-[#e1b9b9] dark:border-slate-600 cursor-pointer min-w-[140px]">
-                <span className="material-symbols-outlined text-[16px] text-[#b5655f]">badge</span>
+              <span className="text-xs font-black text-[#475569] uppercase tracking-widest">Filter By:</span>
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#f8fafc] dark:bg-slate-800 rounded-lg border border-[#e2e8f0] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 cursor-pointer min-w-[140px]">
+                <span className="material-symbols-outlined text-[16px] text-[#475569]">badge</span>
                 <select
                   className="px-3 md:px-4 py-2 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 border-l-0 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 appearance-none pr-10 cursor-pointer shadow-sm transition-all flex-1 min-w-[120px] max-w-[160px]"
                   value={picFilter}
@@ -899,8 +899,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#fdf7f7] dark:bg-slate-800 rounded-lg border border-[#f3dcdc] dark:border-slate-700 hover:border-[#e1b9b9] dark:border-slate-600 cursor-pointer min-w-[140px]">
-                <span className="material-symbols-outlined text-[16px] text-[#b5655f]">campaign</span>
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#f8fafc] dark:bg-slate-800 rounded-lg border border-[#e2e8f0] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 cursor-pointer min-w-[140px]">
+                <span className="material-symbols-outlined text-[16px] text-[#475569]">campaign</span>
                 <select
                   className="px-3 md:px-4 py-2 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 border-l-0 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 appearance-none pr-10 cursor-pointer rounded-r-xl md:rounded-r-2xl shadow-sm transition-all flex-1 min-w-[120px] max-w-[160px]"
                   value={picMarketingFilter}
@@ -912,8 +912,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] dark:border-slate-700 hover:border-[#d6bebe] dark:border-slate-600 cursor-pointer min-w-[140px]">
-                <span className="material-symbols-outlined text-[16px] text-[#b5655f]">flag</span>
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f1f5f9] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 cursor-pointer min-w-[140px]">
+                <span className="material-symbols-outlined text-[16px] text-[#475569]">flag</span>
                 <select
                   className="px-3 md:px-4 py-2 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 appearance-none pr-10 cursor-pointer rounded-l-xl md:rounded-l-2xl shadow-sm transition-all flex-1 min-w-[120px] max-w-[160px]"
                   value={statusFilter}
@@ -925,8 +925,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] dark:border-slate-700 hover:border-[#d6bebe] dark:border-slate-600 cursor-pointer min-w-[140px]">
-                <span className="material-symbols-outlined text-[16px] text-[#b5655f]">timeline</span>
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f1f5f9] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 cursor-pointer min-w-[140px]">
+                <span className="material-symbols-outlined text-[16px] text-[#475569]">timeline</span>
                 <select
                   className="px-3 md:px-4 py-2 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 border-l-0 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 appearance-none pr-10 cursor-pointer shadow-sm transition-all flex-1 min-w-[120px] max-w-[160px]"
                   value={progressFilter}
@@ -940,8 +940,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   <option className="dark:bg-slate-800" value="lte100">76% - 100%</option>
                 </select>
               </div>
-              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f2e9e9] dark:border-slate-700 hover:border-[#d6bebe] dark:border-slate-600 cursor-pointer min-w-[140px]">
-                <span className="material-symbols-outlined text-[16px] text-[#b5655f]">description</span>
+              <div className="flex items-center gap-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-[#f1f5f9] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 cursor-pointer min-w-[140px]">
+                <span className="material-symbols-outlined text-[16px] text-[#475569]">description</span>
                 <select
                   className="px-3 md:px-4 py-2 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 border-l-0 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 appearance-none pr-10 cursor-pointer shadow-sm transition-all flex-1 min-w-[120px] max-w-[160px]"
                   value={contractFilter}
@@ -965,7 +965,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   setProgressFilter('');
                   setContractFilter('');
                 }}
-                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-slate-800 rounded-lg text-[11px] font-semibold text-[#915555] dark:text-slate-300 border border-[#f2e9e9] dark:border-slate-700 hover:border-[#d6bebe] dark:border-slate-600 w-[120px] h-[36px] tracking-[0.12em] uppercase"
+                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-slate-800 rounded-lg text-[11px] font-semibold text-[#64748b] dark:text-slate-300 border border-[#f1f5f9] dark:border-slate-700 hover:border-[#cbd5e1] dark:border-slate-600 w-[120px] h-[36px] tracking-[0.12em] uppercase"
               >
                 Reset
               </button>
@@ -980,13 +980,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   <span className="material-symbols-outlined text-xs">expand_more</span>
                 </button>
                 {isExportMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 border border-[#e5d2d2] dark:border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
                     <button
                       onClick={() => {
                         handleExportExcel();
                         setIsExportMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#1a0f0f] dark:text-white hover:bg-gray-100 border-b border-gray-50 dark:border-slate-700/50 text-left"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-white hover:bg-gray-100 border-b border-gray-50 dark:border-slate-700/50 text-left"
                     >
                       <span className="material-symbols-outlined text-green-600 text-lg">table_view</span>
                       Ekspor ke Excel
@@ -996,7 +996,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                         handleExportCSV();
                         setIsExportMenuOpen(false);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#1a0f0f] dark:text-white hover:bg-gray-100 text-left"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#0f172a] dark:text-white hover:bg-gray-100 text-left"
                     >
                       <span className="material-symbols-outlined text-primary text-lg">description</span>
                       Ekspor CSV
@@ -1011,25 +1011,25 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Projects Table */}
       <section className="px-8 py-6" ref={projectListRef}>
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-[#e5d2d2] dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-[#e5d2d2] dark:border-slate-700">
+                <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-[#e2e8f0] dark:border-slate-700">
                   <th className="px-4 py-5 w-10 text-center">
                     <input
                       type="checkbox"
-                      className="h-4 w-4 text-primary border-[#e5d2d2] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800"
+                      className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800"
                       checked={allVisibleSelected}
                       onChange={handleToggleSelectAllVisible}
                     />
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">Project Name & ID</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Proyek</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Marketing</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">Current Status</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">Timeline Progress</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#915555] dark:text-slate-300 uppercase tracking-[0.15em]">Kontrak Proyek</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Project Name & ID</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Proyek</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Marketing</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Current Status</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Timeline Progress</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Kontrak Proyek</th>
                   <th className="px-6 py-5 text-right">
                     <button
                       onClick={handleExportCSV}
@@ -1041,22 +1041,22 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e5d2d2]">
+              <tbody className="divide-y divide-[#e2e8f0]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#915555] dark:text-slate-300">
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">
                       Loading projects...
                     </td>
                   </tr>
                 ) : projects.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#915555] dark:text-slate-300">
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">
                       Tidak ada proyek ditemukan untuk tahun {selectedYear}
                     </td>
                   </tr>
                 ) : filteredProjects.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#915555] dark:text-slate-300">
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">
                       Tidak ada proyek yang cocok dengan filter yang dipilih
                     </td>
                   </tr>
@@ -1067,13 +1067,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                     return (
                     <tr
                       key={projectId}
-                      className="hover:bg-red-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer"
+                      className="hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer"
                       onClick={() => setSelectedProjectId(projectId)}
                     >
                       <td className="px-4 py-5 text-center">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 text-primary border-[#e5d2d2] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800"
+                          className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800"
                           checked={isSelectedForExport}
                           onChange={(e) => {
                             e.stopPropagation();
@@ -1094,11 +1094,11 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                               const id = project.id?.toString?.() ?? String(project.id);
                               onViewProjectDetail?.(id);
                             }}
-                            className="text-left text-sm font-black text-[#1a0f0f] dark:text-white group-hover:text-primary transition-colors hover:underline"
+                            className="text-left text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors hover:underline"
                           >
                             {highlightText(project.title || '', searchQuery)}
                           </button>
-                          <span className="text-xs font-bold text-[#915555] dark:text-slate-300 uppercase tracking-widest mt-0.5">
+                          <span className="text-xs font-bold text-[#64748b] dark:text-slate-300 uppercase tracking-widest mt-0.5">
                             {highlightText(project.code || '', searchQuery)}
                           </span>
                         </div>
@@ -1141,7 +1141,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                               )}
                             </span>
                           </div>
-                          <div className="w-full bg-[#f2e9e9] dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                          <div className="w-full bg-[#f1f5f9] dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                             <div 
                               className={`${getProgressColor(project.status)} h-full rounded-full transition-all duration-1000 shadow-sm`} 
                               style={{ width: `${project.progress || 0}%` }}
@@ -1150,7 +1150,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <span className="text-xs text-[#915555] dark:text-slate-300 font-bold italic tracking-tight uppercase leading-relaxed">
+                        <span className="text-xs text-[#64748b] dark:text-slate-300 font-bold italic tracking-tight uppercase leading-relaxed">
                           {formatDate(project.start_date)} - {formatDate(project.end_date)}
                         </span>
                       </td>
@@ -1161,12 +1161,12 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                             const id = projectId;
                             setActionMenuProjectId((current) => (current === id ? null : id));
                           }}
-                          className="text-[#915555] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-slate-700"
+                          className="text-[#64748b] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-slate-700"
                           title="Opsi proyek"
                         >
                           <span className="material-symbols-outlined text-2xl">more_vert</span>
                         </button>
-                        {actionMenuProjectId === projectId && (                          <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e5d2d2] dark:border-slate-700 rounded-lg shadow-lg z-50">
+                        {actionMenuProjectId === projectId && (                          <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-lg shadow-lg z-50">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1174,7 +1174,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                                 onViewProjectDetail?.(id);
                                 setActionMenuProjectId(null);
                               }}
-                              className="w-full px-4 py-2 text-xs font-bold text-left text-[#1a0f0f] dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-xs font-bold text-left text-[#0f172a] dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2"
                             >
                               <span className="material-symbols-outlined text-sm text-primary">visibility</span>
                               Lihat Detail Proyek
@@ -1185,7 +1185,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                                 setSelectedProjectId(projectId);
                                 setActionMenuProjectId(null);
                               }}
-                              className="w-full px-4 py-2 text-xs font-bold text-left text-[#1a0f0f] dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 flex items-center gap-2 border-t border-[#f3dcdc] dark:border-slate-700"
+                              className="w-full px-4 py-2 text-xs font-bold text-left text-[#0f172a] dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2 border-t border-[#e2e8f0] dark:border-slate-700"
                             >
                               <span className="material-symbols-outlined text-sm text-primary">edit</span>
                               Edit Proyek
@@ -1196,7 +1196,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                                 const id = projectId;
                                 handleDeleteProject(id);
                               }}
-                              className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-red-50 dark:hover:bg-slate-700 flex items-center gap-2 border-t border-[#f3dcdc] dark:border-slate-700"
+                              className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2 border-t border-[#e2e8f0] dark:border-slate-700"
                             >
                               <span className="material-symbols-outlined text-sm">delete</span>
                               Hapus Proyek
@@ -1213,8 +1213,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
           
           {/* Footer Table Info */}
-          <div className="px-6 py-4 border-t border-[#e5d2d2] dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-            <p className="text-xs font-black text-[#915555] dark:text-slate-300 uppercase tracking-widest">
+          <div className="px-6 py-4 border-t border-[#e2e8f0] dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+            <p className="text-xs font-black text-[#64748b] dark:text-slate-300 uppercase tracking-widest">
               {pagination && !isFiltered ? (
                 <>Showing {((pagination.current_page - 1) * pagination.per_page) + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} results for Year {selectedYear}</>
               ) : (
@@ -1226,7 +1226,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={pagination.current_page === 1}
-                  className="px-4 py-1.5 border border-[#e5d2d2] dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 border border-[#e2e8f0] dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-[#64748b] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Prev
                 </button>
@@ -1248,7 +1248,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                       className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest ${
                         pagination.current_page === pageNum
                           ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                          : 'border border-[#e5d2d2] dark:border-slate-700 text-[#915555] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm'
+                          : 'border border-[#e2e8f0] dark:border-slate-700 text-[#64748b] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm'
                       }`}
                     >
                       {pageNum}
@@ -1258,7 +1258,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(pagination.last_page, prev + 1))}
                   disabled={pagination.current_page === pagination.last_page}
-                  className="px-4 py-1.5 border border-[#e5d2d2] dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-[#915555] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 border border-[#e2e8f0] dark:border-slate-700 rounded-lg text-xs font-black uppercase tracking-widest text-[#64748b] dark:text-slate-300 hover:bg-white dark:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

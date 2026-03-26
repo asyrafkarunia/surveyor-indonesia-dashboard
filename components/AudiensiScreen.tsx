@@ -431,7 +431,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                 <button
                   onClick={() => handleSubmit(true)}
                   disabled={saving}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-primary hover:bg-red-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-primary hover:bg-primary-dark text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[18px]">send</span>
                   {saving ? 'Memproses...' : 'Buat Surat'}

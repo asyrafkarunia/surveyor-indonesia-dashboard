@@ -372,7 +372,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               </button>
               <button 
                 disabled={saving}
-                className="w-full sm:w-auto px-10 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-red-500/20 transition-all flex justify-center items-center gap-2 group active:scale-95 disabled:opacity-60" 
+                className="w-full sm:w-auto px-10 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 group active:scale-95 disabled:opacity-60" 
                 type="submit"
               >
                 <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">save</span>

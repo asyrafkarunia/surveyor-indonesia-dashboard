@@ -80,7 +80,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
       case 'Completed': return 'bg-green-50 text-green-700 border-green-100';
       case 'Active': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
       case 'Expired': return 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700';
-      case 'Delayed': return 'bg-red-50 text-red-700 border-red-100';
+      case 'Delayed': return 'bg-blue-50 text-blue-700 border-blue-100';
       default: return 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700';
     }
   };
@@ -308,7 +308,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               </button>
               <button 
                 onClick={() => onNewProject?.(client)}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:bg-red-700 transition-colors shadow-sm shadow-red-200"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:bg-primary-dark transition-colors shadow-sm shadow-red-200"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 New Project
@@ -321,7 +321,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
+              <div className="p-2 rounded-xl bg-blue-50 text-primary border border-blue-100">
                 <span className="material-symbols-outlined">attach_money</span>
               </div>
             </div>
@@ -777,7 +777,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                             <button
                               type="submit"
                               disabled={submittingActivity || !newActivityTitle.trim() || !newActivityContent.trim()}
-                              className="px-4 py-1.5 rounded-lg bg-primary text-white text-[10px] font-black uppercase tracking-[0.18em] disabled:opacity-60 disabled:cursor-not-allowed hover:bg-red-700"
+                              className="px-4 py-1.5 rounded-lg bg-primary text-white text-[10px] font-black uppercase tracking-[0.18em] disabled:opacity-60 disabled:cursor-not-allowed hover:bg-primary-dark"
                             >
                               {submittingActivity ? 'Menyimpan...' : 'Simpan Aktivitas'}
                             </button>
@@ -846,7 +846,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                           type="button"
                                           disabled={editingSubmitting}
                                           onClick={() => handleUpdateActivity(act)}
-                                          className="px-3 py-1 rounded-full bg-primary text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                                          className="px-3 py-1 rounded-full bg-primary text-white hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
                                           Simpan
                                         </button>

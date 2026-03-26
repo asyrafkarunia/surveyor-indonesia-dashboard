@@ -512,7 +512,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
             <button className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm">
               Mark as Complete
             </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-red-500/20 active:scale-95 group">
+            <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-primary/20 active:scale-95 group">
               <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">edit</span>
               Edit Activity
             </button>

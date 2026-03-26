@@ -283,7 +283,7 @@ PT Surveyor Indonesia`;
                   </button>
                   <button 
                     disabled={saving}
-                    className="px-10 py-3 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest hover:bg-primary-dark shadow-lg shadow-red-500/20 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50" 
+                    className="px-10 py-3 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50" 
                     type="submit"
                   >
                     <span className="material-symbols-outlined text-[20px]">save</span>

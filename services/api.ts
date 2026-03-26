@@ -853,6 +853,43 @@ class ApiService {
       body: JSON.stringify({ email }),
     });
   }
+
+  // Invite Codes
+  async validateInviteCode(code: string) {
+    return this.request<{ valid: boolean; message: string }>('/validate-invite-code', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+  }
+
+  async registerWithInvite(data: {
+    invite_code: string;
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    division: string;
+  }) {
+    const response = await this.request<{ user: any; token: string; message: string }>('/register-invite', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    this.setToken(response.token);
+    return response;
+  }
+
+  async generateInviteCode() {
+    return this.request<{ invite_code: any; message: string }>('/invite-codes/generate', {
+      method: 'POST',
+    });
+  }
+
+  async listInviteCodes(params?: { page?: number }) {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    const queryString = query.toString();
+    return this.request(`/invite-codes${queryString ? `?${queryString}` : ''}`);
+  }
 }
 
 export const api = new ApiService();

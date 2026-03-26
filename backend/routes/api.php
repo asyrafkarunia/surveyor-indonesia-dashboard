@@ -24,6 +24,8 @@ use App\Http\Controllers\ActivityLogController;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/validate-invite-code', [AuthController::class, 'validateInviteCode'])->middleware('throttle:10,1');
+Route::post('/register-invite', [AuthController::class, 'registerWithInvite'])->middleware('throttle:5,1');
 
 // Protected routes
 Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
@@ -139,6 +141,10 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update'])->middleware('role:marketing');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('role:marketing');
     Route::post('/register', [AuthController::class, 'register'])->middleware('role:marketing');
+    
+    // Invite Codes (Admin only)
+    Route::post('/invite-codes/generate', [UserController::class, 'generateInviteCode'])->middleware('role:marketing');
+    Route::get('/invite-codes', [UserController::class, 'listInviteCodes'])->middleware('role:marketing');
     
     // Permissions (Admin only)
     Route::get('/permissions', [PermissionController::class, 'index'])->middleware('role:marketing');

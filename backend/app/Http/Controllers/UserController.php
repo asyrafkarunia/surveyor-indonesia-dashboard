@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\InviteCode;
 use App\Helpers\LogActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -175,5 +176,44 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User deleted successfully',
         ]);
+    }
+
+    /**
+     * Generate a new invite code (Admin only)
+     */
+    public function generateInviteCode(Request $request)
+    {
+        try {
+            $code = InviteCode::generateUniqueCode();
+
+            $inviteCode = InviteCode::create([
+                'code' => $code,
+                'created_by' => $request->user()->id,
+                'expires_at' => now()->addHours(72),
+                'is_active' => true,
+            ]);
+
+            return response()->json([
+                'message' => 'Kode undangan berhasil dibuat.',
+                'invite_code' => $inviteCode->load('creator'),
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Invite code generation error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Gagal membuat kode undangan.',
+            ], 500);
+        }
+    }
+
+    /**
+     * List all invite codes (Admin only)
+     */
+    public function listInviteCodes(Request $request)
+    {
+        $inviteCodes = InviteCode::with(['creator:id,name', 'usedByUser:id,name,email'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return response()->json($inviteCodes);
     }
 }

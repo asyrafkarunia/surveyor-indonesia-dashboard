@@ -151,17 +151,31 @@ class DashboardController extends Controller
 
     public function topProjects(Request $request)
     {
+        $formatCurrency = function($amount) {
+            if ($amount >= 1000000000) {
+                return 'Rp ' . number_format($amount / 1000000000, 1, ',', '.') . ' M';
+            } elseif ($amount >= 1000000) {
+                return 'Rp ' . number_format($amount / 1000000, 1, ',', '.') . ' JT';
+            } else {
+                return 'Rp ' . number_format($amount, 0, ',', '.');
+            }
+        };
+
         $projects = Project::with(['client', 'pic'])
             ->orderBy('progress', 'desc')
             ->limit(5)
             ->get()
-            ->map(function ($project) {
+            ->map(function ($project) use ($formatCurrency) {
                 return [
                     'id' => $project->id,
                     'name' => $project->title,
                     'client' => $project->client->company_name ?? 'N/A',
                     'status' => $project->status,
                     'progress' => $project->progress,
+                    'budget' => $project->budget,
+                    'budgetFormatted' => $formatCurrency($project->budget ?? 0),
+                    'endDate' => $project->end_date,
+                    'pic' => $project->pic->name ?? null,
                 ];
             });
 

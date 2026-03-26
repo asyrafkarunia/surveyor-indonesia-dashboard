@@ -51,6 +51,22 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
     employeeId: '',
   });
 
+
+  // Edit user state
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<SystemUser | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+
+  
+  // Invite code management state
+  const [inviteCodes, setInviteCodes] = useState<any[]>([]);
+  const [inviteCodesLoading, setInviteCodesLoading] = useState(false);
+  const [generateLoading, setGenerateLoading] = useState(false);
+  
+  // User management filters
+  const [divisionFilter, setDivisionFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     if (user) {
       setProfileData({
@@ -61,6 +77,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
     }
     if (isAdmin) {
       loadUsers();
+      loadInviteCodes();
     }
   }, [user, isAdmin]);
 
@@ -246,6 +263,50 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
     return `${roleGroups[role]} - ${roleName}`;
   };
 
+  
+
+  const loadInviteCodes = async () => {
+    setInviteCodesLoading(true);
+    try {
+      const response: any = await api.getInviteCodes();
+      const codes = response.data || response;
+      if (Array.isArray(codes)) {
+        setInviteCodes(codes);
+      }
+    } catch (error) {
+      console.error('Failed to load invite codes:', error);
+    } finally {
+      setInviteCodesLoading(false);
+    }
+  };
+
+  const handleGenerateInviteCode = async () => {
+    setGenerateLoading(true);
+    try {
+      const response = await api.createInviteCode();
+      const codeData = response.data || response;
+      alert(`Kode undangan berhasil dibuat: ${codeData.code || 'Buka tab kode untuk melihatnya'}`);
+      loadInviteCodes();
+    } catch (error) {
+      console.error('Failed to generate invite code:', error);
+      alert('Gagal membuat kode undangan');
+    } finally {
+      setGenerateLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert('Kode disalin ke clipboard');
+  };
+
+  const getInviteCodeStatus = (ic: any) => {
+    if (ic.used_by) return { label: 'Digunakan', color: 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600' };
+    if (!ic.is_active) return { label: 'Nonaktif', color: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' };
+    if (new Date(ic.expires_at) < new Date()) return { label: 'Kedaluwarsa', color: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800' };
+    return { label: 'Tersedia', color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' };
+  };
+
   const getRoleBadgeColor = (role: UserRoleType) => {
     switch (role) {
       case 'marketing':
@@ -400,199 +461,410 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
           </div>
         </div>
 
+        
         {/* User Role Management Section (Administrator Only) */}
+        {isAdmin && (() => {
+          // Compute filtered users
+          const filteredUsers = users.filter(u => {
+            const matchesDivision = divisionFilter === 'all' || u.division === divisionFilter;
+            const matchesSearch = searchQuery === '' || 
+              u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              u.roleName.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesDivision && matchesSearch;
+          });
+
+          // Get unique divisions
+          const uniqueDivisions = [...new Set(users.map(u => u.division).filter(Boolean))];
+
+          // Group users by division
+          const groupedUsers: Record<string, SystemUser[]> = {};
+          filteredUsers.forEach(u => {
+            const div = u.division || 'Belum Ditentukan';
+            if (!groupedUsers[div]) groupedUsers[div] = [];
+            groupedUsers[div].push(u);
+          });
+
+          // Stats
+          const totalUsers = users.length;
+          const activeDivisions = uniqueDivisions.length;
+          const activeUsers = users.filter(u => u.status === 'Aktif').length;
+          const pendingUsers = users.filter(u => u.status !== 'Aktif').length;
+
+          // Division colors
+          const divisionColors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
+            'Marketing': { bg: 'bg-blue-50 dark:bg-blue-900/15', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300', icon: 'campaign' },
+            'Operasi': { bg: 'bg-emerald-50 dark:bg-emerald-900/15', border: 'border-emerald-200 dark:border-emerald-800', text: 'text-emerald-700 dark:text-emerald-300', icon: 'engineering' },
+            'Management': { bg: 'bg-purple-50 dark:bg-purple-900/15', border: 'border-purple-200 dark:border-purple-800', text: 'text-purple-700 dark:text-purple-300', icon: 'supervisor_account' },
+            'Keuangan': { bg: 'bg-amber-50 dark:bg-amber-900/15', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', icon: 'account_balance' },
+            'SDM & Umum': { bg: 'bg-rose-50 dark:bg-rose-900/15', border: 'border-rose-200 dark:border-rose-800', text: 'text-rose-700 dark:text-rose-300', icon: 'people' },
+          };
+          const getColor = (div: string) => divisionColors[div] || { bg: 'bg-slate-50 dark:bg-slate-800', border: 'border-slate-200 dark:border-slate-700', text: 'text-slate-600 dark:text-slate-300', icon: 'folder' };
+
+          return (
+          <div className="space-y-5">
+            {/* Section Header */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest">
+                    <span className="material-symbols-outlined text-primary fill">manage_accounts</span>
+                    Manajemen Pengguna Terkategori
+                  </h3>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Kelola akses dan peran pengguna dalam sistem internal PT SI.</p>
+                </div>
+                <div className="flex gap-3 w-full md:w-auto">
+                  <button 
+                    onClick={() => onManagePermissions()}
+                    className="px-5 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                    Konfigurasi Izin
+                  </button>
+                  <button 
+                    onClick={() => setShowAddUserModal(true)}
+                    className="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 flex-1 md:flex-none justify-center shadow-lg shadow-primary/20"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">person_add</span>
+                    Tambah Pengguna
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Summary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Total Pengguna', value: totalUsers, icon: 'group', color: 'text-primary', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                { label: 'Divisi Aktif', value: activeDivisions, icon: 'business', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+                { label: 'Pengguna Aktif', value: activeUsers, icon: 'check_circle', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                { label: 'Menunggu/Nonaktif', value: pendingUsers, icon: 'pending', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-3 shadow-sm">
+                  <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center shrink-0`}>
+                    <span className={`material-symbols-outlined text-xl ${stat.color}`}>{stat.icon}</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-slate-900 dark:text-white leading-none">{stat.value}</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-0.5">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Filter Tabs + Search */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                {/* Filter pills */}
+                <div className="flex flex-wrap gap-2 flex-1 items-center">
+                  <button
+                    onClick={() => setDivisionFilter('all')}
+                    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                      divisionFilter === 'all'
+                        ? 'text-white shadow-md'
+                        : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    }`}
+                    style={divisionFilter === 'all' ? { background: 'linear-gradient(135deg, #003868, #00B4AE)' } : {}}
+                  >
+                    Semua Divisi ({totalUsers})
+                  </button>
+                  {uniqueDivisions.map(div => {
+                    const count = users.filter(u => u.division === div).length;
+                    return (
+                      <button
+                        key={div}
+                        onClick={() => setDivisionFilter(div)}
+                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                          divisionFilter === div
+                            ? 'text-white shadow-md'
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                        style={divisionFilter === div ? { background: 'linear-gradient(135deg, #003868, #00B4AE)' } : {}}
+                      >
+                        {div} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Search */}
+                <div className="relative w-full md:w-64">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Cari pengguna..."
+                    className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Grouped User Cards */}
+            {usersLoading ? (
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <svg className="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Memuat data pengguna...</p>
+                </div>
+              </div>
+            ) : Object.keys(groupedUsers).length === 0 ? (
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+                <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">person_search</span>
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                  {searchQuery ? `Tidak ada pengguna yang cocok dengan "${searchQuery}"` : 'Belum ada pengguna'}
+                </p>
+              </div>
+            ) : (
+              Object.entries(groupedUsers).map(([division, divUsers]) => {
+                const divColor = getColor(division);
+                return (
+                  <div key={division} className="space-y-3">
+                    {/* Division Header */}
+                    <div className={`flex items-center gap-3 px-1`}>
+                      <div className={`w-8 h-8 rounded-lg ${divColor.bg} border ${divColor.border} flex items-center justify-center`}>
+                        <span className={`material-symbols-outlined text-base ${divColor.text}`}>{divColor.icon}</span>
+                      </div>
+                      <div>
+                        <h4 className={`text-sm font-black ${divColor.text} uppercase tracking-wide`}>{division}</h4>
+                        <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{divUsers.length} pengguna</p>
+                      </div>
+                      <div className={`flex-1 h-px ${divColor.border} border-t ml-2`} />
+                    </div>
+
+                    {/* User Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                      {divUsers.map(userItem => {
+                        const isAdministrator = userItem.role === 'marketing';
+                        const canModify = canModifyUser(userItem);
+                        const isGreyedOut = isAdministrator && !userItem.isCurrentUser;
+
+                        return (
+                          <div
+                            key={userItem.id}
+                            className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 transition-all hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 group ${
+                              isGreyedOut ? 'opacity-60' : ''
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {/* Avatar */}
+                              {userItem.avatar ? (
+                                <div className="w-10 h-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700 shrink-0" style={{ backgroundImage: `url("${userItem.avatar}")` }} />
+                              ) : (
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border text-xs shrink-0 ${
+                                  isGreyedOut
+                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 border-slate-300 dark:border-slate-600'
+                                    : userItem.role === 'marketing' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+                                    : userItem.role === 'head_section' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'
+                                    : ['approver', 'senior_manager', 'general_manager'].includes(userItem.role) ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                                }`}>
+                                  {userItem.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </div>
+                              )}
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <p className={`font-bold text-sm truncate ${
+                                    isGreyedOut ? 'text-slate-400' : 'text-slate-900 dark:text-white'
+                                  }`}>{userItem.name}</p>
+                                  {userItem.isCurrentUser && (
+                                    <span className="text-[8px] font-black text-primary bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">(Anda)</span>
+                                  )}
+                                  {isGreyedOut && (
+                                    <span className="text-[8px] font-black text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">Protected</span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] font-medium text-slate-400 truncate">{userItem.email}</p>
+                              </div>
+                              {/* Actions */}
+                              <div className={`flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                                !canModify ? 'pointer-events-none' : ''
+                              }`}>
+                                <button
+                                  className={`p-1.5 rounded-lg transition-colors ${
+                                    canModify ? 'text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'text-slate-300 cursor-not-allowed'
+                                  }`}
+                                  disabled={!canModify}
+                                  title={canModify ? 'Edit Profil & Peran' : isAdministrator ? 'Administrator penuh' : 'Tidak mengubah akun sendiri'}
+                                  onClick={() => {
+                                    if (canModify) {
+                                      setEditingUser(userItem);
+                                      setShowEditUserModal(true);
+                                    }
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                                <button
+                                  className={`p-1.5 rounded-lg transition-colors ${
+                                    canModify ? 'text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20' : 'text-slate-300 cursor-not-allowed'
+                                  }`}
+                                  disabled={!canModify}
+                                  title={canModify ? 'Konfigurasi Hak Akses Detail' : 'Akses Penuh'}
+                                  onClick={() => {
+                                    if (canModify) onManagePermissions(userItem.id);
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                                </button>
+                                <button
+                                  className={`p-1.5 rounded-lg transition-colors ${
+                                    canModify ? 'text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-slate-300 cursor-not-allowed'
+                                  }`}
+                                  disabled={!canModify}
+                                  title={canModify ? 'Hapus User' : isAdministrator ? 'Administrator tidak dapat dihapus' : 'Tidak dapat menghapus akun sendiri'}
+                                  onClick={() => {
+                                    if (canModify) handleDeleteUser(userItem.id);
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Role + Status Row */}
+                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                              <div className="flex items-center gap-2">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tight border ${
+                                  isGreyedOut ? 'opacity-60' : ''
+                                } ${getRoleBadgeColor(userItem.role)}`}>
+                                  {userItem.role === 'marketing' ? 'Admin' :
+                                   userItem.role === 'head_section' ? 'Head Section' :
+                                   ['approver', 'senior_manager', 'general_manager'].includes(userItem.role) ? 'Approver' : 'Umum'}
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{userItem.roleName}</span>
+                              </div>
+                              <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-tight ${
+                                userItem.status === 'Aktif'
+                                  ? isGreyedOut ? 'text-slate-400' : 'text-emerald-600 dark:text-emerald-400'
+                                  : 'text-slate-400'
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${
+                                  userItem.status === 'Aktif'
+                                    ? isGreyedOut ? 'bg-slate-400' : 'bg-emerald-500'
+                                    : 'bg-slate-400'
+                                }`} />
+                                {userItem.status}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+
+            {/* Footer summary */}
+            <div className="text-center py-2">
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                Menampilkan {filteredUsers.length} dari {totalUsers} pengguna
+                {divisionFilter !== 'all' && ` · Divisi: ${divisionFilter}`}
+                {searchQuery && ` · Pencarian: "${searchQuery}"`}
+              </span>
+            </div>
+          </div>
+          );
+        })()}
+
+        {/* Invite Code Management (Admin Only) */}
         {isAdmin && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest">
-                  <span className="material-symbols-outlined text-primary fill">manage_accounts</span>
-                  Manajemen Peran Pengguna
+                  <span className="material-symbols-outlined text-primary fill">key</span>
+                  Kode Undangan Form Registrasi
                 </h3>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Kelola akses dan peran pengguna dalam sistem internal PT SI.</p>
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Generate kode untuk pendaftaran akun baru pada form registrasi awal. Kode berlaku 72 jam dan sekali pakai.</p>
               </div>
-              <div className="flex gap-3 w-full md:w-auto">
-                <button 
-                  onClick={() => onManagePermissions()}
-                  className="px-6 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2 shadow-sm"
-                >
-                  <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                  Konfigurasi Izin
-                </button>
-                <button 
-                  onClick={() => setShowAddUserModal(true)}
-                  className="px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 flex-1 md:flex-none justify-center shadow-lg shadow-red-500/20"
-                >
-                  <span className="material-symbols-outlined text-[18px]">add</span>
-                  Tambah Pengguna
-                </button>
-              </div>
+              <button
+                onClick={handleGenerateInviteCode}
+                disabled={generateLoading}
+                className="px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 flex-shrink-0 justify-center shadow-lg shadow-primary/20 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[18px]">{generateLoading ? 'hourglass_empty' : 'add'}</span>
+                {generateLoading ? 'Membuat...' : 'Generate Kode'}
+              </button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
                   <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">
-                    <th className="px-6 py-4">Identitas Pengguna</th>
-                    <th className="px-6 py-4">Peran (Role)</th>
-                    <th className="px-6 py-4">Divisi</th>
+                    <th className="px-6 py-4">Kode</th>
                     <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Dibuat Oleh</th>
+                    <th className="px-6 py-4">Digunakan Oleh</th>
+                    <th className="px-6 py-4">Kedaluwarsa</th>
                     <th className="px-6 py-4 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {usersLoading ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Memuat data...</td>
-                    </tr>
-                  ) : users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Belum ada pengguna</td>
-                    </tr>
+                  {inviteCodesLoading ? (
+                    <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Memuat data...</td></tr>
+                  ) : inviteCodes.length === 0 ? (
+                    <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Belum ada kode undangan</td></tr>
                   ) : (
-                    users.map((userItem) => {
-                      const isAdministrator = userItem.role === 'marketing';
-                      const canModify = canModifyUser(userItem);
-                      const isGreyedOut = isAdministrator && !userItem.isCurrentUser;
-                      
+                    inviteCodes.map((ic: any) => {
+                      const status = getInviteCodeStatus(ic);
                       return (
-                        <tr 
-                          key={userItem.id} 
-                          className={`transition-colors group ${
-                            isGreyedOut 
-                              ? 'opacity-50 bg-slate-50 dark:bg-slate-900/30' 
-                              : 'hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700/50'
-                          }`}
-                        >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                              {userItem.avatar ? (
-                                <div className={`w-9 h-9 rounded-full bg-cover bg-center border ${
-                                  isGreyedOut 
-                                    ? 'border-slate-300 dark:border-slate-600 opacity-50' 
-                                    : 'border-slate-200 dark:border-slate-700'
-                                }`} style={{ backgroundImage: `url("${userItem.avatar}")` }}></div>
-                          ) : (
-                                <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black border text-xs ${
-                                  isGreyedOut
-                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-400 border-slate-300 dark:border-slate-600 opacity-50'
-                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
-                                }`}>
-                                  {userItem.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                          )}
-                          <div>
-                                <p className={`font-bold text-sm ${
-                                  isGreyedOut 
-                                    ? 'text-slate-400 dark:text-slate-400' 
-                                    : 'text-slate-900 dark:text-white'
-                                }`}>
-                                  {userItem.name} 
-                                  {userItem.isCurrentUser && <span className="text-[9px] font-black text-primary bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded ml-1 uppercase tracking-widest">(Anda)</span>}
-                                  {isGreyedOut && <span className="text-[9px] font-black text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded ml-1 uppercase tracking-widest">(Protected)</span>}
-                                </p>
-                                <p className={`text-[11px] font-medium ${
-                                  isGreyedOut 
-                                    ? 'text-slate-400 dark:text-slate-400' 
-                                    : 'text-slate-400 dark:text-slate-400'
-                                }`}>{userItem.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                            <div className="flex flex-col gap-1">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border w-fit ${
-                                isGreyedOut ? 'opacity-50' : ''
-                              } ${getRoleBadgeColor(userItem.role)}`}>
-                                {userItem.role === 'marketing' ? 'Administrator' : 
-                                 userItem.role === 'head_section' ? 'Head Section' : 
-                                 ['approver', 'senior_manager', 'general_manager'].includes(userItem.role) ? 'Approver' : 'Umum'}
-                        </span>
-                              <span className={`text-[10px] font-bold ${
-                                isGreyedOut 
-                                  ? 'text-slate-400 dark:text-slate-400' 
-                                  : 'text-slate-600 dark:text-slate-300'
-                              }`}>{userItem.roleName}</span>
-                            </div>
-                      </td>
-                          <td className={`px-6 py-4 font-bold text-xs ${
-                            isGreyedOut 
-                              ? 'text-slate-400 dark:text-slate-400' 
-                              : 'text-slate-600 dark:text-slate-300'
-                          }`}>
-                            {userItem.division}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 font-black text-[10px] uppercase tracking-tighter ${
-                              userItem.status === 'Aktif' 
-                                ? isGreyedOut 
-                                  ? 'text-slate-400 dark:text-slate-400' 
-                                  : 'text-green-600 dark:text-green-400'
-                                : 'text-slate-400 dark:text-slate-400'
-                        }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${
-                                userItem.status === 'Aktif' 
-                                  ? isGreyedOut 
-                                    ? 'bg-slate-400' 
-                                    : 'bg-green-500'
-                                  : 'bg-slate-400'
-                              }`}></span>
-                              {userItem.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                            <div className={`flex items-center justify-end gap-1 ${
-                              !canModify ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}>
-                          <button 
-                                className={`p-1.5 rounded-lg transition-colors ${
-                                  canModify
-                                    ? 'text-slate-400 dark:text-slate-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/20'
-                                    : 'text-slate-300 dark:text-slate-400 cursor-not-allowed'
-                                }`}
-                                disabled={!canModify}
-                                title={canModify ? 'Edit Role' : isAdministrator ? 'Administrator tidak dapat diubah' : 'Tidak dapat mengubah akun sendiri'}
-                                onClick={() => {
-                                  if (canModify) {
-                                    onManagePermissions(userItem.id);
-                                  } else if (isAdministrator) {
-                                    alert('Tidak dapat mengubah akun Administrator. Akses Administrator bersifat mutlak dan tidak dapat diganggu.');
-                                  }
-                                }}
-                          >
-                            <span className="material-symbols-outlined text-[20px]">edit</span>
-                          </button>
-                              <button 
-                                className={`p-1.5 rounded-lg transition-colors ${
-                                  canModify
-                                    ? 'text-slate-400 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-                                    : 'text-slate-300 dark:text-slate-400 cursor-not-allowed'
-                                }`}
-                                disabled={!canModify}
-                                title={canModify ? 'Hapus User' : isAdministrator ? 'Administrator tidak dapat dihapus' : 'Tidak dapat menghapus akun sendiri'}
-                                onClick={() => {
-                                  if (canModify) {
-                                    handleDeleteUser(userItem.id);
-                                  } else if (isAdministrator) {
-                                    alert('Tidak dapat menghapus akun Administrator. Akses Administrator bersifat mutlak dan tidak dapat diganggu.');
-                                  }
-                                }}
+                        <tr key={ic.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <span className="font-mono font-bold text-sm tracking-wider" style={{ color: '#003868' }}>{ic.code}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border w-fit ${status.color}`}>
+                              {status.label}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            {ic.creator?.name || '-'}
+                          </td>
+                          <td className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            {ic.used_by_user ? `${ic.used_by_user.name} (${ic.used_by_user.email})` : '-'}
+                          </td>
+                          <td className="px-6 py-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+                            {new Date(ic.expires_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {!ic.used_by && new Date(ic.expires_at) > new Date() && ic.is_active && (
+                              <button
+                                onClick={() => copyToClipboard(ic.code)}
+                                className="p-1.5 rounded-lg text-slate-400 dark:text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                                title="Salin Kode"
                               >
-                              <span className="material-symbols-outlined text-[20px]">delete</span>
-                            </button>
-                        </div>
-                      </td>
-                    </tr>
+                                <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                              </button>
+                            )}
+                          </td>
+                        </tr>
                       );
                     })
                   )}
                 </tbody>
               </table>
             </div>
-            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/30">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">Menampilkan {users.length} dari {users.length} pengguna</span>
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/30">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">
+                {inviteCodes.length} kode undangan
+              </span>
             </div>
           </div>
         )}
+
 
         {/* Two Column Layout for Security & Preferences */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -698,7 +970,153 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
           </button>
         </div>
 
-        {/* Add User Modal */}
+        
+        {/* Edit User Modal */}
+        {showEditUserModal && editingUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 max-w-md w-full mx-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">Ubah Peran & Profil</h3>
+                <button 
+                  onClick={() => setShowEditUserModal(false)}
+                  className="text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-400 transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                  <input
+                    type="text"
+                    value={editingUser.name}
+                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Divisi</label>
+                  <input
+                    type="text"
+                    value={editingUser.division}
+                    onChange={(e) => setEditingUser({ ...editingUser, division: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                    required
+                  />
+                </div>
+                
+                {/* Role Status Select */}
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Peran Akses (Role)</label>
+                  <select
+                    value={editingUser.role === 'head_section' ? 'marketing' : editingUser.role}
+                    onChange={(e) => {
+                      const role = e.target.value as UserRoleType;
+                      setEditingUser({ 
+                        ...editingUser, 
+                        role,
+                        roleName: role === 'marketing' ? 'Marketing Staff' : role === 'approver' ? 'Senior Manager' : 'Surveyor'
+                      });
+                    }}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                  >
+                    <option value="marketing">Administrator (Marketing)</option>
+                    <option value="approver">Approver / Manajemen</option>
+                    <option value="common">User Umum</option>
+                  </select>
+                </div>
+                
+                {/* Spesific Role Name Select */}
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Posisi Spesifik</label>
+                  <select
+                    value={editingUser.roleName}
+                    onChange={(e) => {
+                      const newRoleName = e.target.value as UserRoleName;
+                      let newRole = editingUser.role;
+                      
+                      if (newRoleName === 'Head Section Marketing') newRole = 'head_section';
+                      else if (editingUser.role === 'head_section') newRole = 'marketing';
+                      
+                      setEditingUser({ ...editingUser, roleName: newRoleName, role: newRole });
+                    }}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                  >
+                    {(editingUser.role === 'marketing' || editingUser.role === 'head_section') && (
+                      <>
+                        <option value="Head Section Marketing">Head Section Marketing</option>
+                        <option value="Marketing Staff">Marketing Staff</option>
+                        <option value="Social Media Specialist">Social Media Specialist</option>
+                        <option value="Content Strategist">Content Strategist</option>
+                        <option value="Brand Manager">Brand Manager</option>
+                      </>
+                    )}
+                    {editingUser.role === 'approver' && (
+                      <>
+                        <option value="Senior Manager">Senior Manager</option>
+                        <option value="General Manager">General Manager</option>
+                      </>
+                    )}
+                    {editingUser.role === 'common' && (
+                      <>
+                        <optgroup label="Operasi">
+                          <option value="Senior Surveyor">Senior Surveyor</option>
+                          <option value="Surveyor">Surveyor</option>
+                          <option value="Field Staff">Field Staff</option>
+                          <option value="Technical Lead">Technical Lead</option>
+                          <option value="Project Manager">Project Manager</option>
+                        </optgroup>
+                        <optgroup label="SDM">
+                          <option value="HR Manager">HR Manager</option>
+                          <option value="HR Staff">HR Staff</option>
+                          <option value="Recruitment Specialist">Recruitment Specialist</option>
+                        </optgroup>
+                        <optgroup label="Keuangan">
+                          <option value="Finance Manager">Finance Manager</option>
+                          <option value="Finance Staff">Finance Staff</option>
+                          <option value="Accountant">Accountant</option>
+                          <option value="Accounting Staff">Accounting Staff</option>
+                        </optgroup>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Status Akun</label>
+                  <select
+                    value={editingUser.status}
+                    onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                  >
+                    <option value="Aktif">Aktif</option>
+                    <option value="Cuti">Cuti</option>
+                    <option value="Nonaktif">Nonaktif</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
+                <button
+                  onClick={() => setShowEditUserModal(false)}
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleEditUser}
+                  disabled={editLoading}
+                  className="flex-1 px-4 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
+                >
+                  {editLoading ? 'Menyimpan...' : 'Simpan Peran'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+\n        {/* Add User Modal */}
         {showAddUserModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 max-w-md w-full mx-4">

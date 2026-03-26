@@ -1098,7 +1098,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     {attachments.map((attachment, index) => (
                       <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm group hover:border-primary/30 transition-all">
                         <div className="flex items-center gap-3 overflow-hidden">
-                          <div className="w-10 h-10 rounded-lg bg-red-50 text-primary flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-[22px]">description</span>
                           </div>
                           <div className="flex flex-col overflow-hidden">
@@ -1131,7 +1131,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 Batal
               </button>
               <button
-                className="rounded-lg bg-primary px-10 py-3 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-red-500/20 hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-lg bg-primary px-10 py-3 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 type="submit"
                 disabled={loading}
               >

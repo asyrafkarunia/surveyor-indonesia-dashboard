@@ -371,7 +371,7 @@ const ProjectApprovalScreen: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleClientDecision('rejected')}
-                          className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
                           title="Client Rejected"
                         >
                           <span className="text-xl">✕</span> Client Rejected
@@ -393,7 +393,7 @@ const ProjectApprovalScreen: React.FC = () => {
                         </button>
                         <button
                           onClick={() => setShowRejectModal(true)}
-                          className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition-colors"
+                          className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors"
                         >
                           Reject
                         </button>
@@ -433,7 +433,7 @@ const ProjectApprovalScreen: React.FC = () => {
                 </button>
                 <button
                   onClick={handleReject}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition-colors"
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors"
                 >
                   Confirm Reject
                 </button>

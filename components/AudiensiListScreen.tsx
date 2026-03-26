@@ -199,7 +199,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
                     <tr><td className="px-6 py-4 text-center text-slate-400" colSpan={6}>Tidak ada surat audiensi</td></tr>
                   ) : (
                     letters.map((letter) => (
-                      <tr key={letter.id} className="hover:bg-red-50/5 transition-colors group">
+                      <tr key={letter.id} className="hover:bg-blue-50/5 transition-colors group">
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
                             <span className="text-sm font-semibold text-slate-900 dark:text-white font-mono tracking-tight">{letter.letter_number}</span>

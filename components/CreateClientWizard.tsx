@@ -180,7 +180,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
             {currentStep === 1 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">domain</span>
                   </div>
                   <div>
@@ -238,7 +238,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
             {currentStep === 2 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">person</span>
                   </div>
                   <div>
@@ -304,7 +304,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
             {currentStep === 3 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">location_on</span>
                   </div>
                   <div>
@@ -341,7 +341,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
             {currentStep === 4 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">note_add</span>
                   </div>
                   <div>
@@ -383,7 +383,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all">
                     <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
+                        <div className="p-2 rounded-xl bg-blue-50 text-primary border border-blue-100">
                           <span className="material-symbols-outlined text-[20px] fill">domain</span>
                         </div>
                         <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Info Dasar Perusahaan</h3>
@@ -421,7 +421,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                   <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all">
                     <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
+                        <div className="p-2 rounded-xl bg-blue-50 text-primary border border-blue-100">
                           <span className="material-symbols-outlined text-[20px] fill">person</span>
                         </div>
                         <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Detail Kontak Utama</h3>
@@ -458,7 +458,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all h-full">
                       <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
+                          <div className="p-2 rounded-xl bg-blue-50 text-primary border border-blue-100">
                             <span className="material-symbols-outlined text-[20px] fill">location_on</span>
                           </div>
                           <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Alamat Perusahaan</h3>
@@ -486,7 +486,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 group hover:border-primary/30 transition-all h-full">
                       <div className="flex justify-between items-start mb-6 border-b border-slate-200 dark:border-slate-700/60 pb-4">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-red-50 text-primary border border-red-100">
+                          <div className="p-2 rounded-xl bg-blue-50 text-primary border border-blue-100">
                             <span className="material-symbols-outlined text-[20px] fill">note_add</span>
                           </div>
                           <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs">Catatan Tambahan</h3>
@@ -543,7 +543,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                 <button 
                   onClick={nextStep}
                   disabled={saving}
-                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-red-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/30 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/30 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="material-symbols-outlined text-[20px] fill">
                     {currentStep === totalSteps ? 'check_circle' : 'arrow_forward'}

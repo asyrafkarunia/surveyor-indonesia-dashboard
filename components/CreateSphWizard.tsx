@@ -294,7 +294,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                    <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                    <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                       <span className="material-symbols-outlined fill">domain</span>
                     </div>
                     <div>
@@ -359,7 +359,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
 
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                    <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                    <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                       <span className="material-symbols-outlined fill">work</span>
                     </div>
                     <div>
@@ -444,7 +444,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
             {currentStep === 3 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">receipt_long</span>
                   </div>
                   <div>
@@ -553,7 +553,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                               <td className="py-4 px-4 text-center">
                                 <button
                                   onClick={() => removeServiceItem(index)}
-                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                  className="p-2 text-red-500 hover:bg-blue-50 rounded-lg transition-colors"
                                 >
                                   <span className="material-symbols-outlined text-[20px]">delete</span>
                                 </button>
@@ -584,7 +584,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
             {currentStep === 2 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                  <div className="size-10 rounded-xl bg-red-50 text-primary flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
                     <span className="material-symbols-outlined fill">gavel</span>
                   </div>
                   <div>
@@ -807,7 +807,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                 <button 
                   onClick={() => handleSaveDraft(true)}
                   disabled={saving}
-                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-red-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/20 transition-all group disabled:opacity-50"
+                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 transition-all group disabled:opacity-50"
                 >
                   {saving ? 'Menyimpan...' : 'Simpan Draft & Kirim ke Approver'}
                   <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">send</span>
@@ -815,7 +815,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
               ) : (
                 <button 
                   onClick={nextStep}
-                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-red-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/20 transition-all group"
+                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 transition-all group"
                 >
                   {`Lanjut: ${steps[currentStep]?.label || 'Selesai'}`}
                   <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
