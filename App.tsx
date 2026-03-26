@@ -184,7 +184,7 @@ const DashboardHome: React.FC<{
       {/* Charts and Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Chart */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm lg:col-span-2">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Aktualisasi</h3>
@@ -213,7 +213,7 @@ const DashboardHome: React.FC<{
         </div>
 
         {/* Activity Feed */}
-        <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm lg:col-span-1">
+        <div className="flex flex-col rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-1 relative z-10">
           <h3 className="mb-8 text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h3>
           {loading ? (
             <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
@@ -248,7 +248,7 @@ const DashboardHome: React.FC<{
       </div>
 
       {/* Projects Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">Monitoring Project (Top 5)</h3>
           <button
@@ -654,7 +654,7 @@ const AppContent: React.FC = () => {
   const breadcrumbs = getBreadcrumbItems();
 
   return (
-    <div className="flex h-screen w-full bg-background-light dark:bg-slate-900 font-display">
+    <div className="flex h-screen w-full bg-slate-50 dark:bg-slate-900 font-display">
       {/* Navigation Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
@@ -759,7 +759,7 @@ const AppContent: React.FC = () => {
           </header>
         )}
 
-        <div className="flex-1 overflow-hidden flex flex-col bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="flex-1 overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-900">
           <PageTransition 
             transitionKey={`${activeTab}-${selectedClient?.id || ''}-${isCreatingSph}-${isCreatingClient}-${isEditingClient}-${isCreatingMarketingTask}-${selectedProjectId || ''}-${audiensiView}`}
           >

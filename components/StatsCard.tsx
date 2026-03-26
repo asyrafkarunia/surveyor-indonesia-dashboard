@@ -12,7 +12,7 @@ const StatsCard: React.FC<StatCardData> = ({
   isNegative 
 }) => {
   return (
-    <div className="group relative flex flex-col gap-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm transition-all hover:shadow-md">
+    <div className="group relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className={`absolute right-0 top-0 p-4 opacity-10 transition-opacity group-hover:opacity-20`}>
         <span className={`material-symbols-outlined text-6xl ${iconColor}`}>{icon}</span>
       </div>

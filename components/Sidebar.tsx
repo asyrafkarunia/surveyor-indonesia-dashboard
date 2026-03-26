@@ -49,13 +49,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors group text-left ${
+              className={`flex items-center gap-3 rounded-r-xl px-4 py-3 transition-all duration-300 group text-left ${
                 activeId === item.id 
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-primary' 
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700'
+                  ? 'bg-linear-to-r from-primary/10 to-transparent text-primary border-l-4 border-primary shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800 border-l-4 border-transparent'
               }`}
             >
-              <span className={`material-symbols-outlined text-[24px] ${activeId === item.id ? 'fill' : ''}`}>
+              <span className={`material-symbols-outlined text-[24px] transition-transform duration-300 ${activeId === item.id ? 'fill scale-110' : 'group-hover:scale-110'}`}>
                 {item.icon}
               </span>
               <span className={`text-sm ${activeId === item.id ? 'font-bold' : 'font-medium'}`}>{item.label}</span>

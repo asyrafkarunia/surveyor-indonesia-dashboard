@@ -656,7 +656,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       {/* Quick Stats Grid */}
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-md group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Total Proyek ({selectedYear})</p>
               <span className="material-symbols-outlined text-primary text-xl">folder_shared</span>
@@ -670,7 +670,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-md group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Menunggu Persetujuan</p>
               <span className="material-symbols-outlined text-yellow-500 text-xl">pending_actions</span>
@@ -680,7 +680,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               <p className="text-[#64748b] dark:text-slate-300 text-xs font-medium">{stats?.pendingPercent || 0}% total</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 border-l-4 border-l-blue-500 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 border-l-4 border-l-blue-500 shadow-md group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Sedang Berjalan</p>
               <span className="material-symbols-outlined text-blue-500 text-xl">rocket_launch</span>
@@ -694,7 +694,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               )}
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm group hover:shadow-md transition-all">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-md group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[#64748b] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">Selesai</p>
               <span className="material-symbols-outlined text-green-500 text-xl">verified</span>
@@ -829,7 +829,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
 
           {/* Portofolio Proyek Bar Chart */}
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-md relative z-10">
             <h3 className="text-[#0f172a] dark:text-white text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
               <span className="material-symbols-outlined text-[#1a237e] text-lg">bar_chart</span>
               Portofolio Proyek {selectedYear}
@@ -870,7 +870,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Filter Toolbar */}
       <section className="px-8 py-2">
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-[#e2e8f0] dark:border-slate-700 flex flex-col gap-3 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col gap-3 shadow-md relative z-10">
           <div className="w-full">
             <div className="relative group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#64748b] dark:text-slate-300 text-xl group-focus-within:text-primary transition-colors">search</span>
@@ -1011,7 +1011,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
       {/* Projects Table */}
       <section className="px-8 py-6" ref={projectListRef}>
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-md overflow-hidden relative z-10">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
