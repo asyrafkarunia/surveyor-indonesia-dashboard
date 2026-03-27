@@ -6,18 +6,26 @@ use App\Models\EssentialDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class EssentialDocumentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = EssentialDocument::with('uploader')->orderByDesc('created_at');
+        $search = $request->get('search');
+        $page = $request->get('page', 1);
+        $cacheKey = 'essential_documents_' . md5($search . '_' . $page);
 
-        if ($search = $request->get('search')) {
-            $query->where('title', 'like', '%' . $search . '%');
-        }
+        return Cache::remember($cacheKey, 60, function () use ($search) {
+            $query = EssentialDocument::with('uploader')->orderByDesc('created_at');
 
-        return $query->get();
+            if ($search) {
+                $query->where('title', 'like', '%' . $search . '%');
+            }
+
+            // Limit to top 100 for performance, ideally use pagination if dataset grows
+            return $query->limit(100)->get();
+        });
     }
 
     public function store(Request $request)

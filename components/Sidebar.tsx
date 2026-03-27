@@ -39,12 +39,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
             <h1 className="text-sm font-bold leading-tight text-slate-900 dark:text-white">MARS</h1>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Marketing Analysis Report System</p>
           </div>
-          <button onClick={onToggle} className="ml-auto lg:hidden text-slate-400">
-             <span className="material-symbols-outlined">close</span>
+          <button onClick={onToggle} className="ml-auto lg:hidden text-slate-400" aria-label="Tutup menu navigasi">
+             <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </div>
 
-        <nav className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1">
+        <nav className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1" aria-label="Navigasi Utama">
           {mainNavItems.map((item) => (
             <button
               key={item.id}

@@ -467,7 +467,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       'Start Date',
       'End Date',
       'Nilai Kontrak',
-      'Actual (Aktualisasi)',
+      'Actual (Realisasi)',
       'Project Type (Portofolio)',
       'Approval Status',
     ];
@@ -571,7 +571,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
       'Start Date',
       'End Date',
       'Budget',
-      'Actual (Aktualisasi)',
+      'Actual (Realisasi)',
       'Project Type (Portofolio)',
       'Approval Status',
     ];

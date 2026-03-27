@@ -298,7 +298,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
               </div>
 
               <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aktualisasi (Terserap)</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Realisasi (Terserap)</p>
                 {isEdit ? (
                   <input
                     type="text"

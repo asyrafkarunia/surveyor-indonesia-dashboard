@@ -46,7 +46,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data = [] }) => {
             <div className="flex items-center justify-between gap-6 text-xs text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span>
-                <span>Aktualisasi</span>
+                <span>Realisasi</span>
               </span>
               <span className="font-bold text-primary">{formatCurrency(payload[1]?.value || 0)}</span>
             </div>

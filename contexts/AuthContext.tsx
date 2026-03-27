@@ -65,6 +65,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (response && response.user) {
         // Reset to dashboard on fresh login (best practice)
         localStorage.setItem('activeTab', 'dashboard');
+        localStorage.setItem('just_logged_in', 'true');
+        console.log('Login success: reset flag set');
         setUser(response.user);
       } else {
         throw new Error('Invalid login response');

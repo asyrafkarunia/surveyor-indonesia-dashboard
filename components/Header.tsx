@@ -62,8 +62,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
         <button 
           onClick={onMenuClick}
           className="rounded-lg p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 lg:hidden"
+          aria-label="Buka menu navigasi"
         >
-          <span className="material-symbols-outlined">menu</span>
+          <span className="material-symbols-outlined" aria-hidden="true">menu</span>
         </button>
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">{activeId === 'notifications' ? 'Notifikasi' : 'Overview'}</h2>
       </div>
@@ -79,6 +80,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
             onKeyDown={handleProjectSearchKeyDown}
             className="w-full bg-transparent border-none outline-none p-0 text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
             style={{ boxShadow: 'none' }}
+            aria-label="Cari proyek"
           />
           {projectSearch && (
             <button 
@@ -93,8 +95,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
         <div 
           onClick={onNotificationClick}
           className={`relative cursor-pointer rounded-lg p-2 transition-colors ${activeId === 'notifications' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+          aria-label={`${unreadCount} notifikasi belum dibaca`}
         >
-          <span className={`material-symbols-outlined text-[22px] ${activeId === 'notifications' ? 'fill' : ''}`}>notifications</span>
+          <span className={`material-symbols-outlined text-[22px] ${activeId === 'notifications' ? 'fill' : ''}`} aria-hidden="true">notifications</span>
           {unreadCount > 0 && (
             <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-800">
               {unreadCount > 9 ? '9+' : unreadCount}

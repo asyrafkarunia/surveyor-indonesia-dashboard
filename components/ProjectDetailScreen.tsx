@@ -305,7 +305,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 </div>
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Aktualisasi (Terserap)
+                    Realisasi (Terserap)
                   </p>
                   {isEditing ? (
                     <input

@@ -238,8 +238,15 @@ const BerkasDokumenScreen: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
-              Memuat data dokumen...
+            <div className="space-y-4 py-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex gap-4 animate-pulse">
+                  <div className="h-10 bg-slate-100 dark:bg-slate-700 rounded-lg flex-1"></div>
+                  <div className="h-10 bg-slate-100 dark:bg-slate-700 rounded-lg flex-1 px-4 hidden md:block"></div>
+                  <div className="h-10 bg-slate-100 dark:bg-slate-700 rounded-lg w-20"></div>
+                  <div className="h-10 bg-slate-100 dark:bg-slate-700 rounded-lg w-40"></div>
+                </div>
+              ))}
             </div>
           ) : documents.length === 0 ? (
             <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">

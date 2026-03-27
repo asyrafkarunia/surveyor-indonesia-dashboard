@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
@@ -11,33 +11,40 @@ import Header from './components/Header';
 import StatsCard from './components/StatsCard';
 import RevenueChart from './components/RevenueChart';
 import ProjectTable from './components/ProjectTable';
-import FeedScreen from './components/FeedScreen';
-import NotificationsScreen from './components/NotificationsScreen';
-import ClientsScreen from './components/ClientsScreen';
-import ClientDetailScreen from './components/ClientDetailScreen';
-import SphManagementScreen from './components/SphManagementScreen';
-import CreateProjectScreen from './components/CreateProjectScreen';
-import CreateSphWizard from './components/CreateSphWizard';
-import SettingsScreen from './components/SettingsScreen';
-import PermissionsScreen from './components/PermissionsScreen';
-import ActivityLogScreen from './components/ActivityLogScreen';
-import CreateClientWizard from './components/CreateClientWizard';
-import EditClientScreen from './components/EditClientScreen';
-import MarketingKanbanScreen from './components/MarketingKanbanScreen';
-import CreateMarketingTaskScreen from './components/CreateMarketingTaskScreen';
-import AudiensiScreen from './components/AudiensiScreen';
-import AudiensiTemplateManagementScreen from './components/AudiensiTemplateManagementScreen';
-import AudiensiListScreen from './components/AudiensiListScreen';
-import AddAudiensiTemplateScreen from './components/AddAudiensiTemplateScreen';
-import ProjectMonitoringScreen from './components/ProjectMonitoringScreen';
-import ProjectApprovalScreen from './components/ProjectApprovalScreen';
-import CalendarActivityScreen from './components/CalendarActivityScreen';
+const FeedScreen = lazy(() => import('./components/FeedScreen'));
+const NotificationsScreen = lazy(() => import('./components/NotificationsScreen'));
+const ClientsScreen = lazy(() => import('./components/ClientsScreen'));
+const ClientDetailScreen = lazy(() => import('./components/ClientDetailScreen'));
+const SphManagementScreen = lazy(() => import('./components/SphManagementScreen'));
+const CreateProjectScreen = lazy(() => import('./components/CreateProjectScreen'));
+const CreateSphWizard = lazy(() => import('./components/CreateSphWizard'));
+const SettingsScreen = lazy(() => import('./components/SettingsScreen'));
+const PermissionsScreen = lazy(() => import('./components/PermissionsScreen'));
+const ActivityLogScreen = lazy(() => import('./components/ActivityLogScreen'));
+const CreateClientWizard = lazy(() => import('./components/CreateClientWizard'));
+const EditClientScreen = lazy(() => import('./components/EditClientScreen'));
+const MarketingKanbanScreen = lazy(() => import('./components/MarketingKanbanScreen'));
+const CreateMarketingTaskScreen = lazy(() => import('./components/CreateMarketingTaskScreen'));
+const AudiensiScreen = lazy(() => import('./components/AudiensiScreen'));
+const AudiensiTemplateManagementScreen = lazy(() => import('./components/AudiensiTemplateManagementScreen'));
+const AudiensiListScreen = lazy(() => import('./components/AudiensiListScreen'));
+const AddAudiensiTemplateScreen = lazy(() => import('./components/AddAudiensiTemplateScreen'));
+const ProjectMonitoringScreen = lazy(() => import('./components/ProjectMonitoringScreen'));
+const ProjectApprovalScreen = lazy(() => import('./components/ProjectApprovalScreen'));
+const CalendarActivityScreen = lazy(() => import('./components/CalendarActivityScreen'));
 import DateRangeSelector from './components/DateRangeSelector';
 import { api } from './services/api';
 import { ClientData } from './types';
-import ProjectDetailScreen from './components/ProjectDetailScreen';
-import BerkasDokumenScreen from './components/BerkasDokumenScreen';
+const ProjectDetailScreen = lazy(() => import('./components/ProjectDetailScreen'));
+const BerkasDokumenScreen = lazy(() => import('./components/BerkasDokumenScreen'));
 import PageTransition from './components/PageTransition';
+
+const LoadingScreen = () => (
+  <div className="flex w-full h-full min-h-[50vh] flex-col items-center justify-center gap-4">
+    <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Memuat Halaman...</p>
+  </div>
+);
 
 const DashboardHome: React.FC<{
   onNavigate?: (tab: string) => void;
@@ -97,7 +104,7 @@ const DashboardHome: React.FC<{
       iconColor: 'text-primary' 
     },
     { 
-      title: 'Aktualisasi (Terserap)', 
+      title: 'Realisasi (Terserap)', 
       value: stats.totalActualFormatted || 'Rp 0', 
       trend: stats.actualTrend || 0, 
       trendLabel: 'vs periode sebelumnya', 
@@ -161,7 +168,7 @@ const DashboardHome: React.FC<{
             {statsCards.map((stat, index) => {
               // Custom sizing logic based on index/title
               // 0: Anggaran (Large)
-              // 1: Aktualisasi (Large)
+              // 1: Realisasi (Large)
               // 2: SPH Issued (Small)
               // 3: Win Rate (Small)
               // 4: Project Berjalan (Medium)
@@ -187,8 +194,8 @@ const DashboardHome: React.FC<{
         <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Aktualisasi</h3>
-          <p className="text-xs text-slate-400">Nilai Kontrak = nilai proyek, Aktualisasi = nilai terserap</p>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Realisasi</h3>
+          <p className="text-xs text-slate-400">Nilai Kontrak = nilai proyek, Realisasi = nilai terserap</p>
             </div>
             <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-wider">
               <div className="flex items-center gap-2">
@@ -197,7 +204,7 @@ const DashboardHome: React.FC<{
               </div>
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-primary"></span>
-                <span className="text-slate-500 dark:text-slate-400">Aktualisasi</span>
+                <span className="text-slate-500 dark:text-slate-400">Realisasi</span>
               </div>
             </div>
           </div>
@@ -283,6 +290,25 @@ const AppContent: React.FC = () => {
   const [audiensiView, setAudiensiView] = useState<'list' | 'create' | 'manage' | 'add-template'>('list');
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
   const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
+
+  // Handle reset on login based on flag from AuthContext
+  useEffect(() => {
+    if (user && localStorage.getItem('just_logged_in')) {
+      console.log('Detected fresh login, resetting navigation...');
+      setActiveTab('dashboard');
+      setSelectedClient(null);
+      setIsCreatingSph(false);
+      setIsCreatingClient(false);
+      setIsEditingClient(false);
+      setIsCreatingMarketingTask(false);
+      setSelectedProjectId(null);
+      setPreSelectedClientId(null);
+      setAudiensiView('list');
+      setGlobalProjectSearch('');
+      setPendingCalendarEventId(null);
+      localStorage.removeItem('just_logged_in');
+    }
+  }, [user]);
 
   // Expose setPendingCalendarEventId to window for deep linking from NotificationsScreen
   useEffect(() => {
@@ -763,7 +789,9 @@ const AppContent: React.FC = () => {
           <PageTransition 
             transitionKey={`${activeTab}-${selectedClient?.id || ''}-${isCreatingSph}-${isCreatingClient}-${isEditingClient}-${isCreatingMarketingTask}-${selectedProjectId || ''}-${audiensiView}`}
           >
-            {renderContent()}
+            <Suspense fallback={<LoadingScreen />}>
+              {renderContent()}
+            </Suspense>
           </PageTransition>
         </div>
       </div>
