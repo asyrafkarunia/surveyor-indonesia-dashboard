@@ -37,6 +37,8 @@ interface User {
   id: number;
   name: string;
   email: string;
+  role?: string;
+  division?: string;
 }
 
 interface ProjectLocation {
@@ -90,6 +92,21 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
   const [mapZoom, setMapZoom] = useState(13);
 
+  // Helper: normalize division name – treat 'Operations' as 'Operasi'
+  const normalizeDivision = (division?: string) => {
+    if (!division) return '';
+    const lower = division.trim().toLowerCase();
+    if (lower === 'operations') return 'Operasi';
+    return division.trim();
+  };
+
+  // Derived filtered user lists
+  const marketingUsers = users.filter(u => u.role === 'marketing');
+  const operasiUsers = users.filter(u => {
+    const div = normalizeDivision(u.division);
+    return div.toLowerCase().includes('operasi');
+  });
+
   useEffect(() => {
     fetchClients();
     fetchUsers();
@@ -109,7 +126,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     try {
       const response: any = await (api as any).getUsers();
       const data = response.data || response;
-      setUsers(Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []));
+      const rawUsers = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+      // Normalize division names client-side before storing
+      const normalizedUsers = rawUsers.map((u: User) => ({
+        ...u,
+        division: normalizeDivision(u.division),
+      }));
+      setUsers(normalizedUsers);
     } catch (error) {
       console.error('Failed to fetch users:', error);
     }
@@ -381,11 +404,11 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
   };
 
   return (
-    <main className="flex-1 flex flex-col overflow-hidden bg-background-light">
+    <main className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg-stone)' }}>
       <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 custom-scrollbar">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Tambah Proyek Baru</h2>
+            <h2 className="text-3xl font-black tracking-tight text-slate-800 dark:text-white sm:text-4xl">Tambah Proyek Baru</h2>
             <p className="mt-2 text-base text-slate-500 dark:text-slate-400">Silakan lengkapi formulir di bawah ini untuk mendaftarkan proyek assurance baru.</p>
           </div>
 
@@ -442,11 +465,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     required
                   >
                     <option value="">Pilih PIC Marketing</option>
-                    {users.map(user => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
+                    {marketingUsers.length > 0 ? marketingUsers.map(u => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} ({u.email})
                       </option>
-                    ))}
+                    )) : (
+                      <option disabled value="">Tidak ada pengguna Marketing</option>
+                    )}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -803,11 +828,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   required
                 >
                   <option value="">Pilih Project Lead</option>
-                  {users.map(user => (
-                    <option key={user.id} value={user.id}>
-                      {user.name} ({user.email})
+                  {operasiUsers.length > 0 ? operasiUsers.map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.name} ({u.email})
                     </option>
-                  ))}
+                  )) : (
+                    <option disabled value="">Tidak ada pengguna Divisi Operasi</option>
+                  )}
                 </select>
               ) : (
                 <input

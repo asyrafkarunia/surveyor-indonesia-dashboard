@@ -291,6 +291,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
               />
             </div>
             <button 
+              id="kanban-add-btn"
               onClick={onAddTask}
               className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 uppercase tracking-widest"
             >
@@ -302,7 +303,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
       </div>
 
       {/* Board Layout */}
-      <div className="flex-1 overflow-x-auto p-6 md:p-10 custom-scrollbar">
+      <div id="kanban-board" className="flex-1 overflow-x-auto p-6 md:p-10 custom-scrollbar">
         {loading ? (
           /* ─── Skeleton Loading State ─── */
           <div className="flex gap-6 h-full min-w-max">

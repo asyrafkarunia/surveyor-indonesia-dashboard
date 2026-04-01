@@ -63,12 +63,22 @@ class ProjectController extends Controller
         // Total projects
         $totalProjects = (clone $query)->count();
         
+        // New vs Carry-over
+        $newProjectsCount = (clone $query)->whereYear('start_date', $year)->count();
+        $carryOverCount = (clone $query)->whereYear('start_date', '<', $year)->count();
+        
         // Projects by status
         $pendingProjects = (clone $query)->where('status', 'PENDING')->count();
         $runningProjects = (clone $query)->where('status', 'RUNNING')->count();
         $doneProjects = (clone $query)->where('status', 'DONE')->count();
         $rejectedProjects = (clone $query)->where('status', 'REJECTED')->count();
         
+        // Delayed Projects (Running AND end_date < today)
+        $delayedCount = (clone $query)
+            ->where('status', 'RUNNING')
+            ->where('end_date', '<', now())
+            ->count();
+            
         // Calculate percentages
         $pendingPercent = $totalProjects > 0 ? round(($pendingProjects / $totalProjects) * 100, 1) : 0;
         $runningPercent = $totalProjects > 0 ? round(($runningProjects / $totalProjects) * 100, 1) : 0;
@@ -121,10 +131,13 @@ class ProjectController extends Controller
         
         return response()->json([
             'totalProjects' => $totalProjects,
+            'newProjectsCount' => $newProjectsCount,
+            'carryOverCount' => $carryOverCount,
             'pendingProjects' => $pendingProjects,
             'runningProjects' => $runningProjects,
             'doneProjects' => $doneProjects,
             'rejectedProjects' => $rejectedProjects,
+            'delayedCount' => $delayedCount,
             'pendingPercent' => $pendingPercent,
             'runningPercent' => $runningPercent,
             'donePercent' => $donePercent,

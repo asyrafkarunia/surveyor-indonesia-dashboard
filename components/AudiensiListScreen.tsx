@@ -137,6 +137,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
             </div>
             <button 
+              id="create-audiensi-btn"
               onClick={onCreateNew}
               className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95"
             >
@@ -146,7 +147,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
           </div>
 
           {/* Search & Toolbar */}
-          <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+          <div id="audiensi-search" className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-1 w-full group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl group-focus-within:text-primary transition-colors">search</span>
               <input 
@@ -286,7 +287,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="audiensi-stats" className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
               <div className="size-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                 <span className="material-symbols-outlined">send</span>

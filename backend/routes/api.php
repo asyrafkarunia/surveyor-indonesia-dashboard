@@ -15,6 +15,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\UserTutorialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,17 @@ use App\Http\Controllers\ActivityLogController;
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/validate-invite-code', [AuthController::class, 'validateInviteCode'])->middleware('throttle:10,1');
 Route::post('/register-invite', [AuthController::class, 'registerWithInvite'])->middleware('throttle:5,1');
+
+// Password Reset
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::get('/password-reset/{token}', function (Illuminate\Http\Request $request, $token) {
+    return redirect(env('FRONTEND_URL') . '?mode=reset-password&token=' . $token . '&email=' . $request->email);
+})->name('password.reset');
+
+// Email Verification
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])->middleware(['auth:sanctum', 'throttle:6,1']);
 
 // Protected routes
 Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
@@ -153,4 +165,8 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     
     // Activity Logs (Admin only)
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->middleware('role:marketing');
+
+    // User Tutorials
+    Route::get('/user-tutorials', [UserTutorialController::class, 'index']);
+    Route::post('/user-tutorials', [UserTutorialController::class, 'store']);
 });

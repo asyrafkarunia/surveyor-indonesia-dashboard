@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { ClientData } from '../types';
+import StatsCard from './StatsCard';
 
 interface Client {
   id: number;
@@ -201,6 +202,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
             <p className="text-slate-500 dark:text-slate-400 text-sm">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
           </div>
           <button 
+            id="add-client-btn"
             onClick={onAddClient}
             className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl shadow-sm shadow-primary/30 transition-all font-bold text-xs uppercase tracking-widest"
           >
@@ -210,75 +212,36 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Total Klien Terdaftar</p>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.total}</h3>
-              {counts && (
-                <div className="flex items-center gap-1 mt-2">
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
-                    counts.trends.total >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                  }`}>
-                    <span className={`material-symbols-outlined text-[12px] mr-1 ${
-                      counts.trends.total >= 0 ? '' : 'rotate-180'
-                    }`}>trending_up</span>
-                    {Math.abs(counts.trends.total)}%
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
-                </div>
-              )}
-            </div>
-            <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center border border-blue-100/50 shadow-inner">
-              <span className="material-symbols-outlined">domain</span>
-            </div>
-          </div>
+        <div id="client-stats" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatsCard 
+            title="Total Klien Terdaftar" 
+            value={counts.total.toString()} 
+            trend={counts.trends.total} 
+            trendLabel="pertumbuhan 30 hari terakhir" 
+            icon="domain" 
+            iconColor="text-blue-600" 
+          />
 
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Klien Aktif</p>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.active}</h3>
-              {counts && (
-                <div className="flex items-center gap-1 mt-2">
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
-                    counts.trends.active >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                  }`}>
-                    <span className={`material-symbols-outlined text-[12px] mr-1 ${
-                      counts.trends.active >= 0 ? '' : 'rotate-180'
-                    }`}>trending_up</span>
-                    {Math.abs(counts.trends.active)}%
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
-                </div>
-              )}
-            </div>
-            <div className="h-10 w-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center border border-emerald-100/50 shadow-inner">
-              <span className="material-symbols-outlined fill">check_circle</span>
-            </div>
-          </div>
+          <StatsCard 
+            title="Klien Aktif" 
+            value={counts.active.toString()} 
+            trend={counts.trends.active} 
+            trendLabel="pertumbuhan 30 hari terakhir" 
+            icon="check_circle" 
+            iconColor="text-emerald-600" 
+          />
 
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-start justify-between">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Klien Non-Aktif</p>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white">{counts.inactive}</h3>
-              {counts && (
-                <div className="flex items-center gap-1 mt-2">
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full flex items-center ${
-                    counts.trends.inactive >= 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                  }`}>
-                    <span className={`material-symbols-outlined text-[12px] mr-1 ${
-                      counts.trends.inactive >= 0 ? '' : 'rotate-180'
-                    }`}>trending_down</span>
-                    {Math.abs(counts.trends.inactive)}%
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">pertumbuhan 30 hari terakhir</span>
-                </div>
-              )}
-            </div>
-            <div className="h-10 w-10 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-700/50 shadow-inner">
-              <span className="material-symbols-outlined">pause_circle</span>
-            </div>
-          </div>
+          <StatsCard 
+            title="Klien Non-Aktif" 
+            value={counts.inactive.toString()} 
+            trend={counts.trends.inactive} 
+            trendLabel="pertumbuhan 30 hari terakhir" 
+            icon="pause_circle" 
+            iconColor="text-slate-500" 
+            // For non-active clients, trend being positive might be seen as "bad" 
+            // but usually "growth" of count is positive. 
+            // For consistency with other cards, we let StatsCard default logic handle it.
+          />
         </div>
 
         {/* Table & Filters Container */}
@@ -288,6 +251,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
             <div className="relative w-full lg:max-w-md group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
               <input 
+                id="client-search"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary text-sm transition-all" 
                 placeholder="Cari nama klien, kontak, atau perusahaan..." 
                 type="text"

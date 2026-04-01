@@ -29,17 +29,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
   });
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transition-transform lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col transition-transform lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      style={{ background: 'linear-gradient(180deg, #0d2137 0%, #0f2a43 60%, #0a1e32 100%)' }}
+    >
       <div className="flex flex-col gap-8 p-6 flex-1 overflow-hidden">
         <div className="flex items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)' }}>
             <MarsIconLogo className="w-7 h-7" color="white" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-sm font-bold leading-tight text-slate-900 dark:text-white">MARS</h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Marketing Analysis Report System</p>
+            <h1 className="text-sm font-bold leading-tight text-white">MARS</h1>
+            <p className="text-[10px] leading-tight" style={{ color: 'rgba(255,255,255,0.45)' }}>Marketing Analysis Report System</p>
           </div>
-          <button onClick={onToggle} className="ml-auto lg:hidden text-slate-400" aria-label="Tutup menu navigasi">
+          <button onClick={onToggle} className="ml-auto lg:hidden" style={{ color: 'rgba(255,255,255,0.5)' }} aria-label="Tutup menu navigasi">
              <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </div>
@@ -49,24 +51,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex items-center gap-3 rounded-r-xl px-4 py-3 transition-all duration-300 group text-left ${
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 group text-left ${
                 activeId === item.id 
-                  ? 'bg-linear-to-r from-primary/10 to-transparent text-primary border-l-4 border-primary shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800 border-l-4 border-transparent'
+                  ? 'shadow-md' 
+                  : 'border-transparent hover:bg-white/8'
               }`}
+              style={activeId === item.id
+                ? { background: 'linear-gradient(135deg, rgba(0,180,174,0.22), rgba(0,56,104,0.18))', color: '#00B4AE', borderLeft: '3px solid #00B4AE' }
+                : { color: 'rgba(255,255,255,0.55)' }
+              }
             >
-              <span className={`material-symbols-outlined text-[24px] transition-transform duration-300 ${activeId === item.id ? 'fill scale-110' : 'group-hover:scale-110'}`}>
+              <span className={`material-symbols-outlined text-[22px] transition-transform duration-200 ${activeId === item.id ? 'fill scale-110' : 'group-hover:scale-105'}`}>
                 {item.icon}
               </span>
-              <span className={`text-sm ${activeId === item.id ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
+              <span className={`text-sm ${activeId === item.id ? 'font-bold' : 'font-medium'}`} style={{ color: activeId === item.id ? '#00B4AE' : 'inherit' }}>{item.label}</span>
             </button>
           ))}
         </nav>
       </div>
 
       {/* Version Badge */}
-      <div className="border-t border-slate-200 dark:border-slate-700 p-4">
-        <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+      <div className="p-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
           <span className="material-symbols-outlined text-[14px]">info</span>
           MARS v1.0
         </div>

@@ -25,7 +25,9 @@ export default {
       colors: {
         primary: "#003868",
         "primary-dark": "#00B4AE",
-        "background-light": "#f7f8fa",
+        "background-light": "#edeef0",
+        "bg-stone": "#edeef0",
+        "surface": "#f8f8fa",
         "brand-blue": "#003868",
         "brand-teal": "#00B4AE",
         "accent-orange": "#FF6A00",

@@ -1,8 +1,21 @@
-
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { TutorialProvider, useTutorial } from './contexts/TutorialContext';
+import TutorialManager from './components/TutorialManager';
+import { 
+  DASHBOARD_STEPS, 
+  MONITORING_STEPS,
+  CALENDAR_STEPS,
+  ACTIVITY_STEPS,
+  CLIENTS_STEPS,
+  SPH_STEPS,
+  AUDIENSI_STEPS,
+  KANBAN_STEPS,
+  SETTINGS_STEPS,
+  DOKUMEN_STEPS,
+} from './src/constants/tutorialSteps';
 import LoginScreen from './components/LoginScreen';
 import { MarsIconLogo } from './components/LoginScreen';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -125,8 +138,7 @@ const DashboardHome: React.FC<{
       trend: 0, 
       trendLabel: 'dari total audiensi', 
       icon: 'emoji_events', 
-      iconColor: 'text-amber-500',
-      isNegative: false
+      iconColor: 'text-amber-500'
     },
     { 
       title: 'Project Berjalan', 
@@ -164,7 +176,7 @@ const DashboardHome: React.FC<{
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap lg:flex-nowrap">
+          <div id="stats-metrics" className="flex flex-col gap-4 sm:flex-row sm:flex-wrap lg:flex-nowrap">
             {statsCards.map((stat, index) => {
               // Custom sizing logic based on index/title
               // 0: Anggaran (Large)
@@ -191,7 +203,7 @@ const DashboardHome: React.FC<{
       {/* Charts and Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Chart */}
-        <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
+        <div id="revenue-chart" className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Realisasi</h3>
@@ -220,7 +232,7 @@ const DashboardHome: React.FC<{
         </div>
 
         {/* Activity Feed */}
-        <div className="flex flex-col rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-1 relative z-10">
+        <div id="recent-activities" className="flex flex-col rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-1 relative z-10">
           <h3 className="mb-8 text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h3>
           {loading ? (
             <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
@@ -255,7 +267,7 @@ const DashboardHome: React.FC<{
       </div>
 
       {/* Projects Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
+      <div id="monitoring-table" className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">Monitoring Project (Top 5)</h3>
           <button
@@ -290,6 +302,32 @@ const AppContent: React.FC = () => {
   const [audiensiView, setAudiensiView] = useState<'list' | 'create' | 'manage' | 'add-template'>('list');
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
   const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
+  const { startTutorial, isCompleted, loading: tutorialLoading } = useTutorial();
+
+  // Auto-start tutorials for new users (once per tutorial per user)
+  useEffect(() => {
+    if (tutorialLoading || !user) return;
+
+    const tutorialMap: Record<string, { id: string; steps: any[] }> = {
+      dashboard:        { id: 'dashboard',     steps: DASHBOARD_STEPS },
+      monitoring:       { id: 'monitoring',    steps: MONITORING_STEPS },
+      calendar:         { id: 'calendar',      steps: CALENDAR_STEPS },
+      activity:         { id: 'activity',      steps: ACTIVITY_STEPS },
+      clients:          { id: 'clients',       steps: CLIENTS_STEPS },
+      sph:              { id: 'sph',           steps: SPH_STEPS },
+      audiensi:         { id: 'audiensi',      steps: AUDIENSI_STEPS },
+      marketing_kanban: { id: 'kanban',        steps: KANBAN_STEPS },
+      settings:         { id: 'settings',      steps: SETTINGS_STEPS },
+      essential_docs:   { id: 'dokumen',       steps: DOKUMEN_STEPS },
+    };
+
+    const tutorial = tutorialMap[activeTab];
+    if (tutorial && !isCompleted(tutorial.id)) {
+      // Small delay so the page content renders before the tooltip targets
+      const timer = setTimeout(() => startTutorial(tutorial.id, tutorial.steps), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab, tutorialLoading, user]);
 
   // Handle reset on login based on flag from AuthContext
   useEffect(() => {
@@ -503,7 +541,10 @@ const AppContent: React.FC = () => {
         return (
           <ProjectDetailScreen
             projectId={selectedProjectId}
-            onBack={() => setActiveTab('monitoring')}
+            onBack={() => {
+              setSelectedProjectId(null);
+              setActiveTab('monitoring');
+            }}
           />
         );
       case 'approval': return <ProjectApprovalScreen />;
@@ -680,7 +721,7 @@ const AppContent: React.FC = () => {
   const breadcrumbs = getBreadcrumbItems();
 
   return (
-    <div className="flex h-screen w-full bg-slate-50 dark:bg-slate-900 font-display">
+    <div className="flex h-screen w-full font-display" style={{ background: 'var(--bg-stone)' }}>
       {/* Navigation Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
@@ -739,7 +780,7 @@ const AppContent: React.FC = () => {
         
         {/* Custom Breadcrumb for Sub-Screens */}
         {activeTab !== 'dashboard' && (
-           <header className="flex h-12 w-full items-center border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2 lg:px-10 shrink-0">
+           <header className="flex h-12 w-full items-center px-6 py-2 lg:px-10 shrink-0" style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--header-border)' }}>
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
               {breadcrumbs.map((crumb, idx) => (
                 <React.Fragment key={`${crumb.id}-${idx}`}>
@@ -804,9 +845,12 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <ThemeProvider>
       <AuthProvider>
-        <NotificationProvider>
-          <AppContent />
-        </NotificationProvider>
+        <TutorialProvider>
+          <NotificationProvider>
+            <AppContent />
+            <TutorialManager />
+          </NotificationProvider>
+        </TutorialProvider>
       </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

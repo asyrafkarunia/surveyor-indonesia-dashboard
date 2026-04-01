@@ -78,8 +78,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = async () => {
-    await api.logout();
+    // Clear token first so subsequent requests are immediately blocked,
+    // then attempt the API call — 401 errors on logout are safe to ignore.
+    const token = localStorage.getItem('auth_token');
+    localStorage.removeItem('auth_token');
     setUser(null);
+    if (token) {
+      try {
+        await api.logout();
+      } catch {
+        // Silently ignore logout API errors (e.g. already expired token)
+      }
+    }
   };
 
   const isMarketing = () => user?.role === 'marketing' || user?.role === 'head_section';

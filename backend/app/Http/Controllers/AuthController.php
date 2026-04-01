@@ -8,7 +8,13 @@ use App\Helpers\LogActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class AuthController extends Controller
 {
@@ -27,8 +33,17 @@ class AuthController extends Controller
                 LogActivity::logLogin($user->id, 'Failed');
             }
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Alamat email atau password salah.'],
             ]);
+        }
+
+        // --- ENFORCE EMAIL VERIFICATION ---
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email Anda belum terverifikasi. Silakan cek email Anda untuk melakukan verifikasi.',
+                'not_verified' => true,
+                'email' => $user->email,
+            ], 403);
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -154,8 +169,8 @@ class AuthController extends Controller
             // Mark invite code as used
             $inviteCode->markAsUsed($user->id);
 
-            // Create auth token
-            $token = $user->createToken('auth-token')->plainTextToken;
+            // Trigger Email Verification Event
+            event(new Registered($user));
 
             // Log registration
             Log::info('User registered via invite code', [
@@ -165,9 +180,9 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Akun berhasil dibuat!',
+                'message' => 'Akun berhasil dibuat! Silakan cek email Anda untuk verifikasi sebelum login.',
                 'user' => $user,
-                'token' => $token,
+                'requires_verification' => true,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -206,5 +221,79 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    /**
+     * Forgot Password - Send reset link
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['message' => 'Link reset password telah dikirim ke email Anda.'])
+            : response()->json(['message' => 'Gagal mengirim email reset password.'], 400);
+    }
+
+    /**
+     * Reset Password - Handle new password submission
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:5',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => 'Password berhasil diubah. Silakan login kembali.'])
+            : response()->json(['message' => 'Link reset password sudah tidak valid atau kedaluwarsa.'], 400);
+    }
+
+    /**
+     * Verify Email - Handle verification link click
+     */
+    public function verifyEmail(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            return redirect(env('FRONTEND_URL') . '?verified=error&message=Link tidak valid');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect(env('FRONTEND_URL') . '?verified=already&message=Email sudah pernah diverifikasi');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect(env('FRONTEND_URL') . '?verified=success&message=Email berhasil diverifikasi');
+    }
+
+    /**
+     * Resend Verification Email
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email sudah terverifikasi.'], 400);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Email verifikasi telah dikirim ulang.']);
     }
 }

@@ -1,6 +1,20 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNotification } from '../contexts/NotificationContext';
+import { useTutorial } from '../contexts/TutorialContext';
+import { 
+  DASHBOARD_STEPS, 
+  MONITORING_STEPS, 
+  PROJECT_DETAIL_STEPS,
+  CALENDAR_STEPS,
+  ACTIVITY_STEPS,
+  CLIENTS_STEPS,
+  SPH_STEPS,
+  AUDIENSI_STEPS,
+  KANBAN_STEPS,
+  SETTINGS_STEPS,
+  DOKUMEN_STEPS,
+} from '../src/constants/tutorialSteps';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -15,6 +29,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activeId, user, onNavigate, onLogout, isAdmin = false, onProjectSearch }) => {
   const { unreadCount } = useNotification();
+  const { startTutorial, activeId: currentActiveTab } = useTutorial();
   const [projectSearch, setProjectSearch] = React.useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -56,8 +71,28 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
     setIsProfileOpen(false);
   };
 
+  const handleManualTutorial = () => {
+    const tutorialMap: Record<string, { id: string; steps: any[] }> = {
+      dashboard:        { id: 'dashboard',     steps: DASHBOARD_STEPS },
+      monitoring:       { id: 'monitoring',    steps: MONITORING_STEPS },
+      project_detail:   { id: 'project_detail',steps: PROJECT_DETAIL_STEPS },
+      calendar:         { id: 'calendar',      steps: CALENDAR_STEPS },
+      activity:         { id: 'activity',      steps: ACTIVITY_STEPS },
+      clients:          { id: 'clients',       steps: CLIENTS_STEPS },
+      sph:              { id: 'sph',           steps: SPH_STEPS },
+      audiensi:         { id: 'audiensi',      steps: AUDIENSI_STEPS },
+      marketing_kanban: { id: 'kanban',        steps: KANBAN_STEPS },
+      settings:         { id: 'settings',      steps: SETTINGS_STEPS },
+      essential_docs:   { id: 'dokumen',       steps: DOKUMEN_STEPS },
+    };
+    const tutorial = tutorialMap[activeId];
+    if (tutorial) {
+      startTutorial(tutorial.id, tutorial.steps);
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between px-6 backdrop-blur-md" style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--header-border)' }}>
       <div className="flex items-center gap-4">
         <button 
           onClick={onMenuClick}
@@ -96,6 +131,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
           onClick={onNotificationClick}
           className={`relative cursor-pointer rounded-lg p-2 transition-colors ${activeId === 'notifications' ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
           aria-label={`${unreadCount} notifikasi belum dibaca`}
+          id="notification-bell"
         >
           <span className={`material-symbols-outlined text-[22px] ${activeId === 'notifications' ? 'fill' : ''}`} aria-hidden="true">notifications</span>
           {unreadCount > 0 && (
@@ -104,6 +140,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
             </span>
           )}
         </div>
+
+        <button 
+          onClick={handleManualTutorial}
+          className="rounded-lg p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group relative"
+          aria-label="Bantuan & Tutorial"
+          id="help-button"
+        >
+          <span className="material-symbols-outlined text-[22px]">help</span>
+          <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap rounded bg-slate-800 px-2 py-1 text-[10px] text-white shadow-lg">Bantuan & Tutorial</span>
+        </button>
 
         <div className="mx-1 h-8 w-px bg-slate-200 dark:bg-slate-700"></div>
 

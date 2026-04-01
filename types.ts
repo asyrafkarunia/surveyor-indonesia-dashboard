@@ -14,6 +14,8 @@ export interface StatCardData {
   icon: string;
   iconColor: string;
   isNegative?: boolean;
+  subValue?: string;
+  subValueColor?: string;
 }
 
 export interface ProjectData {

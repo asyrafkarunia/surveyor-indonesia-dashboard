@@ -163,7 +163,35 @@ const InputField: React.FC<{
 );
 
 const LoginScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot-password' | 'reset-password' | 'verification-sent'>('login');
+  
+  // URL Parameter Handling
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const verifiedStatus = params.get('verified');
+    const mode = params.get('mode');
+    const token = params.get('token');
+    const resetEmail = params.get('email');
+
+    if (verifiedStatus === 'success') {
+      setActiveTab('login');
+      setError('Email berhasil diverifikasi! Silakan login.');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (verifiedStatus === 'error' || verifiedStatus === 'already') {
+      const msg = params.get('message') || 'Terjadi kesalahan verifikasi.';
+      setActiveTab('login');
+      setError(msg);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (mode === 'reset-password' && token && resetEmail) {
+      setActiveTab('reset-password');
+      setResetToken(token);
+      setEmail(resetEmail);
+      // Don't clean up token yet, we need it for the form
+    }
+  }, []);
   
   // Login state
   const [email, setEmail] = useState('');
@@ -191,6 +219,13 @@ const LoginScreen: React.FC = () => {
   const [regLoading, setRegLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
 
+  // Forgot/Reset Password state
+  const [resetToken, setResetToken] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
+  const [notVerifiedEmail, setNotVerifiedEmail] = useState('');
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -206,7 +241,14 @@ const LoginScreen: React.FC = () => {
     } catch (err: any) {
       setLoginSuccess(false);
       setTransitionFadeOut(false);
-      setError(err.message || 'Login gagal. Periksa kembali email dan password Anda.');
+      
+      if (err?.response?.status === 403 && err?.response?.data?.not_verified) {
+        setNotVerifiedEmail(err.response.data.email || email);
+        setActiveTab('verification-sent');
+        setError('');
+      } else {
+        setError(err.message || 'Login gagal. Periksa kembali email dan password Anda.');
+      }
     } finally {
       setLoading(false);
     }
@@ -261,8 +303,11 @@ const LoginScreen: React.FC = () => {
         division: regDivision,
       });
       setRegSuccess(true);
-      // Auto-login after successful registration
-      if (res.user) {
+      if (res.requires_verification) {
+        setNotVerifiedEmail(regEmail);
+        setActiveTab('verification-sent');
+      } else if (res.user && res.token) {
+        // Legacy flow if verification is disabled
         setTimeout(() => window.location.reload(), 1500);
       }
     } catch (err: any) {
@@ -275,6 +320,68 @@ const LoginScreen: React.FC = () => {
       }
     } finally {
       setRegLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setError('Silakan masukkan email Anda.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await api.forgotPassword(email);
+      setResetSuccess(true);
+    } catch (err: any) {
+      setError(err.message || 'Gagal mengirim email reset password.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (regPassword !== regPasswordConfirm) {
+      setError('Password konfirmasi tidak cocok.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await api.resetPassword({
+        token: resetToken,
+        email: email,
+        password: regPassword,
+        password_confirmation: regPasswordConfirm,
+      });
+      setResetSuccess(true);
+      setTimeout(() => {
+        setActiveTab('login');
+        setResetSuccess(false);
+        setRegPassword('');
+        setRegPasswordConfirm('');
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || 'Gagal mengubah password.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setResendMessage('');
+    try {
+      // In a real app we'd need a token or special endpoint for unauthenticated resend
+      // but for this demo logic, we assume we use the email
+      await api.resendVerification(notVerifiedEmail || email);
+      setResendMessage('Email verifikasi telah dikirim ulang! Silakan cek inbox Anda.');
+    } catch (err: any) {
+      setResendMessage('Gagal mengirim ulang email verifikasi. Silakan coba lagi nanti.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -542,7 +649,16 @@ const LoginScreen: React.FC = () => {
                   </div>
 
                   <div className="flex justify-end">
-                    <button type="button" className="text-sm font-semibold hover:underline" style={{ color: '#003868' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setActiveTab('forgot-password');
+                        setError('');
+                        setResetSuccess(false);
+                      }}
+                      className="text-sm font-semibold hover:underline" 
+                      style={{ color: '#003868' }}
+                    >
                       Lupa Password ?
                     </button>
                   </div>
@@ -865,7 +981,205 @@ const LoginScreen: React.FC = () => {
               </div>
             )}
 
-            {/* Footer */}
+            {/* ═══════════ FORGOT PASSWORD FORM ═══════════ */}
+            {activeTab === 'forgot-password' && (
+              <div className="login-fade-in-delayed">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-slate-800">
+                    Lupa Password
+                  </h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Masukkan email Anda untuk menerima link reset password.
+                  </p>
+                </div>
+
+                {resetSuccess ? (
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-emerald-50 text-emerald-500">
+                      <span className="material-symbols-outlined text-3xl">mail</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Email Terkirim!</h3>
+                    <p className="text-slate-500 text-sm mb-6">
+                      Silakan periksa kotak masuk email Anda {email} untuk instruksi selanjutnya.
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('login')}
+                      className="text-sm font-bold hover:underline"
+                      style={{ color: '#003868' }}
+                    >
+                      Kembali ke Login
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    {error && (
+                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm bg-red-50 text-red-600 border border-red-100">
+                        <span className="material-symbols-outlined text-lg">error</span>
+                        <span>{error}</span>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+                      <InputField
+                        id="forgot-email"
+                        icon="mail"
+                        type="email"
+                        value={email}
+                        onChange={setEmail}
+                        placeholder="Masukan alamat email akun Anda"
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full rounded-xl px-4 py-3.5 font-semibold text-white text-sm transition-all duration-300 disabled:opacity-50"
+                      style={{
+                        background: 'linear-gradient(135deg, #003868, #00B4AE)',
+                        boxShadow: '0 4px 15px rgba(0,56,104,0.2)',
+                      }}
+                    >
+                      {loading ? 'Mengirim...' : 'Kirim Link Reset'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('login')}
+                      className="w-full text-sm font-semibold text-slate-500 hover:text-slate-800 pt-2 transition-colors"
+                    >
+                      Batal
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════ RESET PASSWORD FORM ═══════════ */}
+            {activeTab === 'reset-password' && (
+              <div className="login-fade-in-delayed">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-slate-800">
+                    Reset Password
+                  </h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Buat password baru untuk akun {email}.
+                  </p>
+                </div>
+
+                {resetSuccess ? (
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-emerald-50 text-emerald-500">
+                      <span className="material-symbols-outlined text-3xl">check_circle</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Password Diubah!</h3>
+                    <p className="text-slate-500 text-sm">
+                      Password Anda telah berhasil diperbarui. Mengalihkan ke login...
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleResetPassword} className="space-y-4">
+                    {error && (
+                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm bg-red-50 text-red-600 border border-red-100">
+                        <span className="material-symbols-outlined text-lg">error</span>
+                        <span>{error}</span>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru</label>
+                      <InputField
+                        id="reset-password"
+                        icon="lock"
+                        type="password"
+                        value={regPassword}
+                        onChange={setRegPassword}
+                        placeholder="Minimal 5 karakter"
+                        showToggle
+                        onToggle={() => setShowRegPassword(!showRegPassword)}
+                        isVisible={showRegPassword}
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
+                      <InputField
+                        id="reset-password-confirm"
+                        icon="lock"
+                        type="password"
+                        value={regPasswordConfirm}
+                        onChange={setRegPasswordConfirm}
+                        placeholder="Ulangi password"
+                        showToggle
+                        onToggle={() => setShowRegPassword(!showRegPassword)}
+                        isVisible={showRegPassword}
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full rounded-xl px-4 py-3.5 font-semibold text-white text-sm transition-all duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #003868, #00B4AE)',
+                        boxShadow: '0 4px 15px rgba(0,56,104,0.2)',
+                      }}
+                    >
+                      {loading ? 'Memproses...' : 'Simpan Password Baru'}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════ VERIFICATION SENT SCREEN ═══════════ */}
+            {activeTab === 'verification-sent' && (
+              <div className="login-fade-in-delayed text-center">
+                <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-cyan-400 opacity-20 rounded-full animate-ping"></div>
+                  <div className="relative z-10 w-full h-full rounded-full flex items-center justify-center bg-white border-2 border-cyan-400">
+                    <span className="material-symbols-outlined text-4xl text-cyan-500">mark_email_unread</span>
+                  </div>
+                </div>
+
+                <h2 className="text-2xl font-bold text-slate-800 mb-3">Verifikasi Email Anda</h2>
+                <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                  Kami telah mengirimkan link verifikasi ke <br/>
+                  <span className="font-bold text-slate-700">{notVerifiedEmail || email}</span>.<br/>
+                  Silakan klik link tersebut untuk mengaktifkan akun Anda.
+                </p>
+
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 mb-6">
+                    <p className="text-xs text-slate-400 mb-2">Belum menerima email?</p>
+                    <button
+                      onClick={handleResendVerification}
+                      disabled={resendLoading}
+                      className="text-sm font-bold transition-colors disabled:opacity-50"
+                      style={{ color: '#00B4AE' }}
+                    >
+                      {resendLoading ? 'Mengirim Ulang...' : 'Kirim Ulang Link Verifikasi'}
+                    </button>
+                    {resendMessage && (
+                      <p className="text-[11px] mt-2 text-emerald-500 font-medium">{resendMessage}</p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setActiveTab('login')}
+                    className="w-full text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+                  >
+                    Kembali ke Login
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="mt-8 pt-6 border-t border-slate-100 text-center">
               <p className="text-xs text-slate-400">
                 © {new Date().getFullYear()} PT Surveyor Indonesia (Persero)

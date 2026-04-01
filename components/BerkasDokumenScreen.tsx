@@ -169,7 +169,7 @@ const BerkasDokumenScreen: React.FC = () => {
           <div className="hidden"></div>
         </header>
 
-        <section className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+        <section id="upload-form" className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
           <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
             Tambah Dokumen Baru
@@ -220,13 +220,14 @@ const BerkasDokumenScreen: React.FC = () => {
           {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
         </section>
 
-        <section className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+        <section id="doc-list" className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Daftar Dokumen</h3>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
                 <input
+                  id="doc-search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary w-64"

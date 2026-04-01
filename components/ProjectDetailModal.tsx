@@ -13,21 +13,7 @@ const formatCurrency = (value: any) => {
   if (value === null || value === undefined || value === '') return 'N/A';
   const num = typeof value === 'number' ? value : Number(value);
   if (Number.isNaN(num)) return 'N/A';
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
-};
-
-const toPascalCase = (str: string) => {
-  if (!str) return '';
-  return str.replace(/(\w)(\w*)/g, (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase());
-};
-
-const formatDateForInput = (dateString: string | null | undefined) => {
-  if (!dateString) return '';
-  try {
-    return new Date(dateString).toISOString().split('T')[0];
-  } catch (e) {
-    return '';
-  }
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 };
 
 const formatNumberInput = (value: string | number) => {
@@ -37,139 +23,77 @@ const formatNumberInput = (value: string | number) => {
   return new Intl.NumberFormat('id-ID').format(num);
 };
 
-const getTimelineText = (project: any) => {
-  if (!project.start_date) return '';
-  const isDone = project.progress >= 100 || project.status === 'DONE';
-  const start = new Date(project.start_date);
-  const end = project.end_date ? new Date(project.end_date) : new Date();
-  const compareDate = isDone ? end : new Date();
-  
-  let months = (compareDate.getFullYear() - start.getFullYear()) * 12 + compareDate.getMonth() - start.getMonth();
-  months = Math.max(0, months);
-  
-  if (isDone) {
-    return `Selesai dalam ${months} bulan`;
-  }
-  return `Berjalan ${months} bulan`;
-};
-
 const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOpen, onClose, onUpdated }) => {
   const auth = useAuth();
-  const isMarketing = auth?.isMarketing || (() => false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [project, setProject] = useState<any>(null);
-  const [isEdit, setIsEdit] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
 
   const [form, setForm] = useState({
-    title: '',
     status: 'PENDING',
-    start_date: '',
-    end_date: '',
     progress: 0,
     budget: '',
     actual_revenue: '',
-    project_type: '',
+    revenue_increment: '',
     description: '',
   });
 
-  const header = useMemo(() => {
-    const code = project?.code ? ` • ${project.code}` : '';
-    return `${project?.title || 'Detail Proyek'}${code}`;
-  }, [project]);
-
   useEffect(() => {
     if (!isOpen) return;
-    let cancelled = false;
     const run = async () => {
       setLoading(true);
       try {
         const data: any = await api.getProject(projectId);
-        if (cancelled) return;
         setProject(data);
         setForm({
-          title: data?.title || '',
           status: data?.status || 'PENDING',
-          start_date: formatDateForInput(data?.start_date),
-          end_date: formatDateForInput(data?.end_date),
           progress: Number(data?.progress ?? 0),
           budget: data?.budget ? String(data.budget).split('.')[0] : '',
           actual_revenue: data?.actual_revenue ? String(data.actual_revenue).split('.')[0] : '',
-          project_type: data?.project_type ?? '',
+          revenue_increment: '',
           description: data?.description ?? '',
         });
       } catch (e) {
         console.error('Failed to load project detail:', e);
-        if (!cancelled) setProject(null);
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
     };
     run();
-    return () => {
-      cancelled = true;
-    };
   }, [isOpen, projectId]);
 
   useEffect(() => {
     if (!isOpen) {
-      setIsEdit(false);
+      setIsReviewing(false);
       setProject(null);
     }
   }, [isOpen]);
 
-  const handleSave = async () => {
-    if (!form.title.trim()) {
-      alert('Judul proyek wajib diisi');
-      return;
-    }
-    const progress = Math.max(0, Math.min(100, Number(form.progress)));
-    if (Number.isNaN(progress)) {
-      alert('Progress harus berupa angka 0-100');
-      return;
-    }
-    if (form.start_date && form.end_date) {
-      const s = new Date(form.start_date);
-      const e = new Date(form.end_date);
-      if (e < s) {
-        alert('Tanggal selesai harus setelah tanggal mulai');
-        return;
-      }
-    }
+  const newTotalRevenue = useMemo(() => {
+    const current = Number(form.actual_revenue) || 0;
+    const increment = Number(form.revenue_increment) || 0;
+    return current + increment;
+  }, [form.actual_revenue, form.revenue_increment]);
 
+  const handleSave = async () => {
     setSaving(true);
     try {
       const payload: any = {
-        title: form.title.trim(),
         status: form.status,
-        start_date: form.start_date || undefined,
-        end_date: form.end_date || undefined,
-        progress,
-        project_type: form.project_type || null,
+        progress: form.progress,
+        budget: form.budget ? Number(form.budget) : null,
+        actual_revenue: newTotalRevenue,
         description: form.description || null,
       };
-      if (form.budget === '' || form.budget === null) {
-        payload.budget = null;
-      } else {
-        const budgetNum = Number(form.budget);
-        payload.budget = Number.isNaN(budgetNum) ? null : budgetNum;
-      }
 
-      if (form.actual_revenue === '' || form.actual_revenue === null) {
-        payload.actual_revenue = null;
-      } else {
-        const actualNum = Number(form.actual_revenue);
-        payload.actual_revenue = Number.isNaN(actualNum) ? null : actualNum;
-      }
-
-      const updated: any = await api.updateProject(projectId, payload);
-      setProject(updated);
-      onUpdated?.(updated);
-      setIsEdit(false);
-      alert('Proyek berhasil diperbarui');
+      const updatedDetails: any = await api.updateProject(projectId, payload);
+      setProject(updatedDetails);
+      onUpdated?.(updatedDetails);
+      alert('Pembaruan capaian berhasil disimpan');
+      onClose();
     } catch (e: any) {
-      console.error('Failed to update project:', e);
-      alert(`Gagal memperbarui proyek: ${e?.message || 'Unknown error'}`);
+      alert(`Gagal menyimpan: ${e?.message || 'Error tidak diketahui'}`);
     } finally {
       setSaving(false);
     }
@@ -178,276 +102,221 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 p-6 md:px-8 md:pt-8 md:pb-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
-          <div className="min-w-0">
-            <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white truncate">{header}</h3>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-              {project?.client?.company_name ? `Client: ${project.client.company_name}` : 'Client: N/A'}
-            </p>
+        {/* Header */}
+        <div className="p-7 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/20">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-teal-600 text-2xl font-bold">sync_alt</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white leading-none">Pembaruan Capaian</h3>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1.5 truncate max-w-[300px]">
+                {project?.title} • {project?.code}
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 dark:text-slate-200 transition-colors">
+          <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">Memuat detail proyek...</div>
-        ) : !project ? (
-          <div className="py-16 text-center text-sm font-bold text-slate-500 dark:text-slate-400">Detail proyek tidak tersedia.</div>
+          <div className="p-20 flex flex-col items-center justify-center gap-4">
+            <div className="w-8 h-8 rounded-full border-2 border-teal-500/20 border-t-teal-500 animate-spin"></div>
+            <p className="text-xs font-black uppercase text-slate-400">Loading details...</p>
+          </div>
         ) : (
           <>
-            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-6 md:px-8 md:py-6 space-y-6">
-              {/* Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</p>
-                {isEdit ? (
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
-                  >
-                    <option value="PENDING">PENDING</option>
-                    <option value="RUNNING">RUNNING</option>
-                    <option value="DONE">DONE</option>
-                    <option value="REJECTED">REJECTED</option>
-                  </select>
-                ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{project.status}</p>
-                )}
-              </div>
+            <div className="flex-1 overflow-y-auto p-7 custom-scrollbar space-y-8">
+              {!isReviewing ? (
+                <>
+                  {/* Status & Progress Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">flag</span> Status Proyek
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {['RUNNING', 'DONE', 'PENDING', 'REJECTED'].map((st) => (
+                          <button
+                            key={st}
+                            onClick={() => setForm(f => ({ ...f, status: st }))}
+                            className={`px-4 py-2.5 rounded-xl text-[11px] font-black border transition-all
+                              ${form.status === st 
+                                ? 'bg-teal-500 border-teal-500 text-white shadow-lg shadow-teal-500/20' 
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 hover:border-teal-200'}`}
+                          >
+                            {st}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</p>
-                {isEdit ? (
-                  <div className="mt-2 flex items-center gap-3">
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={form.progress}
-                      onChange={(e) => setForm((p) => ({ ...p, progress: Number(e.target.value) }))}
-                      className="w-full"
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={form.progress}
-                      onChange={(e) => setForm((p) => ({ ...p, progress: Number(e.target.value) }))}
-                      className="w-20 h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-black text-slate-900 dark:text-white"
-                    />
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">trending_up</span> Progress Kerja
+                      </label>
+                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <div className="flex justify-between items-center mb-4">
+                          <span className="text-2xl font-black text-teal-600">{form.progress}%</span>
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Target 100%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={form.progress}
+                          onChange={(e) => setForm(f => ({ ...f, progress: Number(e.target.value) }))}
+                          className="w-full transition-all appearance-none bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full accent-teal-500"
+                        />
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="mt-2">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-black text-slate-900 dark:text-white">
-                        {project.progress}%
-                        {project.start_date && (
-                          <span className={`ml-2 text-xs font-bold ${project.progress >= 100 || project.status === 'DONE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-primary dark:text-slate-400'}`}>
-                            • {getTimelineText(project)}
-                          </span>
+
+                  {/* Financial Section (Incremental Updates) */}
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">payments</span> Financial Update (Incremental)
+                    </label>
+                    <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Budget Edit with Confirmation */}
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black text-slate-400">NILAI KONTRAK SAAT INI</p>
+                        <p className="text-base font-black text-slate-900 dark:text-white">{formatCurrency(project?.budget)}</p>
+                        <div className="relative group">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400 group-focus-within:text-teal-500">IDR</span>
+                          <input
+                            type="text"
+                            placeholder="Revisi Nilai Kontrak..."
+                            value={formatNumberInput(form.budget)}
+                            onChange={(e) => setForm(f => ({ ...f, budget: e.target.value.replace(/\D/g, '') }))}
+                            className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Realisasi Increment (The "Neraca" Flow) */}
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black text-slate-400 uppercase">Input Penambahan Realisasi (Neraca)</p>
+                        <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 mb-2">
+                          <p className="text-[9px] font-black text-emerald-600/60 uppercase mb-1">Total Terserap Sekarang</p>
+                          <p className="text-sm font-black text-emerald-700 dark:text-emerald-400">{formatCurrency(project?.actual_revenue)}</p>
+                        </div>
+                        <div className="relative group">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-emerald-600 transition-transform group-hover:scale-110">+</span>
+                          <input
+                            type="text"
+                            placeholder="Contoh: 50.000.000"
+                            value={formatNumberInput(form.revenue_increment)}
+                            onChange={(e) => setForm(f => ({ ...f, revenue_increment: e.target.value.replace(/\D/g, '') }))}
+                            className="w-full bg-white dark:bg-slate-800 border-emerald-200/60 dark:border-emerald-800/40 rounded-xl py-3.5 pl-10 pr-4 text-sm font-black text-emerald-700 dark:text-emerald-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none animate-pulse-subtle"
+                          />
+                        </div>
+                        {form.revenue_increment && (
+                          <div className="pt-2 border-t border-dashed border-emerald-200 dark:border-emerald-800 flex justify-between items-center text-[11px] font-black">
+                            <span className="text-slate-400 italic font-medium">Preview Total Realisasi Baru:</span>
+                            <span className="text-emerald-600">{formatCurrency(newTotalRevenue)}</span>
+                          </div>
                         )}
-                      </p>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{project.approval_status || 'N/A'}</p>
-                    </div>
-                    <div className="mt-2 w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full" style={{ width: `${project.progress}%` }} />
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
 
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nilai Kontrak</p>
-                {isEdit ? (
-                  <input
-                    type="text"
-                    value={formatNumberInput(form.budget)}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setForm((p) => ({ ...p, budget: val }));
-                    }}
-                    placeholder="contoh: 150.000.000"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{formatCurrency(project.budget)}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Portofolio / Jenis Pekerjaan</p>
-                {isEdit ? (
-                  <input
-                    value={form.project_type as any}
-                    onChange={(e) => setForm((p) => ({ ...p, project_type: e.target.value }))}
-                    placeholder="contoh: Inspection"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{toPascalCase(project.project_type || 'Uncategorized')}</p>
-                )}
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Realisasi (Terserap)</p>
-                {isEdit ? (
-                  <input
-                    type="text"
-                    value={formatNumberInput(form.actual_revenue)}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setForm((p) => ({ ...p, actual_revenue: val }));
-                    }}
-                    placeholder="contoh: 50.000.000"
-                    className="mt-2 w-full h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <p className="mt-2 text-sm font-black text-slate-900 dark:text-white">{formatCurrency(project.actual_revenue)}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Proyek</label>
-                {isEdit ? (
-                  <input
-                    value={form.title}
-                    onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <div className="min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white leading-snug break-all">
-                    {project.title}
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">history_edu</span> Keterangan Progress (Opsional)
+                    </label>
+                    <textarea
+                      placeholder="Masukkan catatan pembaruan jika ada..."
+                      value={form.description}
+                      onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
+                      className="w-full min-h-[100px] bg-slate-50 dark:bg-slate-900/50 border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-sm font-medium focus:ring-4 focus:ring-teal-500/10 outline-none transition-all resize-none"
+                    />
                   </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">PIC</label>
-                <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
-                  {project?.pic?.name || project?.custom_pic_name || 'N/A'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal Mulai</label>
-                {isEdit ? (
-                  <input
-                    type="date"
-                    value={form.start_date}
-                    onChange={(e) => setForm((p) => ({ ...p, start_date: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
-                    {formatDateForInput(project.start_date) || 'N/A'}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal Selesai</label>
-                {isEdit ? (
-                  <input
-                    type="date"
-                    value={form.end_date}
-                    onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))}
-                    className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-sm font-bold text-slate-900 dark:text-white"
-                  />
-                ) : (
-                  <div className="h-11 flex items-center px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white">
-                    {formatDateForInput(project.end_date) || 'N/A'}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi</label>
-              {isEdit ? (
-                <textarea
-                  value={form.description as any}
-                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  className="w-full min-h-[110px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-sm font-bold text-slate-900 dark:text-white"
-                />
+                </>
               ) : (
-                <textarea
-                  readOnly
-                  value={project.description || 'N/A'}
-                  className="w-full min-h-[110px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-sm font-bold text-slate-900 dark:text-white resize-y focus:outline-none"
-                />
+                /* Confirmation View */
+                <div className="p-4 space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                  <div className="text-center space-y-2">
+                    <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
+                      <span className="material-symbols-outlined text-amber-600 text-3xl font-bold">fact_check</span>
+                    </div>
+                    <h4 className="text-lg font-black text-slate-900 dark:text-white">Konfirmasi Pembaruan</h4>
+                    <p className="text-xs font-bold text-slate-500 leading-relaxed max-w-[320px] mx-auto">
+                      Harap periksa kembali detail perubahan di bawah ini sebelum menyimpan ke sistem permanen.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-4">
+                      <div className="flex justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                        <span className="text-xs font-bold text-slate-400">Status & Progress</span>
+                        <span className="text-xs font-black text-teal-600">{form.status} • {form.progress}%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-400">Nilai Kontrak Baru</span>
+                        <span className="text-sm font-black text-slate-700 dark:text-white">
+                          {form.budget ? formatCurrency(Number(form.budget)) : formatCurrency(project?.budget)}
+                        </span>
+                      </div>
+                      <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                        <p className="text-[10px] font-black text-emerald-600 uppercase">PENAMBAHAN REALISASI</p>
+                        <div className="flex justify-between items-end">
+                          <span className="text-xs font-bold text-slate-400 mb-1">Total Realisasi Baru</span>
+                          <div className="text-right">
+                            <span className="text-[9px] text-slate-400 line-through block mb-0.5">{formatCurrency(project?.actual_revenue)}</span>
+                            <span className="text-base font-black text-emerald-600">{formatCurrency(newTotalRevenue)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
-            </div>
-
-            {/* Actions */}
-            <div className="p-4 md:px-8 md:py-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 shrink-0 flex items-center justify-between">
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Attachments: <span className="text-slate-900 dark:text-white">{(project.attachments || []).length}</span> • Comments:{' '}
-                <span className="text-slate-900 dark:text-white">{(project.comments || []).length}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {!isEdit ? (
-                  <>
-                    {isMarketing() && (
-                      <button
-                        onClick={() => setIsEdit(true)}
-                        className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
-                      >
-                        Edit Detail
-                      </button>
-                    )}
-                    <button
-                      onClick={onClose}
-                      className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-all"
-                    >
-                      Tutup
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      disabled={saving}
-                      onClick={handleSave}
-                      className="px-5 py-2.5 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {saving ? 'Menyimpan...' : 'Simpan'}
-                    </button>
-                    <button
-                      disabled={saving}
-                      onClick={() => {
-                        setIsEdit(false);
-                        setForm({
-                          title: project?.title || '',
-                          status: project?.status || 'PENDING',
-                          start_date: project?.start_date || '',
-                          end_date: project?.end_date || '',
-                          progress: Number(project?.progress ?? 0),
-                          budget: project?.budget ? String(project.budget).split('.')[0] : '',
-                          actual_revenue: project?.actual_revenue ? String(project.actual_revenue).split('.')[0] : '',
-                          project_type: project?.project_type ?? '',
-                          description: project?.description ?? '',
-                        });
-                      }}
-                      className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      Batal
-                    </button>
-                  </>
-                )}
-              </div>
+            {/* Footer Actions */}
+            <div className="p-7 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 flex gap-3">
+              {!isReviewing ? (
+                <>
+                  <button
+                    onClick={() => setIsReviewing(true)}
+                    className="flex-1 h-12 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">verified</span>
+                    Tinjau Perubahan
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="px-8 h-12 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+                  >
+                    Batal
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    disabled={saving}
+                    onClick={handleSave}
+                    className="flex-1 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">{saving ? 'sync' : 'save_as'}</span>
+                    {saving ? 'Sedang Menyimpan...' : 'Konfirmasi & Simpan'}
+                  </button>
+                  <button
+                    disabled={saving}
+                    onClick={() => setIsReviewing(false)}
+                    className="px-8 h-12 border border-emerald-200 dark:border-emerald-800 bg-emerald-50/20 dark:bg-emerald-900/10 text-emerald-700 dark:text-emerald-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all disabled:opacity-50"
+                  >
+                    Kembali Edit
+                  </button>
+                </>
+              )}
             </div>
           </>
         )}

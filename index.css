@@ -5,6 +5,22 @@
   --primary-dark:#00B4AE;
   --brand-blue:#003868;
   --brand-teal:#00B4AE;
+
+  /* ── Soft Stone Theme ── */
+  /* Page/App background: warm muted stone, easy on eyes */
+  --bg-stone: #edeef0;
+  /* Card/Surface: very slightly tinted off-white */
+  --surface: #f8f8fa;
+  /* Section card: pure white for contrast on stone bg */
+  --card-bg: #ffffff;
+  /* Header: semi-frosted warm white */
+  --header-bg: rgba(248, 248, 250, 0.92);
+  --header-border: #dde0e6;
+  /* Borders: softer, warmer grey */
+  --border-soft: #e2e5ea;
+  /* Text: slightly warmer dark */
+  --text-base: #1e2a38;
+  --text-muted: #64748b;
 }
 .bg-primary{background-color:var(--primary)!important;}
 .hover\:bg-primary-dark:hover{background-color:var(--primary-dark)!important;}

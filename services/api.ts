@@ -85,6 +85,41 @@ class ApiService {
     return this.request<any>('/user');
   }
 
+  async forgotPassword(email: string) {
+    return this.request<{ message: string }>('/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(data: any) {
+    return this.request<{ message: string }>('/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async resendVerification(email: string) {
+    return this.request<{ message: string }>('/email/resend', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async validateInviteCode(code: string) {
+    return this.request<{ valid: boolean; message: string }>('/validate-invite-code', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+  }
+
+  async registerWithInvite(data: any) {
+    return this.request<{ user: any; message: string; requires_verification?: boolean; token?: string }>('/register-invite', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Dashboard
   async getDashboardStats(startMonth?: number, startYear?: number, endMonth?: number, endYear?: number) {
     const params = new URLSearchParams();
@@ -767,6 +802,18 @@ class ApiService {
     });
   }
 
+  // Tutorials
+  async getUserTutorials() {
+    return this.request<string[]>('/user-tutorials');
+  }
+
+  async saveUserTutorial(tutorialId: string) {
+    return this.request('/user-tutorials', {
+      method: 'POST',
+      body: JSON.stringify({ tutorial_id: tutorialId }),
+    });
+  }
+
   async updatePreferences(data: any) {
     return this.request('/users/preferences', {
       method: 'PUT',
@@ -844,44 +891,6 @@ class ApiService {
     if (params?.page) query.append('page', params.page.toString());
     const queryString = query.toString();
     return this.request(`/activity-logs${queryString ? `?${queryString}` : ''}`);
-  }
-
-  // Forgot Password
-  async forgotPassword(email: string) {
-    return this.request('/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
-  }
-
-  // Invite Codes
-  async validateInviteCode(code: string) {
-    return this.request<{ valid: boolean; message: string }>('/validate-invite-code', {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-    });
-  }
-
-  async registerWithInvite(data: {
-    invite_code: string;
-    name: string;
-    email: string;
-    password: string;
-    password_confirmation: string;
-    division: string;
-  }) {
-    const response = await this.request<{ user: any; token: string; message: string }>('/register-invite', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    this.setToken(response.token);
-    return response;
-  }
-
-  async generateInviteCode() {
-    return this.request<{ invite_code: any; message: string }>('/invite-codes/generate', {
-      method: 'POST',
-    });
   }
 
   async listInviteCodes(params?: { page?: number }) {

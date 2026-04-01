@@ -645,6 +645,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                 setSelectedDate(null);
                 setIsModalOpen(true);
               }}
+              id="add-event-btn"
               className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark active:scale-95"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
@@ -654,7 +655,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
         </div>
 
         {/* Calendar Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4 gap-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+        <div id="calendar-header" className="flex flex-col md:flex-row items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4 gap-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden shadow-sm">
               <button
@@ -717,7 +718,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
         </div>
 
         {/* Calendar Content */}
-        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+        <div id="calendar-container" className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
           <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900/20 custom-scrollbar">
             {loading ? (
               <div className="flex items-center justify-center h-96">

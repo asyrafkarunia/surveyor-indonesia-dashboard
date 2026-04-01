@@ -126,6 +126,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Kelola, lacak, dan buat dokumen penawaran harga untuk klien Anda secara efisien.</p>
           </div>
           <button 
+            id="create-sph-btn"
             onClick={onCreateClick}
             className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all active:scale-95"
           >
@@ -137,7 +138,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
         {/* Filters and Table Section */}
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col overflow-hidden">
           {/* Filters Header */}
-          <div className="p-5 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div id="sph-filters" className="p-5 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-1 items-center gap-2 max-w-md">
               <div className="relative w-full group">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>

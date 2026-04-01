@@ -540,7 +540,7 @@ const FeedScreen: React.FC = () => {
         </div>
 
         {/* Post Input */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+        <div id="post-input" className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
           <div className="flex gap-4">
             {user?.avatar ? (
               <div className="size-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${user.avatar}")` }}></div>
@@ -593,7 +593,7 @@ const FeedScreen: React.FC = () => {
         </div>
 
         {/* Feed List */}
-        <div className={`flex flex-col gap-4 pb-6 transition-opacity duration-300 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
+        <div id="feed-list" className={`flex flex-col gap-4 pb-6 transition-opacity duration-300 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
           {isLoading ? (
             <div className="text-center py-8 text-slate-400 text-sm">Memuat aktivitas...</div>
           ) : activities.length === 0 ? (
