@@ -877,7 +877,18 @@ class ApiService {
   }
 
   // Activity Logs
-  async getActivityLogs(params?: { module?: string; status?: string; action_type?: string; action_types?: string[]; search?: string; date_from?: string; date_to?: string; page?: number }) {
+  async getActivityLogs(params?: { 
+    module?: string; 
+    status?: string; 
+    action_type?: string; 
+    action_types?: string[]; 
+    search?: string; 
+    date_from?: string; 
+    date_to?: string; 
+    user_id?: string; 
+    page?: number;
+    per_page?: number;
+  }) {
     const query = new URLSearchParams();
     if (params?.module) query.append('module', params.module);
     if (params?.status) query.append('status', params.status);
@@ -888,7 +899,9 @@ class ApiService {
     if (params?.search) query.append('search', params.search);
     if (params?.date_from) query.append('date_from', params.date_from);
     if (params?.date_to) query.append('date_to', params.date_to);
+    if (params?.user_id) query.append('user_id', params.user_id);
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.per_page) query.append('per_page', params.per_page.toString());
     const queryString = query.toString();
     return this.request(`/activity-logs${queryString ? `?${queryString}` : ''}`);
   }

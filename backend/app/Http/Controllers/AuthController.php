@@ -31,6 +31,8 @@ class AuthController extends Controller
             // Log failed login attempt
             if ($user) {
                 LogActivity::logLogin($user->id, 'Failed');
+            } else {
+                LogActivity::logFailedLoginAttempt($request->email);
             }
             throw ValidationException::withMessages([
                 'email' => ['Alamat email atau password salah.'],

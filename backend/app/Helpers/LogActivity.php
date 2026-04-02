@@ -26,10 +26,11 @@ class LogActivity
         ?array $metadata = null,
         ?int $userId = null
     ): ActivityLog {
-        $userId = $userId ?? Auth::id();
+        // use provided userId OR current authenticated user OR null
+        $id = $userId ?? Auth::id();
 
         return ActivityLog::create([
-            'user_id' => $userId,
+            'user_id' => $id,
             'action' => $action,
             'action_target' => $actionTarget,
             'module' => $module,
@@ -50,6 +51,26 @@ class LogActivity
             $status,
             ['ip_address' => request()->ip(), 'user_agent' => request()->userAgent()],
             $userId
+        );
+    }
+
+    /**
+     * Log failed login attempt (for non-existent users)
+     */
+    public static function logFailedLoginAttempt(string $email): ActivityLog
+    {
+        return self::log(
+            'Failed Login Attempt',
+            'Auth',
+            "Email: $email",
+            'Failed',
+            [
+                'attempted_email' => $email,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'reason' => 'User not found or invalid credentials'
+            ],
+            null // explicitly null
         );
     }
 

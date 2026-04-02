@@ -16,9 +16,11 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigate, isAdmin = false, isApprover = false }) => {
 
   // Filter navigation items based on role
-  const mainNavItems = SIDEBAR_NAV.filter(item => {
-    // Hide settings/permissions/admin_log — now in Header dropdown
+  const visibleItems = SIDEBAR_NAV.filter(item => {
+    // Always skip settings/permissions/admin_log — in Header dropdown
     if (['settings', 'permissions', 'admin_log'].includes(item.id)) return false;
+    // Group headers are always shown (they are just labels)
+    if (item.group === 'header') return true;
     // Hide marketing-only items from non-marketing users
     if ((item.id === 'sph' || item.id === 'audiensi' || item.id === 'marketing_kanban' || item.id === 'essential_docs') && !isAdmin) return false;
     // Hide clients from common users
@@ -28,11 +30,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
     return true;
   });
 
+  // After role filtering, remove group headers that have no visible children
+  const groupsWithChildren = new Set(
+    visibleItems.filter(i => i.group && i.group !== 'header').map(i => i.group)
+  );
+
+  const mainNavItems = visibleItems.filter(item => {
+    if (item.group === 'header') {
+      // Show this header only if there are children in the same group
+      const groupLabel = item.label;
+      return groupsWithChildren.has(groupLabel);
+    }
+    return true;
+  });
+
   return (
     <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col transition-transform lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       style={{ background: 'linear-gradient(180deg, #0d2137 0%, #0f2a43 60%, #0a1e32 100%)' }}
     >
-      <div className="flex flex-col gap-8 p-6 flex-1 overflow-hidden">
+      <div className="flex flex-col gap-6 p-6 flex-1 overflow-hidden">
         <div className="flex items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)' }}>
             <MarsIconLogo className="w-7 h-7" color="white" />
@@ -46,27 +62,45 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
           </button>
         </div>
 
-        <nav className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1" aria-label="Navigasi Utama">
-          {mainNavItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 group text-left ${
-                activeId === item.id 
-                  ? 'shadow-md' 
-                  : 'border-transparent hover:bg-white/8'
-              }`}
-              style={activeId === item.id
-                ? { background: 'linear-gradient(135deg, rgba(0,180,174,0.22), rgba(0,56,104,0.18))', color: '#00B4AE', borderLeft: '3px solid #00B4AE' }
-                : { color: 'rgba(255,255,255,0.55)' }
-              }
-            >
-              <span className={`material-symbols-outlined text-[22px] transition-transform duration-200 ${activeId === item.id ? 'fill scale-110' : 'group-hover:scale-105'}`}>
-                {item.icon}
-              </span>
-              <span className={`text-sm ${activeId === item.id ? 'font-bold' : 'font-medium'}`} style={{ color: activeId === item.id ? '#00B4AE' : 'inherit' }}>{item.label}</span>
-            </button>
-          ))}
+        <nav className="flex flex-col overflow-y-auto custom-scrollbar pr-1 gap-0.5" aria-label="Navigasi Utama">
+          {mainNavItems.map((item) => {
+            // Render group header / separator
+            if (item.group === 'header') {
+              return (
+                <div key={item.id} className="px-2 pt-4 pb-1.5 first:pt-0">
+                  <p
+                    className="text-[9px] font-black tracking-[0.18em] uppercase select-none"
+                    style={{ color: 'rgba(255,255,255,0.28)' }}
+                  >
+                    {item.label}
+                  </p>
+                </div>
+              );
+            }
+
+            // Render regular nav item
+            const isActive = activeId === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={`flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 group text-left ${
+                  isActive
+                    ? 'shadow-md'
+                    : 'border-transparent hover:bg-white/8'
+                }`}
+                style={isActive
+                  ? { background: 'linear-gradient(135deg, rgba(0,180,174,0.22), rgba(0,56,104,0.18))', color: '#00B4AE', borderLeft: '3px solid #00B4AE' }
+                  : { color: 'rgba(255,255,255,0.55)' }
+                }
+              >
+                <span className={`material-symbols-outlined text-[20px] transition-transform duration-200 ${isActive ? 'fill scale-110' : 'group-hover:scale-105'}`}>
+                  {item.icon}
+                </span>
+                <span className={`text-[13px] ${isActive ? 'font-bold' : 'font-medium'}`} style={{ color: isActive ? '#00B4AE' : 'inherit' }}>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
 

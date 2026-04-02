@@ -1,20 +1,29 @@
 import { NavItem, StatCardData, RevenueData, ProjectData, FeedItemData, DeadlineData, OnlineMember, ActivityItemData, NotificationItemData, ClientData, ProjectHistoryItem, ClientActivityItem, ContractHistoryItem, SphData, SystemUser, PermissionCategory, ActivityLogEntry, KanbanColumn, AudiensiTemplate, AudiensiLetter, MonitoringProjectItem } from './types';
 
 export const SIDEBAR_NAV: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', href: '#' },
-  { id: 'monitoring', label: 'Monitoring Proyek', icon: 'folder', href: '#' },
-  { id: 'approval', label: 'Persetujuan Proyek', icon: 'verified', href: '#' },
-  { id: 'calendar', label: 'Kalendar Aktivitas', icon: 'calendar_month', href: '#' },
-  { id: 'activity', label: 'Activity Feed', icon: 'show_chart', href: '#' },
-  { id: 'clients', label: 'Clients', icon: 'groups', href: '#' },
-  { id: 'sph', label: 'SPH Management', icon: 'description', href: '#' },
-  { id: 'audiensi', label: 'Surat Audiensi', icon: 'mail', href: '#' },
-  { id: 'marketing_kanban', label: 'Marketing Plan', icon: 'view_kanban', href: '#' },
-  { id: 'essential_docs', label: 'Berkas Dokumen', icon: 'folder_zip', href: '#' },
-  { id: 'settings', label: 'Settings', icon: 'settings', href: '#' },
-  { id: 'permissions', label: 'Kelola Izin', icon: 'admin_panel_settings', href: '#' },
-  { id: 'admin_log', label: 'Log Aktivitas', icon: 'history', href: '#' },
+  { id: 'dashboard',         label: 'Dashboard',              icon: 'dashboard',           href: '#', group: null },
+
+  { id: '_group_proyek',     label: 'PROYEK & AKTIVITAS',     icon: '',                    href: '#', group: 'header' },
+  { id: 'monitoring',        label: 'Monitoring Proyek',      icon: 'folder',              href: '#', group: 'PROYEK & AKTIVITAS' },
+  { id: 'approval',          label: 'Persetujuan Proyek',     icon: 'verified',            href: '#', group: 'PROYEK & AKTIVITAS' },
+  { id: 'calendar',          label: 'Kalender Aktivitas',     icon: 'calendar_month',      href: '#', group: 'PROYEK & AKTIVITAS' },
+  { id: 'activity',          label: 'Feed Aktivitas',         icon: 'show_chart',          href: '#', group: 'PROYEK & AKTIVITAS' },
+  { id: 'marketing_kanban',  label: 'Papan Marketing',        icon: 'view_kanban',         href: '#', group: 'PROYEK & AKTIVITAS' },
+
+  { id: '_group_surat',      label: 'ADMINISTRASI SURAT',     icon: '',                    href: '#', group: 'header' },
+  { id: 'sph',               label: 'Surat Penawaran (SPH)',  icon: 'description',         href: '#', group: 'ADMINISTRASI SURAT' },
+  { id: 'audiensi',          label: 'Surat Audiensi',         icon: 'mail',                href: '#', group: 'ADMINISTRASI SURAT' },
+
+  { id: '_group_data',       label: 'DATA & KLIEN',           icon: '',                    href: '#', group: 'header' },
+  { id: 'clients',           label: 'Klien',                  icon: 'groups',              href: '#', group: 'DATA & KLIEN' },
+  { id: 'essential_docs',    label: 'Berkas Dokumen',         icon: 'folder_zip',          href: '#', group: 'DATA & KLIEN' },
+
+  // Header-only items (accessible via Header dropdown)
+  { id: 'settings',          label: 'Pengaturan',             icon: 'settings',            href: '#', group: null },
+  { id: 'permissions',       label: 'Kelola Izin',            icon: 'admin_panel_settings', href: '#', group: null },
+  { id: 'admin_log',         label: 'Log Aktivitas',          icon: 'history',             href: '#', group: null },
 ];
+
 
 export const MARKETING_TEAM = [
   { id: 'm1', name: 'Andi Wijaya', role: 'Head Section Marketing', avatar: 'https://picsum.photos/seed/andi/100/100' },

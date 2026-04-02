@@ -4,6 +4,8 @@ export interface NavItem {
   href: string;
   id: string;
   active?: boolean;
+  /** 'header' = this item is a group label/separator; string = this item belongs to that group; null = ungrouped */
+  group?: 'header' | string | null;
 }
 
 export interface StatCardData {
@@ -196,6 +198,7 @@ export interface ActivityLogEntry {
   time: string;
   adminName: string;
   adminId: string;
+  adminEmail?: string;
   adminAvatar?: string;
   adminInitials?: string;
   action: string;
@@ -204,6 +207,7 @@ export interface ActivityLogEntry {
   moduleIcon: string;
   moduleColor: 'purple' | 'blue' | 'orange' | 'slate' | 'red';
   status: 'Success' | 'Warning' | 'Failed';
+  metadata?: any;
 }
 
 export interface KanbanCard {
