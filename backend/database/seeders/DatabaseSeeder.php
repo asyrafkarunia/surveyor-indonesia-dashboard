@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Client;
-use App\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -79,22 +78,5 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Create default permissions
-        $permissions = [
-            ['name' => 'view_sph', 'description' => 'Lihat Daftar SPH', 'category' => 'Manajemen SPH'],
-            ['name' => 'create_sph', 'description' => 'Buat SPH Baru', 'category' => 'Manajemen SPH'],
-            ['name' => 'approve_sph', 'description' => 'Persetujuan Manajerial', 'category' => 'Manajemen SPH'],
-            ['name' => 'view_client_detail', 'description' => 'Lihat Detail Klien', 'category' => 'Data Klien'],
-            ['name' => 'export_data', 'description' => 'Ekspor Data', 'category' => 'Laporan & Analitik'],
-        ];
-
-        foreach ($permissions as $perm) {
-            Permission::create([
-                'name' => $perm['name'],
-                'description' => $perm['description'],
-                'category' => $perm['category'],
-                'is_enabled' => true,
-            ]);
-        }
     }
 }

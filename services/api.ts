@@ -849,32 +849,7 @@ class ApiService {
   }
   
 
-  // Permissions
-  async getPermissions(userId?: string) {
-    const query = userId ? `?user_id=${userId}` : '';
-    return this.request(`/permissions${query}`);
-  }
-
-  async updatePermission(id: string, isEnabled: boolean, userId?: string) {
-    const body: any = { is_enabled: isEnabled };
-    if (userId) {
-      body.user_id = userId;
-    }
-    return this.request(`/permissions/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-    });
-  }
-
-  async updatePermissionsBulk(userId: string, permissions: Array<{ id: number; isEnabled: boolean }>) {
-    return this.request('/permissions/bulk', {
-      method: 'PUT',
-      body: JSON.stringify({
-        user_id: userId,
-        permissions: permissions.map(p => ({ id: p.id, is_enabled: p.isEnabled })),
-      }),
-    });
-  }
+  
 
   // Activity Logs
   async getActivityLogs(params?: { 
@@ -911,6 +886,10 @@ class ApiService {
     if (params?.page) query.append('page', params.page.toString());
     const queryString = query.toString();
     return this.request(`/invite-codes${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async generateInviteCode() {
+    return this.request('/invite-codes/generate', { method: 'POST' });
   }
 }
 

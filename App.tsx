@@ -32,7 +32,6 @@ const SphManagementScreen = lazy(() => import('./components/SphManagementScreen'
 const CreateProjectScreen = lazy(() => import('./components/CreateProjectScreen'));
 const CreateSphWizard = lazy(() => import('./components/CreateSphWizard'));
 const SettingsScreen = lazy(() => import('./components/SettingsScreen'));
-const PermissionsScreen = lazy(() => import('./components/PermissionsScreen'));
 const ActivityLogScreen = lazy(() => import('./components/ActivityLogScreen'));
 const CreateClientWizard = lazy(() => import('./components/CreateClientWizard'));
 const EditClientScreen = lazy(() => import('./components/EditClientScreen'));
@@ -624,16 +623,9 @@ const AppContent: React.FC = () => {
         }
         return <AudiensiListScreen onCreateNew={() => setAudiensiView('create')} />;
       case 'settings': return <SettingsScreen onManagePermissions={(userId) => {
-        if (userId) {
-          setActiveTab('permissions');
-          // Store selected userId for permissions screen
-          sessionStorage.setItem('selectedUserId', userId);
-        } else {
-          setActiveTab('permissions');
-          sessionStorage.removeItem('selectedUserId');
-        }
+        // No-op or redirect to user management if needed, but removing logic for now
+        setActiveTab('settings');
       }} />;
-      case 'permissions': return isAdmin ? <PermissionsScreen /> : <DashboardHome />;
       case 'admin_log': return isAdmin ? <ActivityLogScreen /> : <DashboardHome />;
       default: return <DashboardHome />;
     }
@@ -709,10 +701,6 @@ const AppContent: React.FC = () => {
       case 'settings':
         items.push({ label: 'Pengaturan Akun', id: 'settings' });
         break;
-      case 'permissions':
-        items.push({ label: 'Administrator', id: 'admin' });
-        items.push({ label: 'Kelola Izin', id: 'permissions' });
-        break;
       case 'admin_log':
         items.push({ label: 'Administrator', id: 'admin' });
         items.push({ label: 'Log Aktivitas', id: 'admin_log' });
@@ -743,7 +731,7 @@ const AppContent: React.FC = () => {
         isApprover={isApprover()}
         onNavigate={(id) => {
           // Hide admin features from sidebar if not admin
-          if ((id === 'permissions' || id === 'admin_log') && !isAdmin) return;
+          if (id === 'admin_log' && !isAdmin) return;
           // Hide marketing-only features
           if ((id === 'sph' || id === 'audiensi' || id === 'marketing_kanban' || id === 'essential_docs') && !isMarketing()) return;
           // Hide clients from common users

@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
                 <div key={item.id} className="px-2 pt-4 pb-1.5 first:pt-0">
                   <p
                     className="text-[9px] font-black tracking-[0.18em] uppercase select-none"
-                    style={{ color: 'rgba(255,255,255,0.28)' }}
+                    style={{ color: 'rgba(255,255,255,0.48)' }}
                   >
                     {item.label}
                   </p>
@@ -105,10 +105,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
       </div>
 
       {/* Version Badge */}
-      <div className="p-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
-          <span className="material-symbols-outlined text-[14px]">info</span>
-          MARS v1.0
+      <div className="p-6 mt-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="relative group cursor-default">
+          {/* Glossy Background/Glow Effect */}
+          <div className="absolute -inset-0.5 bg-linear-to-r from-primary/10 to-blue-500/10 rounded-xl blur-sm opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+          
+          <div className="relative w-full flex items-center justify-center gap-2.5 px-4 py-2.5 bg-[#0d2137]/60 backdrop-blur-sm rounded-xl border border-white/5 leading-none shadow-2xl overflow-hidden active:scale-98 transition-transform">
+            {/* Shimmer/Light Streak Effect */}
+            <div className="absolute inset-0 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-linear-to-r from-transparent via-white/10 to-transparent -skew-x-20" />
+            
+            <div className="flex items-center gap-2.5 relative z-10">
+              <MarsIconLogo className="w-4 h-4 opacity-40 group-hover:opacity-80 transition-opacity" color="#00B4AE" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 group-hover:text-white/60 transition-colors flex items-center whitespace-nowrap">
+                MARS&nbsp;<span className="text-primary/70 group-hover:text-primary transition-colors font-black">V1.0</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

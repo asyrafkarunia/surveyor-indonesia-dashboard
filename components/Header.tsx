@@ -225,17 +225,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
               {isAdmin && (
                 <>
                   <button 
-                    onClick={() => handleNavigateFromDropdown('permissions')}
-                    className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                      activeId === 'permissions' 
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-primary' 
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[20px]">shield_person</span>
-                    Kelola Izin
-                  </button>
-                  <button 
                     onClick={() => handleNavigateFromDropdown('admin_log')}
                     className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                       activeId === 'admin_log' 

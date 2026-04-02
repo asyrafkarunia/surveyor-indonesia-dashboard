@@ -13,7 +13,6 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MarketingPlanController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserTutorialController;
 
@@ -158,11 +157,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     Route::post('/invite-codes/generate', [UserController::class, 'generateInviteCode'])->middleware('role:marketing');
     Route::get('/invite-codes', [UserController::class, 'listInviteCodes'])->middleware('role:marketing');
     
-    // Permissions (Admin only)
-    Route::get('/permissions', [PermissionController::class, 'index'])->middleware('role:marketing');
-    Route::put('/permissions/{id}', [PermissionController::class, 'update'])->middleware('role:marketing');
-    Route::put('/permissions/bulk', [PermissionController::class, 'updateBulk'])->middleware('role:marketing');
-    
+
     // Activity Logs (Admin only)
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->middleware('role:marketing');
 

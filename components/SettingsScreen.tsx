@@ -6,10 +6,10 @@ import { SystemUser, UserRoleType, UserRoleName } from '../types';
 import { SYSTEM_USERS } from '../constants';
 
 interface SettingsScreenProps {
-  onManagePermissions: (userId?: string) => void;
+  onNavigate: (id: string) => void;
 }
 
-const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) => {
+const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   const { user, isMarketing } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const isAdmin = isMarketing();
@@ -547,13 +547,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                 </div>
                 <div className="flex gap-3 w-full md:w-auto">
                   <button 
-                    onClick={() => onManagePermissions()}
-                    className="px-5 py-2.5 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2 shadow-sm"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                    Konfigurasi Izin
-                  </button>
-                  <button 
                     onClick={() => setShowAddUserModal(true)}
                     className="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 flex-1 md:flex-none justify-center shadow-lg shadow-primary/20"
                   >
@@ -738,18 +731,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onManagePermissions }) 
                                   }}
                                 >
                                   <span className="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button
-                                  className={`p-1.5 rounded-lg transition-colors ${
-                                    canModify ? 'text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20' : 'text-slate-300 cursor-not-allowed'
-                                  }`}
-                                  disabled={!canModify}
-                                  title={canModify ? 'Konfigurasi Hak Akses Detail' : 'Akses Penuh'}
-                                  onClick={() => {
-                                    if (canModify) onManagePermissions(userItem.id);
-                                  }}
-                                >
-                                  <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
                                 </button>
                                 <button
                                   className={`p-1.5 rounded-lg transition-colors ${

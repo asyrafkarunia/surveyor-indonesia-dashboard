@@ -177,20 +177,6 @@ export interface SystemUser {
   employeeId?: string;
 }
 
-export interface PermissionItem {
-  id: string;
-  name: string;
-  description: string;
-  isEnabled: boolean;
-}
-
-export interface PermissionCategory {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  permissions: PermissionItem[];
-}
 
 export interface ActivityLogEntry {
   id: string;
