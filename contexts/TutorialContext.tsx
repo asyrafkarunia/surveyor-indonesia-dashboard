@@ -42,16 +42,23 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [completedTutorials, setCompletedTutorials] = useState<string[]>([]);
   const [activeTutorialId, setActiveTutorialId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastUserId, setLastUserId] = useState<number | (string | undefined)>(undefined);
+
+  // Sync loading state immediately when user changes to prevent race conditions
+  if (user?.id !== lastUserId) {
+    setLastUserId(user?.id);
+    setLoading(true);
+    if (!user) {
+      setCompletedTutorials([]);
+      setLoading(false);
+    }
+  }
 
   // Fetch completed tutorials when user changes
   useEffect(() => {
-    const fetchTutorials = async () => {
-      if (!user) {
-        setCompletedTutorials([]);
-        setLoading(false);
-        return;
-      }
+    if (!user) return;
 
+    const fetchTutorials = async () => {
       try {
         const data = await api.getUserTutorials();
         // Merge with local storage to avoid data loss on API failure

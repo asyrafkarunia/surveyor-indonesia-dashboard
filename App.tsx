@@ -306,7 +306,11 @@ const AppContent: React.FC = () => {
 
   // Auto-start tutorials for new users (once per tutorial per user)
   useEffect(() => {
+    // Only proceed if tutorial data is fully loaded and user is established
     if (tutorialLoading || !user) return;
+    
+    // Also skip if we just logged in and are still resetting navigation
+    if (localStorage.getItem('just_logged_in')) return;
 
     const tutorialMap: Record<string, { id: string; steps: any[] }> = {
       dashboard:        { id: 'dashboard',     steps: DASHBOARD_STEPS },
@@ -329,10 +333,10 @@ const AppContent: React.FC = () => {
     }
   }, [activeTab, tutorialLoading, user]);
 
-  // Handle reset on login based on flag from AuthContext
+  // Handle navigation reset on application session initialization
   useEffect(() => {
     if (user && localStorage.getItem('just_logged_in')) {
-      console.log('Detected fresh login, resetting navigation...');
+      console.log('Application session initialized, setting default view...');
       setActiveTab('dashboard');
       setSelectedClient(null);
       setIsCreatingSph(false);
