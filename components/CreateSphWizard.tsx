@@ -425,9 +425,8 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                              className="peer appearance-none size-5 rounded border border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                              className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary transition-all cursor-pointer"
                             />
-                            <span className="material-symbols-outlined absolute text-white text-[16px] left-1/2 top-1/2 -translate-y-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">check</span>
                           </div>
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>

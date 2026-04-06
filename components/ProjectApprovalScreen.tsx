@@ -332,7 +332,7 @@ const ProjectApprovalScreen: React.FC = () => {
                               file:text-xs file:font-black
                               ${useExistingSignature 
                                 ? 'file:bg-slate-200 file:text-slate-400 cursor-not-allowed opacity-50' 
-                                : 'file:bg-primary file:text-white hover:file:bg-primary/90 cursor-pointer'} 
+                                : 'file:bg-slate-800 file:text-white hover:file:bg-slate-900 dark:file:bg-slate-700 dark:hover:file:bg-slate-600 cursor-pointer'} 
                               transition-all`}
                           />
                           {signatureFile && (

@@ -165,20 +165,18 @@ class SphController extends Controller
             'general_manager_signature' => null,
         ];
 
-        $idSurveyLogoPath = null;
-        $ptsiLogoPath = null;
-        if (Storage::disk('public')->exists('assets/logo-idsurvey.png')) {
-            $idSurveyLogoPath = storage_path('app/public/assets/logo-idsurvey.png');
-        }
-        if (Storage::disk('public')->exists('assets/logo-ptsi.png')) {
-            $ptsiLogoPath = storage_path('app/public/assets/logo-ptsi.png');
+        $coverFullPath = base_path('../public/logos/cover-sph.jpg');
+        $coverPath = null;
+        if (file_exists($coverFullPath)) {
+            $type = pathinfo($coverFullPath, PATHINFO_EXTENSION);
+            $data = file_get_contents($coverFullPath);
+            $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         $pdf = Pdf::loadView('sph.template', [
             'sph' => $sph,
             'client' => $client,
-            'idSurveyLogoPath' => $idSurveyLogoPath,
-            'ptsiLogoPath' => $ptsiLogoPath,
+            'coverPath' => $coverPath,
         ]);
 
         return response($pdf->output(), 200, [
@@ -397,25 +395,34 @@ class SphController extends Controller
         try {
             $sph->load(['client', 'project', 'creator']);
 
-            // Prepare absolute paths for signatures using storage_path
+            // Prepare base64 encoded paths for signatures
             $smSignaturePath = null;
             if ($sph->senior_manager_signature && Storage::disk('public')->exists($sph->senior_manager_signature)) {
-                $smSignaturePath = storage_path('app/public/' . $sph->senior_manager_signature);
+                $path = storage_path('app/public/' . $sph->senior_manager_signature);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $smSignaturePath = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                }
             }
 
             $gmSignaturePath = null;
             if ($sph->general_manager_signature && Storage::disk('public')->exists($sph->general_manager_signature)) {
-                $gmSignaturePath = storage_path('app/public/' . $sph->general_manager_signature);
+                $path = storage_path('app/public/' . $sph->general_manager_signature);
+                if (file_exists($path)) {
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $gmSignaturePath = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                }
             }
 
             // Generate PDF using template
-            $idSurveyLogoPath = null;
-            $ptsiLogoPath = null;
-            if (Storage::disk('public')->exists('assets/logo-idsurvey.png')) {
-                $idSurveyLogoPath = storage_path('app/public/assets/logo-idsurvey.png');
-            }
-            if (Storage::disk('public')->exists('assets/logo-ptsi.png')) {
-                $ptsiLogoPath = storage_path('app/public/assets/logo-ptsi.png');
+            $coverFullPath = base_path('../public/logos/cover-sph.jpg');
+            $coverPath = null;
+            if (file_exists($coverFullPath)) {
+                $type = pathinfo($coverFullPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($coverFullPath);
+                $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
 
             $pdf = Pdf::loadView('sph.template', [
@@ -423,8 +430,7 @@ class SphController extends Controller
                 'client' => $sph->client,
                 'smSignaturePath' => $smSignaturePath,
                 'gmSignaturePath' => $gmSignaturePath,
-                'idSurveyLogoPath' => $idSurveyLogoPath,
-                'ptsiLogoPath' => $ptsiLogoPath,
+                'coverPath' => $coverPath,
             ]);
 
             $fileName = 'SPH-' . str_replace('/', '-', $sph->sph_no) . '.pdf';
