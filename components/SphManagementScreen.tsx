@@ -118,6 +118,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
 
   return (
     <main className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
+      <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
       <div className="mx-auto max-w-[1200px] flex flex-col gap-6 pb-12">
         {/* Page Heading & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -239,8 +240,8 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                               </button>
                             </>
                           )}
-                          {sph.status === 'Draft' && !sph.is_new_application && (
-                            <button onClick={() => handleGenerate(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Generate & Kirim ke Approver">
+                          {sph.status === 'Draft' && (
+                            <button onClick={() => handleGenerate(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Kirim ke Approver">
                               <span className="material-symbols-outlined text-[20px]">send</span>
                             </button>
                           )}

@@ -5,7 +5,7 @@
     <title>SPH - {{ $sph->sph_no }}</title>
     <style>
         @page {
-            margin: 140px 50px 100px 50px;
+            margin: 140px 50px 200px 50px;
         }
         body { 
             font-family: Arial, sans-serif; 
@@ -17,10 +17,8 @@
             position: fixed;
             top: -140px;
             left: -50px;
-            right: -50px;
-            bottom: -100px;
-            width: 100%;
-            height: 100%;
+            width: 210mm;
+            height: 297mm;
             z-index: -1000;
         }
         .header-title-wrapper {
@@ -96,7 +94,7 @@
 <body>
     @if(isset($coverPath) && $coverPath)
     <div id="bg-cover">
-        <img src="{{ $coverPath }}" style="width: 100%; height: 100%; object-fit: fill;" />
+        <img src="{{ $coverPath }}" style="width: 100%; height: 100%; object-fit: cover;" />
     </div>
     @endif
 
@@ -238,14 +236,12 @@
     </div>
     
     <div class="p-text">
-        Dokumen ini sah sebagai konfirmasi Order apabila telah ditandatangani kedua belah pihak (berlaku scan atau faks) / <i>This document is valid as the Order Confirmation, if it has been signed by both parties (scan or facsimile valid).</i>
+        Dokumen ini sah sebagai <strong>Konfirmasi Order</strong>, apabila telah ditandatangani kedua belah pihak (berlaku scan atau faks) / <i>This document is valid as the <strong>Order Confirmation</strong>, if it has been signed by both parties (scan or facsimile valid).</i> Kami berharap dapat bekerjasama untuk pekerjaan ini, jika Anda memerlukan klarifikasi lebih lanjut untuk penawaran ini, jangan ragu untuk menghubungi kami / <i>We look forward to provide the services, should you need further clarification please do not hesitate to contact us, phone: (0761) 848878, fax: (0761) 848213 email: marketing.sipku@ptsi.co.id , am.suhada@ptsi.co.id , m.asfarina@ptsi.co.id</i>
     </div>
 
-    @if($sph->project && $sph->creator)
     <div class="p-text">
-        Kami berharap dapat bekerjasama untuk pekerjaan ini, jika Anda memerlukan klarifikasi lebih lanjut untuk penawaran ini, jangan ragu untuk menghubungi kami / <i>We look forward to provide the services, should you need further clarification please do not hesitate to contact us, phone: (0761) 848878, fax: (0761) 848213 email: marketing.sipku@ptsi.co.id and {{ $sph->creator->email }}</i>
+        Kami mengucapkan terima kasih atas perhatian dan kerjasamanya / <i>Thank you for your kind attention and cooperation.</i>
     </div>
-    @endif
 
     <div class="signature-section">
         <div class="sig-col">

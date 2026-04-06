@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
+import { showToast } from './Toast';
 
 interface CreateSphWizardProps {
   onCancel: () => void;
@@ -153,7 +154,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
       setPreviewUrl(url);
     } catch (e: any) {
       console.error(e);
-      // alert('Gagal memuat preview SPH: ' + (e.message || 'Unknown error'));
+      showToast('Gagal memuat preview SPH: ' + (e.message || 'Error tidak diketahui'), 'error');
     } finally {
       setLoadingPreview(false);
     }
@@ -163,17 +164,17 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
     setSaving(true);
     try {
       if (!form.client_id || !form.project_name || !form.date_created) {
-        alert('Klien, nama proyek, dan tanggal wajib diisi');
+        showToast('Klien, nama proyek, dan tanggal wajib diisi', 'error');
         setSaving(false);
         return;
       }
       if (form.items.length === 0) {
-        alert('Minimal harus ada 1 item layanan');
+        showToast('Minimal harus ada 1 item layanan', 'error');
         setSaving(false);
         return;
       }
       if (!form.validity_period) {
-        alert('Masa berlaku penawaran wajib diisi');
+        showToast('Masa berlaku penawaran wajib diisi', 'error');
         setSaving(false);
         return;
       }
@@ -195,15 +196,15 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
       
       if (submitForApproval && sph?.id) {
         // Status akan tetap 'Draft' dan perlu di-approve terlebih dahulu
-        alert('Draft SPH berhasil dibuat. Silakan tunggu persetujuan dari approver sebelum dapat di-generate menjadi PDF.');
+        showToast('Draft SPH berhasil dibuat. Silakan tunggu persetujuan dari approver sebelum dapat di-generate menjadi PDF.', 'success');
       } else {
-        alert('Draft SPH berhasil disimpan.');
+        showToast('Draft SPH berhasil disimpan.', 'success');
       }
       
       onFinish();
     } catch (e: any) {
       console.error(e);
-      alert(e.message || 'Gagal menyimpan SPH');
+      showToast(e.message || 'Gagal menyimpan SPH', 'error');
     } finally {
       setSaving(false);
     }
@@ -243,7 +244,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
           <div className="flex gap-3">
             <button 
               onClick={onCancel}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm"
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
             >
               Batal
             </button>
@@ -419,14 +420,15 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     <div className="col-span-1 md:col-span-2">
                       <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                         <label className="flex items-center gap-3 cursor-pointer group">
-                          <div className="relative flex items-center">
+                          <div className="relative flex items-center justify-center">
                             <input
                               type="checkbox"
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                              className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary transition-all cursor-pointer"
+                              className="peer appearance-none w-5 h-5 rounded border-2 border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
                             />
+                            <span className="material-symbols-outlined absolute text-white text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                           </div>
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>

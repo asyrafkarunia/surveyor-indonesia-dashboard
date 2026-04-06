@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { showToast } from './Toast';
 
 interface ApprovalItem {
   id: number;
@@ -14,6 +15,7 @@ interface ApprovalItem {
   value?: number; // for SPH
   pic?: string; // creator name
   file_path?: string;
+  is_new_application?: boolean;
 }
 
 const ProjectApprovalScreen: React.FC = () => {
@@ -74,6 +76,7 @@ const ProjectApprovalScreen: React.FC = () => {
         value: activeTab === 'sph' ? item.value : undefined,
         pic: item.creator?.name || 'Unknown',
         file_path: item.generated_file_path,
+        is_new_application: item.is_new_application,
       }));
 
       setItems(normalized);
@@ -85,9 +88,10 @@ const ProjectApprovalScreen: React.FC = () => {
   };
 
   const handleApprove = async (id: number) => {
-    const needsSignature = isSeniorManager() || isGeneralManager();
+    const isManual = activeTab === 'sph' && selectedItem?.is_new_application;
+    const needsSignature = (isSeniorManager() || isGeneralManager()) && !isManual;
     if (needsSignature && !signatureFile && !useExistingSignature) {
-      alert('Silakan pilih file tanda tangan atau gunakan tanda tangan yang sudah ada');
+      showToast('Silakan pilih file tanda tangan atau gunakan tanda tangan yang sudah ada', 'error');
       return;
     }
 
@@ -98,13 +102,14 @@ const ProjectApprovalScreen: React.FC = () => {
       } else {
         await api.approveAudiensi(id.toString(), signatureFile || undefined, useExistingSignature);
       }
+      showToast('Dokumen berhasil disetujui', 'success');
       await loadApprovals();
       setSelectedItem(null);
       setSignatureFile(null);
       setUseExistingSignature(false);
     } catch (error: any) {
       console.error('Failed to approve:', error);
-      alert(error.message || 'Gagal menyetujui dokumen');
+      showToast(error.message || 'Gagal menyetujui dokumen', 'error');
     } finally {
       setIsApproving(false);
     }
@@ -127,13 +132,13 @@ const ProjectApprovalScreen: React.FC = () => {
       setSelectedItem(null);
     } catch (error) {
       console.error('Failed to update client decision:', error);
-      alert('Failed to update client decision');
+      showToast('Gagal memproses keputusan klien', 'error');
     }
   };
 
   const handleReject = async () => {
     if (!selectedItem || !rejectionReason.trim()) {
-      alert('Please provide a rejection reason');
+      showToast('Pastikan Anda memasukkan alasan penolakan', 'error');
       return;
     }
 
@@ -143,13 +148,14 @@ const ProjectApprovalScreen: React.FC = () => {
       } else {
         await api.rejectAudiensi(selectedItem.id.toString(), rejectionReason);
       }
+      showToast('Dokumen berhasil ditolak', 'success');
       setRejectionReason('');
       setShowRejectModal(false);
       setSelectedItem(null);
       await loadApprovals();
     } catch (error) {
       console.error('Failed to reject:', error);
-      alert('Failed to reject');
+      showToast('Gagal menolak dokumen', 'error');
     }
   };
 
@@ -290,7 +296,7 @@ const ProjectApprovalScreen: React.FC = () => {
                     </div>
                   )}
 
-                  {(isSeniorManager() || isGeneralManager()) && (
+                  {(isSeniorManager() || isGeneralManager()) && (!selectedItem.is_new_application || activeTab !== 'sph') && (
                     <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Input Tanda Tangan</h4>

@@ -59,6 +59,7 @@ class SphController extends Controller
             'items' => 'nullable|array',
             'validity_period' => 'required|date',
             'terms_conditions' => 'nullable|string',
+            'is_new_application' => 'nullable|boolean',
         ]);
 
         $sph = DB::transaction(function () use ($validated, $request) {
@@ -68,6 +69,7 @@ class SphController extends Controller
             $validated['sph_no'] = 'SPH-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/PTSI/' . $year;
             $validated['status'] = 'waiting_head_section';
             $validated['created_by'] = $request->user()->id;
+            $validated['is_new_application'] = $request->input('is_new_application', false);
 
             return Sph::create($validated);
         });
@@ -169,6 +171,7 @@ class SphController extends Controller
         $coverPath = null;
         if (file_exists($coverFullPath)) {
             $type = pathinfo($coverFullPath, PATHINFO_EXTENSION);
+            if (strtolower($type) === 'jpg') $type = 'jpeg';
             $data = file_get_contents($coverFullPath);
             $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
@@ -220,7 +223,8 @@ class SphController extends Controller
             $user = $request->user();
 
             // Determine if a signature is required based on status
-            $needsSignature = ($sph->status === 'waiting_senior_manager' || $sph->status === 'waiting_general_manager');
+            // If it's a new application (manual signature), backend shouldn't enforce digital signature uploads
+            $needsSignature = ($sph->status === 'waiting_senior_manager' || $sph->status === 'waiting_general_manager') && !$sph->is_new_application;
             
             if ($needsSignature) {
                 $request->validate([
@@ -401,6 +405,7 @@ class SphController extends Controller
                 $path = storage_path('app/public/' . $sph->senior_manager_signature);
                 if (file_exists($path)) {
                     $type = pathinfo($path, PATHINFO_EXTENSION);
+                    if (strtolower($type) === 'jpg') $type = 'jpeg';
                     $data = file_get_contents($path);
                     $smSignaturePath = 'data:image/' . $type . ';base64,' . base64_encode($data);
                 }
@@ -411,6 +416,7 @@ class SphController extends Controller
                 $path = storage_path('app/public/' . $sph->general_manager_signature);
                 if (file_exists($path)) {
                     $type = pathinfo($path, PATHINFO_EXTENSION);
+                    if (strtolower($type) === 'jpg') $type = 'jpeg';
                     $data = file_get_contents($path);
                     $gmSignaturePath = 'data:image/' . $type . ';base64,' . base64_encode($data);
                 }
@@ -421,6 +427,7 @@ class SphController extends Controller
             $coverPath = null;
             if (file_exists($coverFullPath)) {
                 $type = pathinfo($coverFullPath, PATHINFO_EXTENSION);
+                if (strtolower($type) === 'jpg') $type = 'jpeg';
                 $data = file_get_contents($coverFullPath);
                 $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
