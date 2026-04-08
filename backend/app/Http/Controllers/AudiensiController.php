@@ -27,13 +27,17 @@ class AudiensiController extends Controller
             });
         }
 
-        if ($request->has('status')) {
+        if ($request->has('status') && $request->status) {
             $statuses = explode(',', $request->status);
             if (count($statuses) > 1) {
                 $query->whereIn('status', $statuses);
             } else {
                 $query->where('status', $request->status);
             }
+        }
+
+        if ($request->has('date')) {
+            $query->whereDate('date', $request->date);
         }
 
         $letters = $query->latest()->paginate(15);

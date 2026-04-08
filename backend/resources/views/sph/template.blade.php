@@ -170,6 +170,19 @@
                         <td class="desc-label">Lingkup Pekerjaan /<br><i>Scope of Work</i></td>
                         <td class="desc-colon">:</td>
                         <td class="desc-value">
+                            {!! nl2br(e($sph->scope_of_work ?? '')) !!}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="desc-table">
+                    <tr>
+                        <td class="desc-label">Uraian Pekerjaan /<br><i>Description of Work</i></td>
+                        <td class="desc-colon">:</td>
+                        <td class="desc-value">
                             {!! nl2br(e($sph->description ?? '')) !!}
                         </td>
                     </tr>
@@ -199,7 +212,7 @@
         <tr>
             <td>
                 <table class="desc-table">
-                    <tr><td class="desc-label">Validitas / <i>Quotation Validity</i></td><td class="desc-colon">:</td><td class="desc-value">{{ optional($sph->validity_period)->format('d F Y') ?? '-' }}</td></tr>
+                    <tr><td class="desc-label">Validitas / <i>Quotation Validity</i></td><td class="desc-colon">:</td><td class="desc-value">{{ $sph->validity_text ?? '-' }}</td></tr>
                 </table>
             </td>
         </tr>
@@ -221,8 +234,7 @@
                         <td class="desc-label">Rekening Bank /<br><i>Bank Account</i></td>
                         <td class="desc-colon">:</td>
                         <td class="desc-value">
-                            <strong>{{ $sph->bank_name ?? 'PT Surveyor Indonesia' }}</strong><br>
-                            {{ $sph->bank_name ? '' : 'Bank Mandiri cabang Pekanbaru' }}<br>
+                            <strong>{{ $sph->bank_name ?? 'Bank Mandiri cabang Pekanbaru' }}</strong><br>
                             <strong>ACC No : {{ $sph->bank_acc_no ?? '108.000.21704.97' }}</strong>
                         </td>
                     </tr>

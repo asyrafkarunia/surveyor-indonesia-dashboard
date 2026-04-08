@@ -25,11 +25,13 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
     description: '',
     items: [] as any[],
     validity_period: '',
+    validity_months: 1,
     time_period: '',
     term_payment: '',
     bank_name: 'Bank Mandiri cabang Pekanbaru',
     bank_acc_no: '108.000.21704.97',
     terms_conditions: '',
+    scope_of_work: '',
     is_new_application: false,
   });
   const [saving, setSaving] = useState(false);
@@ -129,6 +131,37 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, name: string) => {
+    if (e.key === 'Enter') {
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+
+      // Get the current line
+      const beforeCursor = value.substring(0, start);
+      const lastLine = beforeCursor.split('\n').pop() || '';
+
+      if (lastLine.trim().startsWith('-')) {
+        e.preventDefault();
+        const newValue = value.substring(0, start) + '\n- ' + value.substring(end);
+        setForm(prev => ({ ...prev, [name]: newValue }));
+        
+        // Fix cursor position
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 3;
+        }, 0);
+      }
+    }
+  };
+
+  const ensureBulletStart = (name: string, value: string) => {
+    if (value && !value.startsWith('-')) {
+      return '- ' + value;
+    }
+    return value;
+  };
+
   const handlePreview = async () => {
     setLoadingPreview(true);
     try {
@@ -140,7 +173,9 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         date_created: form.date_created,
         description: form.description || null,
         items: form.items,
-        validity_period: form.validity_period,
+        validity_period: form.validity_period || null,
+        validity_months: parseInt(form.validity_months.toString()) || 1,
+        scope_of_work: form.scope_of_work || null,
         time_period: form.time_period || null,
         term_payment: form.term_payment || null,
         bank_name: form.bank_name || null,
@@ -187,7 +222,13 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         date_created: form.date_created,
         description: form.description || null,
         items: form.items,
-        validity_period: form.validity_period,
+        validity_period: form.validity_period || null,
+        validity_months: parseInt(form.validity_months.toString()) || 1,
+        scope_of_work: form.scope_of_work || null,
+        time_period: form.time_period || null,
+        term_payment: form.term_payment || null,
+        bank_name: form.bank_name || null,
+        bank_acc_no: form.bank_acc_no || null,
         terms_conditions: form.terms_conditions || null,
         is_new_application: form.is_new_application,
       };
@@ -418,21 +459,24 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                       />
                     </div>
                     <div className="col-span-1 md:col-span-2">
-                      <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <div className="relative flex items-center justify-center">
+                      <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all shadow-sm">
+                        <label className="flex items-center gap-4 cursor-pointer group select-none">
+                          <div className="relative flex items-center justify-center shrink-0">
                             <input
                               type="checkbox"
+                              id="is_new_application_checkbox"
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                              className="peer appearance-none w-5 h-5 rounded border-2 border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                              className="peer absolute inset-0 opacity-0 cursor-pointer z-10"
                             />
-                            <span className="material-symbols-outlined absolute text-white text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                            <div className="size-6 rounded-lg border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 group-hover:border-primary transition-all peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center">
+                              <span className="material-symbols-outlined text-white text-[18px] opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                            </div>
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
-                            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Ceklis jika SPH tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
+                            <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ceklis jika SPH tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
                           </div>
                         </label>
                       </div>
@@ -596,24 +640,38 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
 
                 <div className="space-y-6">
                   <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Lingkup Pekerjaan</label>
+                    <textarea
+                      name="scope_of_work"
+                      value={form.scope_of_work}
+                      onChange={handleChange}
+                      onFocus={(e) => { if (!e.target.value) handleChange({ target: { name: 'scope_of_work', value: '- ' } } as any) }}
+                      onKeyDown={(e) => handleTextareaKeyDown(e, 'scope_of_work')}
+                      className="w-full min-h-[120px] p-4 text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:ring-primary/20 focus:border-primary resize-none custom-scrollbar"
+                      placeholder="Tuliskan lingkup pekerjaan..."
+                    />
+                  </div>
+
+                  <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
-                      MASA BERLAKU PENAWARAN <span className="text-primary">*</span>
+                      MASA BERLAKU PENAWARAN (BULAN) <span className="text-primary">*</span>
                     </label>
                     <div className="relative">
                       <input
-                        name="validity_period"
-                        value={form.validity_period}
+                        name="validity_months"
+                        value={form.validity_months}
                         onChange={handleChange}
-                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary pl-11 px-4"
-                        placeholder="dd/mm/yyyy"
-                        type="date"
+                        className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-black text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary pl-11 px-4"
+                        placeholder="Ex: 1"
+                        type="number"
+                        min="1"
                         required
                       />
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">calendar_today</span>
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">calendar_month</span>
                     </div>
                     <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
                       <span className="material-symbols-outlined text-[14px]">info</span>
-                      Tanggal berakhirnya validitas harga.
+                      Masa berlaku dalam hitungan bulan (Ex: 1 month after quotation issued).
                     </p>
                   </div>
 
@@ -639,8 +697,10 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="term_payment"
                           value={form.term_payment}
                           onChange={handleChange}
-                          className="w-full min-h-[120px] p-4 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
-                          placeholder="Contoh: Termin 1: 60% setelah BA pekerjaan; Termin 2: 40% setelah LP"
+                          onFocus={(e) => { if (!e.target.value) handleChange({ target: { name: 'term_payment', value: '- ' } } as any) }}
+                          onKeyDown={(e) => handleTextareaKeyDown(e, 'term_payment')}
+                          className="w-full min-h-[120px] p-4 text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:ring-primary/20 focus:border-primary resize-none custom-scrollbar"
+                          placeholder="Ex: - Termin 1: 60% setelah BA pekerjaan; - Termin 2: 40% setelah LP"
                         />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -671,7 +731,9 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                           name="terms_conditions"
                           value={form.terms_conditions}
                           onChange={handleChange}
-                          className="w-full min-h-[180px] p-4 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-primary/20 focus:border-primary resize-none"
+                          onFocus={(e) => { if (!e.target.value) handleChange({ target: { name: 'terms_conditions', value: '- ' } } as any) }}
+                          onKeyDown={(e) => handleTextareaKeyDown(e, 'terms_conditions')}
+                          className="w-full min-h-[180px] p-4 text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:ring-primary/20 focus:border-primary resize-none custom-scrollbar"
                           placeholder="Tambahkan ketentuan lainnya bila diperlukan"
                         />
                       </div>
@@ -736,8 +798,16 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                       </div>
                     )}
 
+                    {form.scope_of_work && (
+                      <div>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white mb-2 uppercase tracking-widest">Lingkup Pekerjaan</h4>
+                        <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 text-sm whitespace-pre-wrap">{form.scope_of_work}</div>
+                      </div>
+                    )}
+
+                    <Info label="Masa Berlaku" value={`${form.validity_months} (Bulan)`} />
                     {form.validity_period && (
-                      <Info label="Masa Berlaku" value={form.validity_period} />
+                      <Info label="Batas Akhir (Data)" value={form.validity_period} />
                     )}
 
                     {form.terms_conditions && (

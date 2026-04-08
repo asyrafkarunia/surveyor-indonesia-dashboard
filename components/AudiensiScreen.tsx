@@ -184,16 +184,6 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
   };
   return (
     <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
-      {/* Top Header / Breadcrumbs */}
-      <header className="h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center px-8 shrink-0">
-        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
-          <button onClick={onBack} className="hover:text-primary transition-colors">Dashboard</button>
-          <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <button onClick={onBack} className="hover:text-primary transition-colors">Surat Audiensi</button>
-          <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white font-black">Buat Baru</span>
-        </div>
-      </header>
 
       {/* Content Scroll Area */}
       <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
@@ -216,7 +206,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
               </div>
               <button 
                 onClick={onManageTemplates}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
               >
                 <span className="material-symbols-outlined text-[18px] text-slate-400">tune</span>
                 Kelola Template Surat

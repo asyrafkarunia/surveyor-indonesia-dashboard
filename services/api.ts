@@ -383,9 +383,11 @@ class ApiService {
   }
 
   // SPH
-  async getSphList(params?: { status?: string; page?: number }) {
+  async getSphList(params?: { status?: string; search?: string; date?: string; page?: number }) {
     const query = new URLSearchParams();
     if (params?.status) query.append('status', params.status);
+    if (params?.search) query.append('search', params.search);
+    if (params?.date) query.append('date', params.date);
     if (params?.page) query.append('page', params.page.toString());
     const queryString = query.toString();
     return this.request(`/sph${queryString ? `?${queryString}` : ''}`);
@@ -470,10 +472,11 @@ class ApiService {
     return this.request('/audiensi/stats');
   }
 
-  async getAudiensiList(params?: { search?: string; status?: string; page?: number }) {
+  async getAudiensiList(params?: { search?: string; status?: string; date?: string; page?: number }) {
     const query = new URLSearchParams();
     if (params?.search) query.append('search', params.search);
     if (params?.status) query.append('status', params.status);
+    if (params?.date) query.append('date', params.date);
     if (params?.page) query.append('page', params.page.toString());
     const queryString = query.toString();
     return this.request(`/audiensi${queryString ? `?${queryString}` : ''}`);

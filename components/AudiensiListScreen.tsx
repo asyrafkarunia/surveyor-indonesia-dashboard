@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../services/api';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -14,12 +14,14 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [dateFilter, setDateFilter] = useState('');
   const [stats, setStats] = useState<{ total_sent?: number; upcoming?: number; completed?: number; rejected?: number }>({});
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchLetters();
     fetchStats();
-  }, [page]);
+  }, [page, dateFilter]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,6 +36,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
     try {
       const params: any = { page };
       if (search) params.search = search;
+      if (dateFilter) params.date = dateFilter;
       const res: any = await api.getAudiensiList(params);
       const data = res.data || res;
       const list = data.data || data;
@@ -89,28 +92,30 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
   const getStatusBadge = (status: string, isNewApplication?: boolean) => {
     if (isNewApplication && (status === 'submitted' || status.startsWith('waiting_'))) {
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-          Siap Tanda Tangan Basah
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
+          <span className="size-1.5 rounded-full bg-emerald-500"></span>
+          Tanda Tangan Basah
         </span>
       );
     }
 
-    const statusMap: Record<string, { label: string; className: string }> = {
-      'submitted': { label: 'Diajukan', className: 'bg-blue-100 text-blue-700' },
-      'waiting_head_section': { label: 'Menunggu Head Section', className: 'bg-amber-100 text-amber-700' },
-      'waiting_senior_manager': { label: 'Menunggu Senior Manager', className: 'bg-orange-100 text-orange-700' },
-      'waiting_general_manager': { label: 'Menunggu General Manager', className: 'bg-purple-100 text-purple-700' },
-      'waiting_client': { label: 'Menunggu Klien', className: 'bg-indigo-100 text-indigo-700' },
-      'accepted': { label: 'Diterima', className: 'bg-emerald-100 text-emerald-700' },
-      'approved': { label: 'Disetujui', className: 'bg-emerald-100 text-emerald-700' },
-      'rejected': { label: 'Ditolak', className: 'bg-red-100 text-red-700' },
-      'draft': { label: 'Draft', className: 'bg-slate-100 text-slate-700 dark:text-slate-200' },
+    const statusMap: Record<string, { label: string; className: string; dot: string }> = {
+      'submitted': { label: 'Diajukan', className: 'bg-blue-50 text-blue-700 border-blue-100', dot: 'bg-blue-500' },
+      'waiting_head_section': { label: 'Menunggu Head Section', className: 'bg-amber-50 text-amber-700 border-amber-100', dot: 'bg-amber-500' },
+      'waiting_senior_manager': { label: 'Menunggu Senior Manager', className: 'bg-amber-50 text-amber-700 border-amber-100', dot: 'bg-amber-500' },
+      'waiting_general_manager': { label: 'Menunggu General Manager', className: 'bg-amber-50 text-amber-700 border-amber-100', dot: 'bg-amber-500' },
+      'waiting_client': { label: 'Menunggu Klien', className: 'bg-amber-50 text-amber-700 border-amber-100', dot: 'bg-amber-500' },
+      'accepted': { label: 'Diterima', className: 'bg-emerald-50 text-emerald-700 border-emerald-100', dot: 'bg-emerald-500' },
+      'approved': { label: 'Disetujui', className: 'bg-emerald-50 text-emerald-700 border-emerald-100', dot: 'bg-emerald-500' },
+      'rejected': { label: 'Ditolak', className: 'bg-red-50 text-red-700 border-red-100', dot: 'bg-red-500' },
+      'draft': { label: 'Draft', className: 'bg-slate-50 text-slate-700 border-slate-100', dot: 'bg-slate-500' },
     };
 
-    const config = statusMap[status] || { label: status, className: 'bg-slate-100 text-slate-700 dark:text-slate-200' };
+    const config = statusMap[status] || { label: status, className: 'bg-slate-50 text-slate-700 border-slate-100', dot: 'bg-slate-400' };
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.className}`}>
+      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${config.className}`}>
+        <span className={`size-1.5 rounded-full ${config.dot}`}></span>
         {config.label}
       </span>
     );
@@ -118,14 +123,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
 
   return (
     <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900 relative">
-      {/* Top Header / Breadcrumbs */}
-      <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-8 shrink-0">
-        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <span>Dashboard</span>
-          <span className="material-symbols-outlined text-base">chevron_right</span>
-          <span className="text-slate-900 dark:text-white font-medium">Daftar Surat Audiensi</span>
-        </div>
-      </header>
+
 
       {/* Content Scroll Area */}
       <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
@@ -133,8 +131,8 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
           {/* Page Heading */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Daftar Surat Audiensi</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Daftar Surat Audiensi</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
             </div>
             <button 
               id="create-audiensi-btn"
@@ -151,7 +149,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
             <div className="relative flex-1 w-full group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl group-focus-within:text-primary transition-colors">search</span>
               <input 
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all" 
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" 
                 placeholder="Cari nomor surat, perusahaan, atau tujuan..." 
                 type="text"
                 value={search}
@@ -159,22 +157,49 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(); } }}
               />
             </div>
-            <div className="flex gap-2 w-full md:w-auto">
-              <button
-                onClick={handleSearch}
-                className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 transition-colors"
-              >
-                <span className="material-symbols-outlined text-lg">search</span>
-                Cari
-              </button>
+            <div className="flex gap-3 w-full md:w-auto items-center">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <input 
+                    type="date"
+                    id="audiensi-date-filter"
+                    ref={dateInputRef}
+                    className="absolute inset-0 opacity-0 pointer-events-none -z-10"
+                    value={dateFilter}
+                    onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}
+                  />
+                  <button 
+                    onClick={() => dateInputRef.current?.showPicker()}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-all ${dateFilter ? 'bg-primary text-white border-primary' : 'bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300'}`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">calendar_today</span>
+                    {dateFilter && <span className="text-sm font-bold">{format(new Date(dateFilter), 'dd MMM yyyy', { locale: id })}</span>}
+                  </button>
+                  {dateFilter && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setDateFilter(''); setPage(1); }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full size-4 flex items-center justify-center z-20 shadow-sm"
+                    >
+                      <span className="material-symbols-outlined text-[10px] font-bold">close</span>
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={handleSearch}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-bold transition-all shadow-sm shadow-primary/20 whitespace-nowrap"
+                >
+                  <span className="material-symbols-outlined text-lg">search</span>
+                  Cari
+                </button>
+              </div>
               <button
                 onClick={() => { fetchLetters(); fetchStats(); }}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-black uppercase tracking-widest transition-colors disabled:opacity-50 whitespace-nowrap"
                 title="Refresh Data"
               >
                 <span className={`material-symbols-outlined text-lg ${loading ? 'animate-spin' : ''}`}>refresh</span>
-                {loading ? 'Refreshing...' : 'Refresh'}
+                {loading ? '...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -185,12 +210,12 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nomor Surat Audiensi</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tanggal Surat</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nama Perusahaan/Instansi</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nama Pimpinan/Tujuan</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Aksi</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Doc No</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal Surat</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Perusahaan/Instansi</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Pimpinan/Tujuan</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

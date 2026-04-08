@@ -25,7 +25,10 @@ class SphController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('sph_no', 'like', "%{$search}%")
-                  ->orWhere('project_name', 'like', "%{$search}%");
+                  ->orWhere('project_name', 'like', "%{$search}%")
+                  ->orWhereHas('client', function($cq) use ($search) {
+                      $cq->where('company_name', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -38,8 +41,8 @@ class SphController extends Controller
             }
         }
 
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $query->whereBetween('date_created', [$request->start_date, $request->end_date]);
+        if ($request->has('date')) {
+            $query->whereDate('date_created', $request->date);
         }
 
         $sph = $query->latest()->paginate(15);
@@ -57,7 +60,13 @@ class SphController extends Controller
             'date_created' => 'required|date',
             'description' => 'nullable|string',
             'items' => 'nullable|array',
-            'validity_period' => 'required|date',
+            'validity_period' => 'nullable|date',
+            'validity_months' => 'nullable|integer',
+            'scope_of_work' => 'nullable|string',
+            'time_period' => 'nullable|string',
+            'term_payment' => 'nullable|string',
+            'bank_name' => 'nullable|string',
+            'bank_acc_no' => 'nullable|string',
             'terms_conditions' => 'nullable|string',
             'is_new_application' => 'nullable|boolean',
         ]);
@@ -110,9 +119,13 @@ class SphController extends Controller
         $validated = $request->validate([
             'project_name' => 'sometimes|string|max:255',
             'value' => 'sometimes|numeric|min:0',
-            'date_created' => 'sometimes|date',
-            'description' => 'nullable|string',
-            'items' => 'nullable|array',
+            'validity_period' => 'nullable|date',
+            'validity_months' => 'nullable|integer',
+            'scope_of_work' => 'nullable|string',
+            'time_period' => 'nullable|string',
+            'term_payment' => 'nullable|string',
+            'bank_name' => 'nullable|string',
+            'bank_acc_no' => 'nullable|string',
             'status' => 'sometimes|in:Draft,Sent,Approved,Rejected,waiting_head_section,waiting_senior_manager,waiting_general_manager,waiting_client,accepted,rejected',
         ]);
 
@@ -138,12 +151,15 @@ class SphController extends Controller
             'date_created' => 'required|date',
             'description' => 'nullable|string',
             'items' => 'required|array',
-            'validity_period' => 'required|date',
+            'validity_period' => 'nullable|date',
+            'validity_months' => 'nullable|integer',
+            'scope_of_work' => 'nullable|string',
             'time_period' => 'nullable|string',
             'term_payment' => 'nullable|string',
             'bank_name' => 'nullable|string',
             'bank_acc_no' => 'nullable|string',
             'terms_conditions' => 'nullable|string',
+            'is_new_application' => 'nullable|boolean',
         ]);
 
         $client = Client::find($validated['client_id']);
@@ -156,12 +172,16 @@ class SphController extends Controller
             'date_created' => Carbon::parse($validated['date_created']),
             'description' => $validated['description'],
             'items' => $validated['items'],
-            'validity_period' => Carbon::parse($validated['validity_period']),
+            'validity_period' => $validated['validity_period'] ? Carbon::parse($validated['validity_period']) : null,
+            'validity_months' => $validated['validity_months'] ?? null,
+            'validity_text' => $this->formatValidityMonths($validated['validity_months'] ?? null),
+            'scope_of_work' => $validated['scope_of_work'] ?? null,
             'time_period' => $validated['time_period'] ?? null,
             'term_payment' => $validated['term_payment'] ?? null,
-            'bank_name' => $validated['bank_name'] ?? 'PT Surveyor Indonesia',
+            'bank_name' => $validated['bank_name'] ?? 'Bank Mandiri cabang Pekanbaru',
             'bank_acc_no' => $validated['bank_acc_no'] ?? '108.000.21704.97',
-            'terms_conditions' => $validated['terms_conditions'],
+            'terms_conditions' => $validated['terms_conditions'] ?? null,
+            'is_new_application' => $validated['is_new_application'] ?? false,
             'client' => $client,
             'senior_manager_signature' => null,
             'general_manager_signature' => null,
@@ -184,8 +204,6 @@ class SphController extends Controller
 
         return response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Access-Control-Allow-Origin' => $request->headers->get('origin') ?? '*',
-            'Access-Control-Allow-Credentials' => 'true',
         ]);
     }
 
@@ -432,6 +450,8 @@ class SphController extends Controller
                 $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
 
+            $sph->validity_text = $this->formatValidityMonths($sph->validity_months);
+
             $pdf = Pdf::loadView('sph.template', [
                 'sph' => $sph,
                 'client' => $sph->client,
@@ -458,5 +478,21 @@ class SphController extends Controller
             ]);
             throw $e;
         }
+    }
+
+    private function formatValidityMonths($months)
+    {
+        if (!$months) return "-";
+        
+        $numberToWord = [
+            1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
+            6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
+            11 => 'eleven', 12 => 'twelve'
+        ];
+        
+        $word = $numberToWord[(int)$months] ?? $months;
+        $unit = (int)$months > 1 ? 'months' : 'month';
+        
+        return "{$months} ({$word}) {$unit} after quotation issued";
     }
 }
