@@ -261,18 +261,21 @@ const FeedItem: React.FC<{
 
             {item.attachments && item.attachments.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {item.attachments.map(file => (
-                  <a 
-                    key={file.id}
-                    href={file.path}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>
-                    {file.name}
-                  </a>
-                ))}
+                {item.attachments.map(file => {
+                  const storageUrl = (import.meta as any).env.VITE_API_URL ? (import.meta as any).env.VITE_API_URL.replace('/api', '/storage/') : 'http://localhost:8000/storage/';
+                  return (
+                    <a 
+                      key={file.id}
+                      href={`${storageUrl}${file.path}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors cursor-pointer shadow-sm"
+                    >
+                      <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>
+                      <span className="truncate max-w-[200px]">{file.name}</span>
+                    </a>
+                  );
+                })}
               </div>
             )}
           </>
@@ -485,7 +488,30 @@ const FeedScreen: React.FC = () => {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      const selectedFiles = Array.from(e.target.files);
+      const validFiles: File[] = [];
+      let hasOversizedFile = false;
+
+      selectedFiles.forEach(file => {
+        if (file.size > 10 * 1024 * 1024) { // 10MB Limit
+          hasOversizedFile = true;
+        } else {
+          validFiles.push(file);
+        }
+      });
+
+      if (hasOversizedFile) {
+        alert('File tidak dapat dilampirkan karena melebihi batas maksimal 10MB.');
+      }
+
+      if (validFiles.length > 0) {
+        setFiles(validFiles);
+      } else {
+        // if all were oversized, just ignore
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
     }
   };
 

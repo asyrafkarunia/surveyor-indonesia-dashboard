@@ -10,6 +10,18 @@ interface ActivityModalProps {
   onSave?: () => void;
 }
 
+const TIME_OPTIONS = (() => {
+  const times = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hour = h.toString().padStart(2, '0');
+      const minute = m.toString().padStart(2, '0');
+      times.push(`${hour}:${minute}`);
+    }
+  }
+  return times;
+})();
+
 const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selectedDate, onSave }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -18,6 +30,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
   const [selectedTeam, setSelectedTeam] = useState<number[]>([]);
   const [teamSearchTerm, setTeamSearchTerm] = useState('');
   const [isTeamDropdownOpen, setIsTeamDropdownOpen] = useState(false);
+  const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
+  const [isStartTimeOpen, setIsStartTimeOpen] = useState(false);
+  const [isEndTimeOpen, setIsEndTimeOpen] = useState(false);
   
   // Form state
   const [title, setTitle] = useState('');
@@ -163,6 +178,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
       case 'meeting': return 'Meeting';
       case 'deadline': return 'Deadline';
       case 'activity': return 'Aktivitas';
+      case 'visit': return 'Visitasi / Kunjungan';
+      case 'inspection': return 'Inspeksi';
+      case 'audit': return 'Audit';
       case 'other': return 'Lainnya';
       default: return type;
     }
@@ -173,6 +191,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
       case 'meeting': return 'bg-purple-50 text-purple-700 border-purple-200';
       case 'deadline': return 'bg-red-50 text-red-700 border-red-200';
       case 'activity': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'visit': return 'bg-teal-50 text-teal-700 border-teal-200';
+      case 'inspection': return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'audit': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
       default: return 'bg-slate-50 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700';
     }
   };
@@ -188,7 +209,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
             <div className="flex items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-current/20">
                 <span className="material-symbols-outlined text-[28px]">
-                  {type === 'meeting' ? 'groups' : type === 'deadline' ? 'event' : 'event_note'}
+                  {type === 'meeting' ? 'groups' : type === 'deadline' ? 'event' : type === 'visit' ? 'directions_car' : type === 'inspection' ? 'search_check' : type === 'audit' ? 'fact_check' : 'event_note'}
                 </span>
               </div>
               <div>
@@ -258,43 +279,109 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   {durationUnit === 'Hari' ? 'Durasi (Hari)' : 'Rentang Waktu'}
                 </label>
-                <div className="flex items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-hidden focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary transition-all min-h-[54px] shadow-sm">
+                <div className="relative h-[54px]">
                   {durationUnit === 'Hari' ? (
-                    <input
-                      required
-                      value={durationDays}
-                      onChange={(e) => setDurationDays(Number(e.target.value))}
-                      className="w-full bg-transparent py-4 px-5 text-sm font-bold text-slate-900 dark:text-white focus:outline-none"
-                      type="number"
-                      min="1"
-                      max="365"
-                    />
+                    <div className="flex items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary transition-all shadow-sm h-full w-full">
+                      <input
+                        required
+                        value={durationDays}
+                        onChange={(e) => setDurationDays(Number(e.target.value))}
+                        className="w-full h-full bg-transparent px-5 text-sm font-bold text-slate-900 dark:text-white outline-none"
+                        type="number"
+                        min="1"
+                        max="365"
+                      />
+                      <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 shrink-0 mx-2"></div>
+                      
+                      {/* Hari Dropdown */}
+                      <div className="relative shrink-0 pr-3 h-full flex items-center">
+                        <button
+                          type="button"
+                          onClick={() => { setIsUnitDropdownOpen(!isUnitDropdownOpen); setIsStartTimeOpen(false); setIsEndTimeOpen(false); }}
+                          onBlur={() => setTimeout(() => setIsUnitDropdownOpen(false), 200)}
+                          className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 focus:outline-none"
+                        >
+                          {durationUnit}
+                          <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+                        </button>
+                        {isUnitDropdownOpen && (
+                          <div className="absolute top-12 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                            <button type="button" onMouseDown={() => { setDurationUnit('Hari'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Hari' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>HARI</button>
+                            <button type="button" onMouseDown={() => { setDurationUnit('Jam'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Jam' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>JAM</button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   ) : (
-                    <div className="flex items-center w-full px-3 gap-1 animate-in slide-in-from-left-2 duration-200">
-                      <input
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 text-center"
-                      />
-                      <span className="text-slate-300 font-bold">-</span>
-                      <input
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full bg-transparent border-none p-1 text-sm font-bold text-slate-900 dark:text-white focus:ring-0 text-center"
-                      />
+                    <div className="flex items-center gap-2 h-full w-full animate-in slide-in-from-left-2 duration-200">
+                      
+                      {/* Start Time Custom Box */}
+                      <div className="relative flex-1 h-full">
+                        <input
+                          type="text"
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
+                          onFocus={() => { setIsStartTimeOpen(true); setIsEndTimeOpen(false); setIsUnitDropdownOpen(false); }}
+                          onBlur={() => setTimeout(() => setIsStartTimeOpen(false), 200)}
+                          placeholder="00:00"
+                          className="w-full h-full text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm cursor-pointer"
+                        />
+                        {isStartTimeOpen && (
+                          <div className="absolute top-14 left-0 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                            {TIME_OPTIONS.map((time) => (
+                              <button key={`start-${time}`} type="button" onMouseDown={() => { setStartTime(time); setIsStartTimeOpen(false); }} className="w-full text-center px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 transition-colors">
+                                {time}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <span className="text-slate-400 font-bold shrink-0">-</span>
+
+                      {/* End Time Custom Box */}
+                      <div className="relative flex-1 h-full">
+                        <input
+                          type="text"
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
+                          onFocus={() => { setIsEndTimeOpen(true); setIsStartTimeOpen(false); setIsUnitDropdownOpen(false); }}
+                          onBlur={() => setTimeout(() => setIsEndTimeOpen(false), 200)}
+                          placeholder="00:00"
+                          className="w-full h-full text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm cursor-pointer"
+                        />
+                        {isEndTimeOpen && (
+                          <div className="absolute top-14 left-1/2 -translate-x-1/2 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2 text-center">
+                            {TIME_OPTIONS.map((time) => (
+                              <button key={`end-${time}`} type="button" onMouseDown={() => { setEndTime(time); setIsEndTimeOpen(false); }} className="w-full text-center px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 transition-colors">
+                                {time}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Custom Unit Box (Jam) */}
+                      <div className="relative shrink-0 flex items-center justify-center h-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 shadow-sm transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary">
+                        <button
+                          type="button"
+                          onClick={() => { setIsUnitDropdownOpen(!isUnitDropdownOpen); setIsStartTimeOpen(false); setIsEndTimeOpen(false); }}
+                          onBlur={() => setTimeout(() => setIsUnitDropdownOpen(false), 200)}
+                          className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 focus:outline-none"
+                        >
+                          {durationUnit}
+                          <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+                        </button>
+                        {isUnitDropdownOpen && (
+                          <div className="absolute top-14 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                            <button type="button" onMouseDown={() => { setDurationUnit('Hari'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Hari' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>HARI</button>
+                            <button type="button" onMouseDown={() => { setDurationUnit('Jam'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Jam' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>JAM</button>
+                          </div>
+                        )}
+                      </div>
+
                     </div>
                   )}
-                  <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 shrink-0 mx-1"></div>
-                  <select
-                    value={durationUnit}
-                    onChange={(e) => setDurationUnit(e.target.value as 'Hari' | 'Jam')}
-                    className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 focus:ring-0 cursor-pointer pr-10 pl-3"
-                  >
-                    <option value="Hari">Hari</option>
-                    <option value="Jam">Jam</option>
-                  </select>
                 </div>
               </div>
             </div>
@@ -311,6 +398,9 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                   >
                     <option value="activity">Aktivitas</option>
                     <option value="meeting">Meeting</option>
+                    <option value="visit">Visitasi / Kunjungan</option>
+                    <option value="inspection">Inspeksi</option>
+                    <option value="audit">Audit</option>
                     <option value="deadline">Deadline</option>
                     <option value="other">Lainnya</option>
                   </select>

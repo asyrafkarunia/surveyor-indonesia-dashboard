@@ -20,6 +20,18 @@ class ActivityController extends Controller
     {
         $query = Activity::with(['user', 'project', 'likes.user', 'comments.user', 'attachments', 'mentionedUsers']);
 
+        // Privasi Feed: Aktivitas selain "post" hanya dapat dilihat oleh pembuat atau orang yang di-tag
+        $user = $request->user();
+        if ($user) {
+            $query->where(function($q) use ($user) {
+                $q->where('type', 'post')
+                  ->orWhere('user_id', $user->id)
+                  ->orWhereHas('mentionedUsers', function($q2) use ($user) {
+                      $q2->where('users.id', $user->id);
+                  });
+            });
+        }
+
         if ($request->has('type') && $request->type !== 'Semua') {
             $query->where('type', $request->type);
         }
