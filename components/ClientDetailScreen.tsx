@@ -242,7 +242,9 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
   return (
     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
-        <BackButton onClick={onBack} />
+        <div className="flex justify-end">
+          <BackButton onClick={onBack} className="mb-0" />
+        </div>
         {/* Profile Header Card */}
         <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">

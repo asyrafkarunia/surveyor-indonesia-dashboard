@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { showToast } from './Toast';
+import BackButton from './BackButton';
 
 interface CreateSphWizardProps {
   onCancel: () => void;
@@ -267,36 +268,15 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
-        {/* Breadcrumbs */}
-        <nav className="flex text-sm font-medium text-slate-400">
-          <ol className="flex items-center space-x-2">
-            <li><button onClick={onCancel} className="hover:text-primary transition-colors">Manage SPH</button></li>
-            <li><span className="mx-1">/</span></li>
-            <li className="text-slate-900 dark:text-white font-black uppercase text-[10px] tracking-widest">Buat SPH Baru</li>
-          </ol>
-        </nav>
+
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Buat SPH Baru</h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-tight">Wizard pembuatan Surat Penawaran Harga.</p>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Buat SPH Baru</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Wizard pembuatan Surat Penawaran Harga.</p>
           </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={onCancel}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
-            >
-              Batal
-            </button>
-            <button 
-              onClick={() => handleSaveDraft(false)}
-              disabled={saving}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm disabled:opacity-50"
-            >
-              {saving ? 'Menyimpan...' : 'Simpan Draft'}
-            </button>
-          </div>
+          <BackButton onClick={onCancel} className="mb-0" />
         </div>
 
         {/* Progress Stepper */}
@@ -871,6 +851,13 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
               Kembali
             </button>
             <div className="flex items-center gap-4">
+              <button 
+                onClick={() => handleSaveDraft(false)}
+                disabled={saving}
+                className="hidden sm:block text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-all disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Simpan Draft'}
+              </button>
               <span className="hidden md:inline text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] italic">
                 Step {currentStep} of {totalSteps}
               </span>

@@ -653,7 +653,6 @@ const AppContent: React.FC = () => {
         items.push({ label: 'Kalendar Aktivitas', id: 'calendar' });
         break;
       case 'marketing_kanban':
-        items.push({ label: 'Marketing', id: 'marketing' });
         items.push({ label: 'Kanban Board', id: 'marketing_kanban' });
         if (isCreatingMarketingTask) {
           items.push({ label: 'Tambah Kegiatan', id: 'create_marketing_task' });
@@ -674,14 +673,12 @@ const AppContent: React.FC = () => {
         }
         break;
       case 'sph':
-        items.push({ label: 'Dashboard', id: 'dashboard' });
         items.push({ label: 'Surat Penawaran (SPH)', id: 'sph' });
         if (isCreatingSph) {
           items.push({ label: 'Buat SPH Baru', id: 'create-sph' });
         }
         break;
       case 'audiensi':
-        items.push({ label: 'Dashboard', id: 'dashboard' });
         items.push({ label: 'Surat Audiensi', id: 'audiensi' });
         if (audiensiView === 'manage') {
           items.push({ label: 'Kelola Template', id: 'manage-audiensi' });
@@ -690,12 +687,9 @@ const AppContent: React.FC = () => {
         } else if (audiensiView === 'add-template') {
           items.push({ label: 'Kelola Template', id: 'manage-audiensi' });
           items.push({ label: 'Tambah Baru', id: 'add-template' });
-        } else {
-          items.push({ label: 'Daftar Surat', id: 'list-audiensi' });
         }
         break;
       case 'essential_docs':
-        items.push({ label: 'Administrator', id: 'admin' });
         items.push({ label: 'Berkas Dokumen', id: 'essential_docs' });
         break;
       case 'settings':
@@ -785,7 +779,7 @@ const AppContent: React.FC = () => {
                         setActiveTab('monitoring');
                       } else if (crumb.id === 'calendar') {
                         setActiveTab('calendar');
-                      } else if (crumb.id === 'marketing') {
+                      } else if (crumb.id === 'marketing_kanban') {
                         setActiveTab('marketing_kanban');
                         setIsCreatingMarketingTask(false);
                       } else if (crumb.id === 'clients') {

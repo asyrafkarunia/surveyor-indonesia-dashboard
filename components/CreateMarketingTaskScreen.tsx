@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
+import BackButton from './BackButton';
 
 interface CreateMarketingTaskScreenProps {
   onCancel: () => void;
@@ -138,36 +139,17 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
   return (
     <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="max-w-5xl mx-auto px-6 py-8 sm:py-12">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="flex mb-6 text-sm text-slate-500 dark:text-slate-400 font-medium">
-          <ol className="inline-flex items-center space-x-1 md:space-x-3">
-            <li className="inline-flex items-center">
-              <button onClick={onCancel} className="inline-flex items-center hover:text-primary transition-colors">
-                <span className="material-symbols-outlined text-[18px] mr-2">dashboard</span>
-                Dashboard
-              </button>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 text-[18px]">chevron_right</span>
-                <button onClick={onCancel} className="ml-1 md:ml-2 hover:text-primary transition-colors">Kanban Board</button>
-              </div>
-            </li>
-            <li aria-current="page">
-              <div className="flex items-center">
-                <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 text-[18px]">chevron_right</span>
-                <span className="ml-1 md:ml-2 text-slate-900 dark:text-white font-bold uppercase text-[10px] tracking-widest">Tambah Kegiatan</span>
-              </div>
-            </li>
-          </ol>
-        </nav>
+
 
         {/* Header */}
-        <div className="flex flex-col gap-2 mb-8">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Tambah Kegiatan Marketing Baru</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl font-medium">
-            Isi formulir di bawah ini untuk menambahkan kartu kegiatan baru ke papan Kanban. Pastikan semua informasi penting terisi untuk memudahkan pelacakan tim.
-          </p>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Tambah Kegiatan Marketing Baru</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl font-medium">
+              Isi formulir di bawah ini untuk menambahkan kartu kegiatan baru ke papan Kanban. Pastikan semua informasi penting terisi untuk memudahkan pelacakan tim.
+            </p>
+          </div>
+          <BackButton onClick={onCancel} className="mb-0" />
         </div>
 
         {/* Form Card */}

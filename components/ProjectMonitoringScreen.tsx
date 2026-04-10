@@ -65,6 +65,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [progressFilter, setProgressFilter] = useState<string>('');
   const [contractFilter, setContractFilter] = useState<string>('');
+  const [projectTypeFilter, setProjectTypeFilter] = useState<string>('');
   const [picOptions, setPicOptions] = useState<string[]>([]);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [selectedExportIds, setSelectedExportIds] = useState<string[]>([]);
@@ -354,11 +355,32 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
   const donutData = calculateDonutData();
   const statusOptions = ['RUNNING', 'PENDING', 'DONE', 'REJECTED'];
+  const projectTypeOptions = [
+    { value: 'assurance', label: 'Assurance' },
+    { value: 'inspection', label: 'Inspection' },
+    { value: 'testing', label: 'Testing' },
+    { value: 'certification', label: 'Certification' },
+    { value: 'consultancy', label: 'Consultancy' },
+  ];
+  const progressOptions = [
+    { value: '0', label: '0%' },
+    { value: 'lte25', label: '1 - 25%' },
+    { value: 'lte50', label: '26 - 50%' },
+    { value: 'lte75', label: '51 - 75%' },
+    { value: 'lte100', label: '76 - 100%' },
+  ];
+  const contractOptions = [
+    { value: 'lte6m', label: '≤ 6 Bulan' },
+    { value: 'lte1y', label: '6 - 12 Bulan' },
+    { value: 'lte2y', label: '1 - 2 Tahun' },
+    { value: 'gt2y', label: '> 2 Tahun' },
+  ];
 
   const filteredProjects = projects.filter((project: any) => {
     if (picFilter && (project.pic?.name || '') !== picFilter) return false;
     if (picMarketingFilter && (project.marketing_pic?.name || '') !== picMarketingFilter) return false;
     if (statusFilter && (project.status || '') !== statusFilter) return false;
+    if (projectTypeFilter && (project.project_type || '').toLowerCase() !== projectTypeFilter.toLowerCase()) return false;
     if (progressFilter) {
       const progress = Number(project.progress) || 0;
       if (progressFilter === '0' && progress !== 0) return false;
@@ -417,7 +439,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div className="flex flex-col gap-1">
             <h2 className="text-[#0f172a] dark:text-white text-3xl font-black tracking-tight">Dashboard Monitoring Status Proyek</h2>
-            <p className="text-[#64748b] dark:text-slate-300 text-sm font-normal uppercase tracking-wider">Integrated view of all assurance project stages across Indonesia</p>
+            <p className="text-[#64748b] dark:text-slate-300 text-sm font-normal uppercase tracking-wider">Pantau seluruh tahapan proyek assurance di Indonesia</p>
           </div>
           <div className="flex items-center gap-3">
             <button id="add-project-btn" onClick={onAddProject} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-bold shadow-md hover:bg-primary-dark transition-all active:scale-95">
@@ -479,19 +501,19 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 </div>
                 <div className="flex-1 space-y-3 w-full">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Running</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Berjalan</span></div>
                     <span className="text-xs font-black text-[#0f172a] dark:text-white">{stats.runningProjects || 0} ({stats.runningPercent || 0}%)</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-yellow-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Pending</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-yellow-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Menunggu</span></div>
                     <span className="text-xs font-black text-[#0f172a] dark:text-white">{stats.pendingProjects || 0} ({stats.pendingPercent || 0}%)</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-green-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Done</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-green-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Selesai</span></div>
                     <span className="text-xs font-black text-[#0f172a] dark:text-white">{stats.doneProjects || 0} ({stats.donePercent || 0}%)</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Rejected</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500"></span><span className="text-xs font-bold text-[#6b7280] dark:text-slate-400 uppercase tracking-tighter">Ditolak</span></div>
                     <span className="text-xs font-black text-[#0f172a] dark:text-white">{stats.rejectedProjects || 0} ({stats.rejectedPercent || 0}%)</span>
                   </div>
                 </div>
@@ -511,25 +533,47 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               <div className="flex items-center justify-center h-48">
                 <div className="text-sm text-[#64748b] dark:text-slate-300">Loading...</div>
               </div>
-            ) : stats?.portfolioData && stats.portfolioData.length > 0 ? (
-              <div className="space-y-6">
-                {stats.portfolioData.map((item: any, index: number) => {
-                  const colors = ['#003868', '#4a5568', '#00B4AE'];
-                  const color = colors[index % colors.length];
-                  return (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.15em] text-[#64748b] dark:text-slate-300">
-                        <span>{item.category}</span>
-                        <span>{item.count} Projects</span>
+            ) : stats?.portfolioData && stats.portfolioData.length > 0 ? (() => {
+              const portfolioColors = ['#1e40af', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777', '#475569', '#65a30d', '#4338ca'];
+              const totalPortfolio = stats.portfolioData.reduce((sum: number, item: any) => sum + item.count, 0);
+              return (
+                <div className="space-y-5">
+                  {/* Stacked Bar */}
+                  <div className="w-full h-10 rounded-xl overflow-hidden flex shadow-inner" style={{ backgroundColor: '#f1f5f9' }}>
+                    {stats.portfolioData.map((item: any, index: number) => {
+                      const pct = totalPortfolio > 0 ? (item.count / totalPortfolio) * 100 : 0;
+                      if (pct <= 0) return null;
+                      return (
+                        <div
+                          key={index}
+                          className="h-full transition-all duration-1000 relative group/bar"
+                          style={{ width: `${pct}%`, backgroundColor: portfolioColors[index % portfolioColors.length], minWidth: pct > 0 ? '12px' : '0' }}
+                          title={`${item.category}: ${item.count} Proyek (${item.percentage}%)`}
+                        >
+                          {pct > 10 && (
+                            <span className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white/90 tracking-wide">
+                              {Math.round(pct)}%
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Legend Grid */}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                    {stats.portfolioData.map((item: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: portfolioColors[index % portfolioColors.length] }}></span>
+                          <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight truncate">{item.category}</span>
+                        </div>
+                        <span className="text-[10px] font-black text-slate-900 dark:text-white whitespace-nowrap">{item.count} Proyek</span>
                       </div>
-                      <div className="w-full bg-[#f1f5f9] dark:bg-slate-700 h-6 rounded-lg overflow-hidden flex">
-                        <div className="h-full transition-all duration-1000" style={{ width: `${item.percentage}%`, backgroundColor: color }}></div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
+                    ))}
+                  </div>
+                </div>
+              );
+            })() : (
               <div className="flex items-center justify-center h-48">
                 <div className="text-sm text-[#64748b] dark:text-slate-300">Tidak ada data</div>
               </div>
@@ -546,14 +590,21 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2 pr-3 border-r border-slate-100 dark:border-slate-700 h-10 shrink-0"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Filter By:</span></div>
+              <div className="flex items-center gap-2 pr-3 border-r border-slate-100 dark:border-slate-700 h-10 shrink-0"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Filter:</span></div>
+              <FilterSelect label="Portofolio" icon="category" value={projectTypeFilter} onChange={setProjectTypeFilter} options={projectTypeOptions} />
               <FilterSelect label="PIC Proyek" icon="badge" value={picFilter} onChange={setPicFilter} options={picOptions} />
               <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
-              <button type="button" onClick={() => { setPicFilter(''); setStatusFilter(''); setSearchQuery(''); }} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
+              <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} />
+              <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} />
+              <button type="button" onClick={() => { setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); }} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
                 <span className="material-symbols-outlined text-[18px]">restart_alt</span>
-                Reset
+                Atur Ulang
               </button>
             </div>
+            <button type="button" onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-xl text-[10px] font-black text-primary transition-all duration-300 tracking-[0.15em] uppercase border border-primary/20 hover:border-primary/40 active:scale-95 shrink-0">
+              <span className="material-symbols-outlined text-[18px]">download</span>
+              Unduh CSV
+            </button>
           </div>
         </div>
       </section>
@@ -564,35 +615,56 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr id="project-table-header" className="bg-gray-50 dark:bg-slate-900/50 border-b border-[#e2e8f0] dark:border-slate-700">
-                  <th className="px-4 py-5 w-10 text-center"><input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={allVisibleSelected} onChange={handleToggleSelectAllVisible} /></th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Project Name & ID</th>
+                  <th className="px-4 py-5 w-10 text-center"><input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={allVisibleSelected} onChange={handleToggleSelectAllVisible} onClick={(e) => e.stopPropagation()} /></th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Nama Proyek & ID</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Portofolio</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Proyek</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Current Status</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Timeline Progress</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Status Terkini</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Progres Timeline</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Kontrak Proyek</th>
                   <th className="px-6 py-5 text-right"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e2e8f0]">
                 {loading ? (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Loading projects...</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Memuat proyek...</td></tr>
                 ) : projects.length === 0 ? (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Tidak ada proyek ditemukan untuk tahun {selectedYear}</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Tidak ada proyek ditemukan untuk tahun {selectedYear}</td></tr>
                 ) : filteredProjects.length === 0 ? (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Tidak ada proyek yang cocok dengan filter</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-8 text-center text-sm text-[#64748b] dark:text-slate-300">Tidak ada proyek yang cocok dengan filter</td></tr>
                 ) : (
                   filteredProjects.map((project) => {
                     const projectId = getProjectExportId(project);
                     return (
                       <tr key={projectId} className="hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer" onClick={() => onViewProjectDetail?.(projectId)}>
                         <td className="px-4 py-5 text-center">
-                          <input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={selectedExportIds.includes(projectId)} onChange={(e) => { e.stopPropagation(); setSelectedExportIds(prev => prev.includes(projectId) ? prev.filter(id => id !== projectId) : [...prev, projectId]); }} />
+                          <input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={selectedExportIds.includes(projectId)} onChange={(e) => { e.stopPropagation(); setSelectedExportIds(prev => prev.includes(projectId) ? prev.filter(id => id !== projectId) : [...prev, projectId]); }} onClick={(e) => e.stopPropagation()} />
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
                             <span className="text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors">{highlightText(project.title || '', searchQuery)}</span>
                             <span className="text-xs font-bold text-[#64748b] dark:text-slate-300 uppercase tracking-widest mt-0.5">{highlightText(project.code || '', searchQuery)}</span>
                           </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          {(() => {
+                            const portfolioColors: Record<string, string> = {
+                              certification: '#1e40af',
+                              inspection: '#059669',
+                              testing: '#d97706',
+                              assurance: '#dc2626',
+                              consultancy: '#7c3aed',
+                            };
+                            const pType = (project.project_type || '').toLowerCase();
+                            const color = portfolioColors[pType] || '#475569';
+                            const label = project.project_type ? project.project_type.charAt(0).toUpperCase() + project.project_type.slice(1).toLowerCase() : 'N/A';
+                            return (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tight border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }}></span>
+                                {label}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="px-6 py-5 whitespace-nowrap">
                           <div className="flex items-center gap-2">
@@ -623,7 +695,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                             {formatDate(project.start_date)} - {formatDate(project.end_date)}
                           </span>
                         </td>
-                        <td className="px-6 py-5 text-right whitespace-nowrap relative">
+                        <td className="px-6 py-5 text-right whitespace-nowrap relative" onClick={(e) => e.stopPropagation()}>
                           <button onClick={(e) => { e.stopPropagation(); setActionMenuProjectId(actionMenuProjectId === projectId ? null : projectId); }} className="text-[#64748b] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full">
                             <span className="material-symbols-outlined text-2xl">more_vert</span>
                           </button>
@@ -644,7 +716,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             </table>
           </div>
           <div className="px-6 py-4 border-t border-[#e2e8f0] dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-             <p className="text-xs font-black text-[#64748b] dark:text-slate-300 uppercase tracking-widest">{pagination ? `Showing projects for year ${selectedYear}` : ''}</p>
+             <p className="text-xs font-black text-[#64748b] dark:text-slate-300 uppercase tracking-widest">{pagination ? `Menampilkan proyek tahun ${selectedYear}` : ''}</p>
           </div>
         </div>
       </section>

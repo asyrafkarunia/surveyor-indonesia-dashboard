@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
+import BackButton from './BackButton';
 
 interface AudiensiScreenProps {
   onManageTemplates: () => void;
@@ -191,26 +192,23 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
           
           {/* Back Button and Page Header */}
           <div className="flex flex-col gap-4">
-            <button 
-              onClick={onBack}
-              className="flex items-center gap-2 text-slate-400 hover:text-primary transition-colors w-fit group"
-            >
-              <span className="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
-              <span className="text-[11px] font-black uppercase tracking-widest">Kembali ke Daftar</span>
-            </button>
+
             
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Pengajuan Surat Audiensi</h1>
                 <p className="text-slate-500 dark:text-slate-400 text-sm">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
               </div>
-              <button 
-                onClick={onManageTemplates}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
-              >
-                <span className="material-symbols-outlined text-[18px] text-slate-400">tune</span>
-                Kelola Template Surat
-              </button>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={onManageTemplates}
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-slate-400">tune</span>
+                  Kelola Template Surat
+                </button>
+                <BackButton onClick={onBack} className="mb-0" />
+              </div>
             </div>
           </div>
 

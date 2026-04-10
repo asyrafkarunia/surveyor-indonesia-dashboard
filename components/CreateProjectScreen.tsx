@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { api } from '../services/api';
+import BackButton from './BackButton';
 
 // Fix default marker icon
 const DefaultIcon = new Icon({
@@ -114,7 +115,8 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
 
   const fetchClients = async () => {
     try {
-      const response: any = await api.getClients();
+      // Only fetch active clients — Non-Aktif and Suspended clients should not be selectable
+      const response: any = await api.getClients({ status: 'Aktif' });
       const data = response.data || response;
       setClients(Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []));
     } catch (error) {
@@ -407,9 +409,12 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     <main className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg-stone)' }}>
       <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 custom-scrollbar">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h2 className="text-3xl font-black tracking-tight text-slate-800 dark:text-white sm:text-4xl">Tambah Proyek Baru</h2>
-            <p className="mt-2 text-base text-slate-500 dark:text-slate-400">Silakan lengkapi formulir di bawah ini untuk mendaftarkan proyek assurance baru.</p>
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-3xl font-black tracking-tight text-slate-800 dark:text-white sm:text-4xl">Tambah Proyek Baru</h2>
+              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">Silakan lengkapi formulir di bawah ini untuk mendaftarkan proyek assurance baru.</p>
+            </div>
+            <BackButton onClick={onCancel} className="mb-0" />
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit}>

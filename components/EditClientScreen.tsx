@@ -95,7 +95,9 @@ const EditClientScreen: React.FC<EditClientScreenProps> = ({ client, onBack, onS
   return (
     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-3xl mx-auto">
-        <BackButton onClick={onBack} />
+        <div className="flex justify-end mb-4">
+          <BackButton onClick={onBack} />
+        </div>
         
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 dark:border-slate-700">

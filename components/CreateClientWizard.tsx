@@ -136,7 +136,9 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
-        <BackButton onClick={onCancel} />
+        <div className="flex justify-end">
+          <BackButton onClick={onCancel} />
+        </div>
 
         {/* Stepper Indicator */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
