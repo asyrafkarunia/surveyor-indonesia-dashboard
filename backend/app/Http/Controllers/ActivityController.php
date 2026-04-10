@@ -26,8 +26,10 @@ class ActivityController extends Controller
             $query->where(function($q) use ($user) {
                 $q->where('type', 'post')
                   ->orWhere('user_id', $user->id)
-                  ->orWhereHas('mentionedUsers', function($q2) use ($user) {
-                      $q2->where('users.id', $user->id);
+                  ->orWhereIn('id', function($q2) use ($user) {
+                      $q2->select('activity_id')
+                         ->from('activity_mentions')
+                         ->where('user_id', $user->id);
                   });
             });
         }

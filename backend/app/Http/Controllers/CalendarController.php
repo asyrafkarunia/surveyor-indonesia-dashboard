@@ -96,13 +96,18 @@ class CalendarController extends Controller
 
         // Auto-create feed activity for meetings
         if ($event->type === 'meeting') {
-            $timeString = $event->start_time ? " Pukul " . substr($event->start_time, 0, 5) : "";
-            Activity::create([
+            $timeString = $event->start_time ? " Pukul " . \Carbon\Carbon::parse($event->start_time)->format('H:i') : "";
+            $activity = Activity::create([
                 'type' => 'meeting',
                 'content' => "Rapat Terjadwal: {$event->title}\nTanggal: " . Carbon::parse($event->date)->translatedFormat('l, d F Y') . $timeString,
                 'user_id' => $request->user()->id,
                 'project_id' => $event->project_id,
             ]);
+
+            // Ensure team members are mentioned in the activity feed so they have visibility
+            if (!empty($validated['team_members'])) {
+                $activity->mentionedUsers()->sync($validated['team_members']);
+            }
         }
 
         // Notify team members
