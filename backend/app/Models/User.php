@@ -74,7 +74,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isMarketing()
     {
-        return $this->role === 'marketing';
+        return in_array($this->role, ['marketing', 'head_section', 'super_admin']);
+    }
+
+    public function isFinance()
+    {
+        return $this->division === 'Divisi Keuangan';
+    }
+
+    public function canUpdateProject()
+    {
+        return $this->isMarketing() || $this->isFinance() || $this->isSuperAdmin();
     }
 
     public function isApprover()

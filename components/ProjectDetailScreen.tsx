@@ -30,8 +30,8 @@ const toPascalCase = (str: string) => {
 
 const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, onBack }) => {
   const auth = useAuth();
-  const isMarketing = auth?.isMarketing || (() => false);
-  const canEdit = isMarketing();
+  const canUpdateProject = auth?.canUpdateProject || (() => false);
+  const canEdit = canUpdateProject();
 
   const [project, setProject] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);

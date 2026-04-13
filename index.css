@@ -275,3 +275,20 @@
 .animate-ripple-expand {
   animation: ripple-expand 8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* ═══════════ Browser-Native UI Cleanup ═══════════ */
+
+/* Hide IE/Edge/Chrome native password reveal icon to avoid redundancy with our custom toggle */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+/* For some versions of Chrome/Safari that might add a native icon */
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+

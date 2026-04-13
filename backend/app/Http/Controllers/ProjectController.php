@@ -275,7 +275,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
 
-        if (!$request->user() || !$request->user()->isMarketing()) {
+        if (!$request->user() || !$request->user()->canUpdateProject()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
