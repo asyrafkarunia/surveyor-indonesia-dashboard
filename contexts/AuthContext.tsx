@@ -5,7 +5,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'marketing' | 'common' | 'approver' | 'head_section' | 'senior_manager' | 'general_manager';
+  role: 'super_admin' | 'marketing' | 'common' | 'approver' | 'head_section' | 'senior_manager' | 'general_manager';
   roleName?: string;
   division?: string;
   avatar?: string;
@@ -23,6 +23,7 @@ interface AuthContextType {
   isHeadSection: () => boolean;
   isSeniorManager: () => boolean;
   isGeneralManager: () => boolean;
+  isSuperAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -92,15 +93,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const isMarketing = () => user?.role === 'marketing' || user?.role === 'head_section';
-  const isApprover = () => ['approver', 'head_section', 'senior_manager', 'general_manager'].includes(user?.role || '');
+  const isSuperAdmin = () => user?.role === 'super_admin';
+  const isMarketing = () => user?.role === 'marketing' || user?.role === 'head_section' || user?.role === 'super_admin';
+  const isApprover = () => ['approver', 'head_section', 'senior_manager', 'general_manager', 'super_admin'].includes(user?.role || '');
   const isCommon = () => user?.role === 'common';
-  const isHeadSection = () => user?.role === 'head_section';
+  const isHeadSection = () => user?.role === 'head_section' || user?.role === 'super_admin';
   const isSeniorManager = () => user?.role === 'senior_manager' || user?.roleName === 'Senior Manager';
   const isGeneralManager = () => user?.role === 'general_manager' || user?.roleName === 'General Manager';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isMarketing, isApprover, isCommon, isHeadSection, isSeniorManager, isGeneralManager }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, isMarketing, isApprover, isCommon, isHeadSection, isSeniorManager, isGeneralManager, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   );

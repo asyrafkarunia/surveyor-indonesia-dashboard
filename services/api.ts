@@ -100,14 +100,25 @@ class ApiService {
   }
 
   async resendVerification(email: string) {
-    return this.request<{ message: string }>('/email/resend', {
+    // Public endpoint — no auth token needed
+    const url = `${API_BASE_URL}/email/resend`;
+    const response = await fetch(url, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       body: JSON.stringify({ email }),
     });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || 'Request failed');
+    }
+    return response.json();
   }
 
   async validateInviteCode(code: string) {
-    return this.request<{ valid: boolean; message: string }>('/validate-invite-code', {
+    return this.request<{ valid: boolean; message: string; role?: string; role_label?: string; division?: string }>('/validate-invite-code', {
       method: 'POST',
       body: JSON.stringify({ code }),
     });
@@ -891,8 +902,11 @@ class ApiService {
     return this.request(`/invite-codes${queryString ? `?${queryString}` : ''}`);
   }
 
-  async generateInviteCode() {
-    return this.request('/invite-codes/generate', { method: 'POST' });
+  async generateInviteCode(data?: { role?: string; division?: string }) {
+    return this.request('/invite-codes/generate', {
+      method: 'POST',
+      body: JSON.stringify(data || {}),
+    });
   }
 }
 

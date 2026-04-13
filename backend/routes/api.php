@@ -36,7 +36,7 @@ Route::get('/password-reset/{token}', function (Illuminate\Http\Request $request
 
 // Email Verification
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
-Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])->middleware(['auth:sanctum', 'throttle:6,1']);
+Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])->middleware('throttle:6,1');
 
 // Protected routes
 Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {

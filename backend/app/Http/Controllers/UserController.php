@@ -95,7 +95,7 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:5',
-                'role' => 'required|in:marketing,common,approver,head_section,senior_manager,general_manager',
+                'role' => 'required|in:super_admin,marketing,common,approver,head_section,senior_manager,general_manager',
                 'division' => 'required|string|max:255',
                 'status' => 'nullable|in:Aktif,Cuti,Nonaktif',
             ]);
@@ -132,16 +132,50 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $actor = $request->user();
         
         $oldData = $user->toArray();
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'sometimes|in:marketing,common,approver,head_section,senior_manager,general_manager',
+            'role' => 'sometimes|in:super_admin,marketing,common,approver,head_section,senior_manager,general_manager',
             'division' => 'sometimes|string|max:255',
             'status' => 'sometimes|in:Aktif,Cuti,Nonaktif',
         ]);
+
+        // === HIERARCHY ENFORCEMENT ===
+        $isSelf = $actor->id === $user->id;
+        
+        // super_admin can edit anyone
+        if ($actor->role !== 'super_admin') {
+            // No one can edit super_admin except themselves
+            if ($user->role === 'super_admin' && !$isSelf) {
+                return response()->json(['message' => 'Tidak dapat mengubah akun Super Admin.'], 403);
+            }
+            
+            // head_section can edit everyone except super_admin (already handled above)
+            if ($actor->role === 'head_section') {
+                // allowed for all non-super_admin
+            }
+            // marketing can only edit users with lower privilege
+            elseif ($actor->role === 'marketing') {
+                if (!$isSelf && in_array($user->role, ['marketing', 'head_section', 'super_admin'])) {
+                    return response()->json(['message' => 'Tidak dapat mengubah akun dengan hak akses yang sama atau lebih tinggi.'], 403);
+                }
+            }
+            // other roles cannot edit other users
+            else {
+                if (!$isSelf) {
+                    return response()->json(['message' => 'Anda tidak memiliki izin untuk mengubah akun pengguna lain.'], 403);
+                }
+            }
+            
+            // If editing self, cannot change own role
+            if ($isSelf && isset($validated['role']) && $validated['role'] !== $actor->role) {
+                return response()->json(['message' => 'Tidak dapat mengubah role Anda sendiri.'], 403);
+            }
+        }
 
         $user->update($validated);
         
@@ -163,13 +197,30 @@ class UserController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $actor = $request->user();
         $userName = $user->name;
         
+        // Cannot delete yourself
+        if ($actor->id === $user->id) {
+            return response()->json(['message' => 'Tidak dapat menghapus akun Anda sendiri.'], 403);
+        }
+
+        // Cannot delete super_admin
+        if ($user->role === 'super_admin') {
+            return response()->json(['message' => 'Akun Super Admin tidak dapat dihapus.'], 403);
+        }
+
+        // Privileged accounts can only be deleted by super_admin
+        $privilegedRoles = ['marketing', 'head_section', 'approver', 'senior_manager', 'general_manager'];
+        if (in_array($user->role, $privilegedRoles) && $actor->role !== 'super_admin') {
+            return response()->json(['message' => 'Hanya Super Admin yang dapat menghapus akun dengan hak akses tinggi.'], 403);
+        }
+        
         // Log user deletion before deleting
-        LogActivity::logUserDeleted($user->id, $userName, request()->user()->id ?? null);
+        LogActivity::logUserDeleted($user->id, $userName, $actor->id ?? null);
         
         $user->delete();
 
@@ -184,10 +235,17 @@ class UserController extends Controller
     public function generateInviteCode(Request $request)
     {
         try {
+            $request->validate([
+                'role' => 'sometimes|in:super_admin,marketing,common,approver,head_section,senior_manager,general_manager',
+                'division' => 'sometimes|string|max:255',
+            ]);
+
             $code = InviteCode::generateUniqueCode();
 
             $inviteCode = InviteCode::create([
                 'code' => $code,
+                'role' => $request->input('role', 'common'),
+                'division' => $request->input('division', ''),
                 'created_by' => $request->user()->id,
                 'expires_at' => now()->addHours(72),
                 'is_active' => true,

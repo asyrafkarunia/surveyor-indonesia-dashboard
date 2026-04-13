@@ -267,8 +267,7 @@ const FeedItem: React.FC<{
                     <a 
                       key={file.id}
                       href={`${storageUrl}${file.path}`}
-                      target="_blank"
-                      rel="noreferrer"
+                      download={file.name}
                       className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors cursor-pointer shadow-sm"
                     >
                       <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>

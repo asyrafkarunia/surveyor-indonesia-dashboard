@@ -151,8 +151,10 @@ export interface SphData {
   iconColor?: string;
 }
 
-export type UserRoleType = 'marketing' | 'approver' | 'common' | 'head_section' | 'senior_manager' | 'general_manager';
+export type UserRoleType = 'super_admin' | 'marketing' | 'approver' | 'common' | 'head_section' | 'senior_manager' | 'general_manager';
 export type UserRoleName = 
+  // Super Admin (IT)
+  | 'Super Admin'
   // Administrator (Marketing)
   | 'Marketing Lead' | 'Head Section Marketing' | 'Social Media Specialist' | 'Content Strategist' | 'Brand Manager' | 'Marketing Staff'
   // Approver

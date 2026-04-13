@@ -61,6 +61,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
       case 'marketing': return 'Marketing Staff';
       case 'senior_manager': return 'Senior Manager';
       case 'general_manager': return 'General Manager';
+      case 'super_admin': return 'Super Admin';
       case 'approver': return 'Senior Manager / General Manager';
       default: return 'Umum';
     }

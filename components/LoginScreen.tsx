@@ -95,13 +95,11 @@ const MarsWatermark: React.FC<{ className?: string; style?: React.CSSProperties 
 
 /* ─── Division Options ─── */
 const DIVISIONS = [
-  'Divisi Layanan Manajemen',
-  'Divisi Energi dan Infrastruktur',
-  'Divisi Perdagangan dan Investasi',
-  'Divisi Properti',
+  'Divisi Manajemen',
+  'Divisi Operasi',
   'Divisi Keuangan',
+  'Divisi Marketing & Sales',
   'Divisi SDM & Umum',
-  'Sekretaris Perusahaan',
 ];
 
 /* ─── A reusable input row component (OUTSIDE LoginScreen to prevent focus loss) ─── */
@@ -175,7 +173,7 @@ const LoginScreen: React.FC = () => {
 
     if (verifiedStatus === 'success') {
       setActiveTab('login');
-      setError('Email berhasil diverifikasi! Silakan login.');
+      setSuccessMessage('Email berhasil diverifikasi! Silakan login.');
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (verifiedStatus === 'error' || verifiedStatus === 'already') {
@@ -198,6 +196,7 @@ const LoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -209,11 +208,13 @@ const LoginScreen: React.FC = () => {
   const [inviteCodeValid, setInviteCodeValid] = useState<boolean | null>(null);
   const [inviteCodeMessage, setInviteCodeMessage] = useState('');
   const [inviteCodeLoading, setInviteCodeLoading] = useState(false);
+  const [inviteCodeRole, setInviteCodeRole] = useState('');
+  const [inviteCodeRoleLabel, setInviteCodeRoleLabel] = useState('');
+  const [inviteCodeDivision, setInviteCodeDivision] = useState('');
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regPasswordConfirm, setRegPasswordConfirm] = useState('');
-  const [regDivision, setRegDivision] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [regError, setRegError] = useState('');
   const [regLoading, setRegLoading] = useState(false);
@@ -266,6 +267,12 @@ const LoginScreen: React.FC = () => {
       const res = await api.validateInviteCode(inviteCode);
       setInviteCodeValid(res.valid);
       setInviteCodeMessage(res.message);
+      // Store role and division metadata from invite code
+      if (res.valid) {
+        setInviteCodeRole(res.role || 'common');
+        setInviteCodeRoleLabel(res.role_label || 'Umum');
+        setInviteCodeDivision(res.division || '');
+      }
     } catch (err: any) {
       const msg = err?.response?.data?.message || err.message || 'Gagal memvalidasi kode.';
       setInviteCodeValid(false);
@@ -300,7 +307,6 @@ const LoginScreen: React.FC = () => {
         email: regEmail,
         password: regPassword,
         password_confirmation: regPasswordConfirm,
-        division: regDivision,
       });
       setRegSuccess(true);
       if (res.requires_verification) {
@@ -603,6 +609,20 @@ const LoginScreen: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">
+                  {successMessage && (
+                    <div
+                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm"
+                      style={{
+                        background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
+                        color: '#16A34A',
+                        border: '1px solid #BBF7D0',
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-lg">check_circle</span>
+                      <span>{successMessage}</span>
+                    </div>
+                  )}
+
                   {error && (
                     <div
                       className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm login-shake"
@@ -826,6 +846,36 @@ const LoginScreen: React.FC = () => {
                       {/* Rest of the form — only shown after invite code is validated */}
                       {inviteCodeValid && (
                         <div className="space-y-4 login-fade-in mt-4 pt-4 border-t border-slate-100 max-h-[42vh] md:max-h-[50vh] overflow-y-auto custom-scrollbar pr-2 pb-2">
+                          {/* Auto-assigned Role & Division Badge */}
+                          <div
+                            className="rounded-xl p-3.5 border-2 transition-all duration-300"
+                            style={{
+                              background: 'linear-gradient(135deg, #F0FDFA, #F0F9FF)',
+                              borderColor: '#00B4AE',
+                              borderStyle: 'dashed',
+                            }}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="material-symbols-outlined text-sm" style={{ color: '#00B4AE' }}>verified</span>
+                              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#00B4AE' }}>Akses Ditentukan oleh Kode Undangan</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              {inviteCodeDivision && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold" style={{ background: '#003868', color: 'white' }}>
+                                  <span className="material-symbols-outlined text-xs">business</span>
+                                  {inviteCodeDivision}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold" style={{
+                                background: inviteCodeRole === 'marketing' ? '#DC2626' : inviteCodeRole === 'common' ? '#64748B' : '#7C3AED',
+                                color: 'white',
+                              }}>
+                                <span className="material-symbols-outlined text-xs">shield</span>
+                                {inviteCodeRoleLabel}
+                              </span>
+                            </div>
+                          </div>
+
                           <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
                             <InputField
@@ -852,41 +902,6 @@ const LoginScreen: React.FC = () => {
                               focusedField={focusedField}
                               setFocusedField={setFocusedField}
                             />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Divisi</label>
-                            <div
-                              className="flex items-center rounded-xl border-2 transition-all duration-300"
-                              style={{
-                                borderColor: focusedField === 'reg-division' ? '#00B4AE' : '#E2E8F0',
-                                boxShadow: focusedField === 'reg-division' ? '0 0 0 4px rgba(0,180,174,0.1)' : 'none',
-                                background: focusedField === 'reg-division' ? '#F0FDFA' : '#F8FAFC',
-                              }}
-                            >
-                              <span
-                                className="material-symbols-outlined pl-4 text-lg transition-colors duration-300"
-                                style={{ color: focusedField === 'reg-division' ? '#00B4AE' : '#94A3B8' }}
-                              >
-                                business
-                              </span>
-                              <select
-                                id="reg-division"
-                                value={regDivision}
-                                onChange={(e) => setRegDivision(e.target.value)}
-                                onFocus={() => setFocusedField('reg-division')}
-                                onBlur={() => setFocusedField(null)}
-                                required
-                                className="w-full bg-transparent border-none outline-none px-3 py-3.5 text-sm text-slate-800 appearance-none cursor-pointer"
-                                style={{ boxShadow: 'none' }}
-                              >
-                                <option value="" disabled>Pilih divisi</option>
-                                {DIVISIONS.map((d) => (
-                                  <option key={d} value={d}>{d}</option>
-                                ))}
-                              </select>
-                              <span className="material-symbols-outlined pr-3 text-slate-400">expand_more</span>
-                            </div>
                           </div>
 
                           <div>

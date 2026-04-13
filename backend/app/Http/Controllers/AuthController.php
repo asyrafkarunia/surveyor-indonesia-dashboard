@@ -129,9 +129,22 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Return role and division metadata from the invite code
+        $roleLabels = [
+            'marketing' => 'Administrator',
+            'head_section' => 'Head Section',
+            'approver' => 'Approver',
+            'senior_manager' => 'Senior Manager',
+            'general_manager' => 'General Manager',
+            'common' => 'Umum',
+        ];
+
         return response()->json([
             'valid' => true,
             'message' => 'Kode undangan valid.',
+            'role' => $inviteCode->role,
+            'role_label' => $roleLabels[$inviteCode->role] ?? 'Umum',
+            'division' => $inviteCode->division,
         ]);
     }
 
@@ -146,7 +159,6 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:5|confirmed',
-                'division' => 'required|string|max:255',
             ]);
 
             // Validate invite code
@@ -158,13 +170,13 @@ class AuthController extends Controller
                 ], 422);
             }
 
-            // Create user with default 'common' role
+            // Create user with role and division from invite code
             $user = User::create([
                 'name' => trim($request->name),
                 'email' => strtolower(trim($request->email)),
                 'password' => Hash::make($request->password),
-                'role' => 'common',
-                'division' => trim($request->division),
+                'role' => $inviteCode->role ?? 'common',
+                'division' => $inviteCode->division ?? '',
                 'status' => 'Aktif',
             ]);
 
@@ -178,6 +190,8 @@ class AuthController extends Controller
             Log::info('User registered via invite code', [
                 'user_id' => $user->id,
                 'invite_code' => $inviteCode->code,
+                'role' => $inviteCode->role,
+                'division' => $inviteCode->division,
                 'invited_by' => $inviteCode->created_by,
             ]);
 
@@ -286,16 +300,27 @@ class AuthController extends Controller
     }
 
     /**
-     * Resend Verification Email
+     * Resend Verification Email (Public — works without auth)
      */
     public function resendVerificationEmail(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email sudah terverifikasi.'], 400);
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', strtolower(trim($request->email)))->first();
+
+        if (!$user) {
+            // Don't reveal whether the email exists
+            return response()->json(['message' => 'Jika email terdaftar, email verifikasi telah dikirim ulang.']);
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email sudah terverifikasi. Silakan login.'], 400);
+        }
 
-        return response()->json(['message' => 'Email verifikasi telah dikirim ulang.']);
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Email verifikasi telah dikirim ulang. Silakan cek inbox Anda.']);
     }
 }

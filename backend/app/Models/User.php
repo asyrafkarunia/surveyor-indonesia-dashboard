@@ -47,6 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         
         switch ($this->role) {
+            case 'super_admin': return 'Super Admin';
             case 'marketing': return 'Marketing';
             case 'senior_manager': return 'Senior Manager';
             case 'general_manager': return 'General Manager';
@@ -84,5 +85,28 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isCommon()
     {
         return $this->role === 'common';
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'super_admin';
+    }
+
+    /**
+     * Get numeric hierarchy level for role comparison.
+     * Higher number = higher privilege.
+     */
+    public function getRoleLevel(): int
+    {
+        $levels = [
+            'common' => 1,
+            'approver' => 2,
+            'senior_manager' => 2,
+            'general_manager' => 2,
+            'marketing' => 3,
+            'head_section' => 4,
+            'super_admin' => 5,
+        ];
+        return $levels[$this->role] ?? 0;
     }
 }

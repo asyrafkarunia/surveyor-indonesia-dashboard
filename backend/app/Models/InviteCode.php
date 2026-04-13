@@ -11,6 +11,8 @@ class InviteCode extends Model
 
     protected $fillable = [
         'code',
+        'role',
+        'division',
         'created_by',
         'used_by',
         'used_at',

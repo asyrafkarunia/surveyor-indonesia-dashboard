@@ -16,6 +16,11 @@ class RoleMiddleware
 
         $user = auth()->user();
         
+        // Super admin and head_section bypass all role checks
+        if (in_array($user->role, ['super_admin', 'head_section'])) {
+            return $next($request);
+        }
+
         // Check both database role and dynamic roleName
         $isMatch = false;
         foreach ($roles as $role) {

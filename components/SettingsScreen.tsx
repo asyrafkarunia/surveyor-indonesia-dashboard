@@ -10,7 +10,7 @@ interface SettingsScreenProps {
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
-  const { user, isMarketing } = useAuth();
+  const { user, isMarketing, isSuperAdmin } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const isAdmin = isMarketing();
 
@@ -62,6 +62,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   const [inviteCodes, setInviteCodes] = useState<any[]>([]);
   const [inviteCodesLoading, setInviteCodesLoading] = useState(false);
   const [generateLoading, setGenerateLoading] = useState(false);
+  const [generateRole, setGenerateRole] = useState('common');
+  const [generateDivision, setGenerateDivision] = useState('');
   
   // User management filters
   const [divisionFilter, setDivisionFilter] = useState<string>('all');
@@ -109,6 +111,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
           roleName = 'Senior Manager';
         } else if (u.role === 'general_manager') {
           roleName = 'General Manager';
+        } else if (u.role === 'super_admin') {
+          roleName = 'Super Admin';
         } else if (u.role === 'common') {
           roleName = 'Surveyor';
         }
@@ -285,6 +289,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
   const getRoleDisplayName = (role: UserRoleType, roleName: UserRoleName) => {
     const roleGroups: Record<UserRoleType, string> = {
+      'super_admin': 'Super Admin',
       'marketing': 'Administrator',
       'approver': 'Approver',
       'senior_manager': 'Approver',
@@ -313,11 +318,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   };
 
   const handleGenerateInviteCode = async () => {
+    if (!generateDivision) {
+      alert('Silakan pilih divisi target terlebih dahulu.');
+      return;
+    }
     setGenerateLoading(true);
     try {
-      const response = await api.generateInviteCode();
+      const response = await api.generateInviteCode({
+        role: generateRole,
+        division: generateDivision,
+      });
       const codeData: any = (response as any).data || response;
-      alert(`Kode undangan berhasil dibuat: ${codeData.code || 'Buka tab kode untuk melihatnya'}`);
+      alert(`Kode undangan berhasil dibuat: ${codeData.code || codeData?.invite_code?.code || 'Buka tab kode untuk melihatnya'}`);
       loadInviteCodes();
     } catch (error) {
       console.error('Failed to generate invite code:', error);
@@ -341,6 +353,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
   const getRoleBadgeColor = (role: UserRoleType) => {
     switch (role) {
+      case 'super_admin':
+        return 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
       case 'marketing':
         return 'bg-red-50 dark:bg-red-900/20 text-primary border-red-100 dark:border-red-800';
       case 'head_section':
@@ -356,37 +370,101 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     }
   };
 
+  // Role hierarchy levels for comparison
+  const getRoleLevel = (role: string) => {
+    const levels: Record<string, number> = {
+      'common': 1,
+      'approver': 2,
+      'senior_manager': 2,
+      'general_manager': 2,
+      'marketing': 3,
+      'head_section': 4,
+      'super_admin': 5,
+    };
+    return levels[role] || 0;
+  };
+
   const handleDeleteUser = async (userId: string) => {
     const userToDelete = users.find(u => u.id === userId);
+    if (!userToDelete) return;
     
-    // Cek apakah user yang akan dihapus adalah administrator
-    if (userToDelete?.role === 'marketing') {
-      alert('Tidak dapat menghapus akun Administrator. Akses Administrator bersifat mutlak dan tidak dapat diganggu.');
+    // Cannot delete yourself
+    if (userToDelete.isCurrentUser) {
+      alert('Tidak dapat menghapus akun Anda sendiri.');
       return;
     }
 
-    if (!confirm(`Apakah Anda yakin ingin menghapus pengguna ${userToDelete?.name}?`)) return;
+    // Cannot delete super_admin
+    if (userToDelete.role === 'super_admin') {
+      alert('Akun Super Admin tidak dapat dihapus.');
+      return;
+    }
+
+    // Privileged accounts can only be deleted by super_admin
+    const privilegedRoles = ['marketing', 'head_section', 'approver', 'senior_manager', 'general_manager'];
+    if (privilegedRoles.includes(userToDelete.role) && user?.role !== 'super_admin') {
+      alert('Hanya Super Admin yang dapat menghapus akun dengan hak akses tinggi.');
+      return;
+    }
+
+    if (!confirm(`Apakah Anda yakin ingin menghapus pengguna ${userToDelete.name}?`)) return;
     
     try {
       await api.deleteUser(userId);
       alert('Pengguna berhasil dihapus');
       loadUsers();
     } catch (error: any) {
-      alert('Gagal menghapus pengguna: ' + (error.message || 'Unknown error'));
+      const msg = error?.response?.data?.message || error.message || 'Unknown error';
+      alert('Gagal menghapus pengguna: ' + msg);
     }
   };
 
-  // Fungsi untuk mengecek apakah user bisa di-edit atau dihapus
+  // === HIERARCHY-BASED ACCESS CONTROL ===
+  // Determines if the current user can EDIT a target user
   const canModifyUser = (userItem: SystemUser) => {
-    // Administrator tidak bisa diubah atau dihapus
-    if (userItem.role === 'marketing') {
-      return false;
-    }
-    // User sendiri tidak bisa diubah
-    if (userItem.isCurrentUser) {
-      return false;
-    }
-    return true;
+    const actorRole = user?.role || 'common';
+    const actorLevel = getRoleLevel(actorRole);
+    const targetLevel = getRoleLevel(userItem.role);
+    
+    // Self-edit is always allowed (profile only, not role)
+    if (userItem.isCurrentUser) return true;
+    
+    // super_admin can edit anyone
+    if (actorRole === 'super_admin') return true;
+    
+    // head_section can edit everyone except super_admin
+    if (actorRole === 'head_section' && userItem.role !== 'super_admin') return true;
+    
+    // marketing can only edit users with lower privilege level
+    if (actorRole === 'marketing' && targetLevel < actorLevel) return true;
+    
+    return false;
+  };
+
+  // Determines if the current user can DELETE a target user
+  const canDeleteUser = (userItem: SystemUser) => {
+    // Can never delete yourself
+    if (userItem.isCurrentUser) return false;
+    
+    // Can never delete super_admin
+    if (userItem.role === 'super_admin') return false;
+    
+    // Privileged accounts can only be deleted by super_admin
+    const privilegedRoles = ['marketing', 'head_section', 'approver', 'senior_manager', 'general_manager'];
+    if (privilegedRoles.includes(userItem.role) && user?.role !== 'super_admin') return false;
+    
+    // super_admin can delete anyone (except themselves and other super_admins, already handled)
+    if (user?.role === 'super_admin') return true;
+    
+    // head_section and marketing can delete common users
+    if (['head_section', 'marketing'].includes(user?.role || '') && userItem.role === 'common') return true;
+    
+    return false;
+  };
+
+  // Check if editing self (used to disable role selector)
+  const isEditingSelf = (userItem: SystemUser | null) => {
+    return userItem?.isCurrentUser || false;
   };
 
   return (
@@ -418,7 +496,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
               <div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">{user?.name || 'User'}</h2>
                 <p className="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-tight">
-                  {user?.role === 'marketing' ? 'Administrator' : user?.role === 'approver' ? 'Approver' : 'Umum'}
+                  {user?.role === 'super_admin' ? 'Super Admin' : 
+                   user?.role === 'head_section' ? 'Head Section' :
+                   user?.role === 'marketing' ? 'Administrator' : 
+                   user?.role === 'approver' ? 'Approver' : 'Umum'}
                 </p>
                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 mt-1 uppercase tracking-widest">
                   ID Karyawan: {users.find(u => u.isCurrentUser)?.employeeId || user?.id || 'N/A'}
@@ -530,6 +611,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
             'Management': { bg: 'bg-purple-50 dark:bg-purple-900/15', border: 'border-purple-200 dark:border-purple-800', text: 'text-purple-700 dark:text-purple-300', icon: 'supervisor_account' },
             'Keuangan': { bg: 'bg-amber-50 dark:bg-amber-900/15', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', icon: 'account_balance' },
             'SDM & Umum': { bg: 'bg-rose-50 dark:bg-rose-900/15', border: 'border-rose-200 dark:border-rose-800', text: 'text-rose-700 dark:text-rose-300', icon: 'people' },
+            'System Administrator': { bg: 'bg-amber-50 dark:bg-amber-900/15', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', icon: 'terminal' },
           };
           const getColor = (div: string) => divisionColors[div] || { bg: 'bg-slate-50 dark:bg-slate-800', border: 'border-slate-200 dark:border-slate-700', text: 'text-slate-600 dark:text-slate-300', icon: 'folder' };
 
@@ -671,15 +753,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                     {/* User Cards Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                       {divUsers.map(userItem => {
-                        const isAdministrator = userItem.role === 'marketing';
-                        const canModify = canModifyUser(userItem);
-                        const isGreyedOut = isAdministrator && !userItem.isCurrentUser;
+                        const canEdit = canModifyUser(userItem);
+                        const canDelete = canDeleteUser(userItem);
+                        const isSuperAdminUser = userItem.role === 'super_admin';
+                        const isProtected = isSuperAdminUser && !userItem.isCurrentUser;
 
                         return (
                           <div
                             key={userItem.id}
                             className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 transition-all hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 group ${
-                              isGreyedOut ? 'opacity-60' : ''
+                              isSuperAdminUser ? 'ring-1 ring-amber-200 dark:ring-amber-800' : ''
                             }`}
                           >
                             <div className="flex items-start gap-3">
@@ -688,8 +771,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                 <div className="w-10 h-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700 shrink-0" style={{ backgroundImage: `url("${userItem.avatar}")` }} />
                               ) : (
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border text-xs shrink-0 ${
-                                  isGreyedOut
-                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 border-slate-300 dark:border-slate-600'
+                                  userItem.role === 'super_admin' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
                                     : userItem.role === 'marketing' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                                     : userItem.role === 'head_section' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'
                                     : ['approver', 'senior_manager', 'general_manager'].includes(userItem.role) ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
@@ -701,30 +783,26 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                               {/* Info */}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <p className={`font-bold text-sm truncate ${
-                                    isGreyedOut ? 'text-slate-400' : 'text-slate-900 dark:text-white'
-                                  }`}>{userItem.name}</p>
+                                  <p className="font-bold text-sm truncate text-slate-900 dark:text-white">{userItem.name}</p>
                                   {userItem.isCurrentUser && (
                                     <span className="text-[8px] font-black text-primary bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">(Anda)</span>
                                   )}
-                                  {isGreyedOut && (
-                                    <span className="text-[8px] font-black text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">Protected</span>
+                                  {isSuperAdminUser && (
+                                    <span className="text-[8px] font-black text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded uppercase tracking-widest shrink-0">Master</span>
                                   )}
                                 </div>
                                 <p className="text-[11px] font-medium text-slate-400 truncate">{userItem.email}</p>
                               </div>
-                              {/* Actions */}
-                              <div className={`flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ${
-                                !canModify ? 'pointer-events-none' : ''
-                              }`}>
+                              {/* Actions — separate edit and delete permissions */}
+                              <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                   className={`p-1.5 rounded-lg transition-colors ${
-                                    canModify ? 'text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'text-slate-300 cursor-not-allowed'
+                                    canEdit ? 'text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'text-slate-300 cursor-not-allowed'
                                   }`}
-                                  disabled={!canModify}
-                                  title={canModify ? 'Edit Profil & Peran' : isAdministrator ? 'Administrator penuh' : 'Tidak mengubah akun sendiri'}
+                                  disabled={!canEdit}
+                                  title={canEdit ? (userItem.isCurrentUser ? 'Edit Profil Saya' : 'Edit Profil & Peran') : 'Tidak memiliki izin'}
                                   onClick={() => {
-                                    if (canModify) {
+                                    if (canEdit) {
                                       setEditingUser(userItem);
                                       setShowEditUserModal(true);
                                     }
@@ -734,12 +812,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                 </button>
                                 <button
                                   className={`p-1.5 rounded-lg transition-colors ${
-                                    canModify ? 'text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-slate-300 cursor-not-allowed'
+                                    canDelete ? 'text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-slate-300 cursor-not-allowed'
                                   }`}
-                                  disabled={!canModify}
-                                  title={canModify ? 'Hapus User' : isAdministrator ? 'Administrator tidak dapat dihapus' : 'Tidak dapat menghapus akun sendiri'}
+                                  disabled={!canDelete}
+                                  title={canDelete ? 'Hapus User' : userItem.isCurrentUser ? 'Tidak dapat menghapus akun sendiri' : 'Tidak memiliki izin hapus'}
                                   onClick={() => {
-                                    if (canModify) handleDeleteUser(userItem.id);
+                                    if (canDelete) handleDeleteUser(userItem.id);
                                   }}
                                 >
                                   <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -750,24 +828,19 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                             {/* Role + Status Row */}
                             <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
                               <div className="flex items-center gap-2">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tight border ${
-                                  isGreyedOut ? 'opacity-60' : ''
-                                } ${getRoleBadgeColor(userItem.role)}`}>
-                                  {userItem.role === 'marketing' ? 'Admin' :
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tight border ${getRoleBadgeColor(userItem.role)}`}>
+                                  {userItem.role === 'super_admin' ? 'Super Admin' :
+                                   userItem.role === 'marketing' ? 'Admin' :
                                    userItem.role === 'head_section' ? 'Head Section' :
                                    ['approver', 'senior_manager', 'general_manager'].includes(userItem.role) ? 'Approver' : 'Umum'}
                                 </span>
                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{userItem.roleName}</span>
                               </div>
                               <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-tight ${
-                                userItem.status === 'Aktif'
-                                  ? isGreyedOut ? 'text-slate-400' : 'text-emerald-600 dark:text-emerald-400'
-                                  : 'text-slate-400'
+                                userItem.status === 'Aktif' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
                               }`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${
-                                  userItem.status === 'Aktif'
-                                    ? isGreyedOut ? 'bg-slate-400' : 'bg-emerald-500'
-                                    : 'bg-slate-400'
+                                  userItem.status === 'Aktif' ? 'bg-emerald-500' : 'bg-slate-400'
                                 }`} />
                                 {userItem.status}
                               </span>
@@ -796,28 +869,69 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
         {/* Invite Code Management (Admin Only) */}
         {isAdmin && (
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest">
-                  <span className="material-symbols-outlined text-primary fill">key</span>
-                  Kode Undangan Form Registrasi
-                </h3>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Generate kode untuk pendaftaran akun baru pada form registrasi awal. Kode berlaku 72 jam dan sekali pakai.</p>
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-widest">
+                    <span className="material-symbols-outlined text-primary fill">key</span>
+                    Kode Undangan Form Registrasi
+                  </h3>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Generate kode untuk pendaftaran akun baru. Kode membawa role dan divisi yang ditentukan oleh admin. Berlaku 72 jam dan sekali pakai.</p>
+                </div>
               </div>
-              <button
-                onClick={handleGenerateInviteCode}
-                disabled={generateLoading}
-                className="px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 flex-shrink-0 justify-center shadow-lg shadow-primary/20 disabled:opacity-50"
-              >
-                <span className="material-symbols-outlined text-[18px]">{generateLoading ? 'hourglass_empty' : 'add'}</span>
-                {generateLoading ? 'Membuat...' : 'Generate Kode'}
-              </button>
+              {/* Generate Invite Code Form */}
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Konfigurasi Kode Undangan Baru</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Divisi Target</label>
+                    <select
+                      value={generateDivision}
+                      onChange={(e) => setGenerateDivision(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm font-bold text-slate-900 dark:text-white focus:border-primary outline-none"
+                    >
+                      <option value="">Pilih Divisi...</option>
+                      <option value="Divisi Manajemen">Divisi Manajemen</option>
+                      <option value="Divisi Operasi">Divisi Operasi</option>
+                      <option value="Divisi Keuangan">Divisi Keuangan</option>
+                      <option value="Divisi Marketing & Sales">Divisi Marketing & Sales</option>
+                      <option value="Divisi SDM & Umum">Divisi SDM & Umum</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Level Akses</label>
+                    <select
+                      value={generateRole}
+                      onChange={(e) => setGenerateRole(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm font-bold text-slate-900 dark:text-white focus:border-primary outline-none"
+                    >
+                      <option value="common">Umum (Common)</option>
+                      <option value="marketing">Administrator (Marketing)</option>
+                      <option value="head_section">Head Section</option>
+                      <option value="approver">Approver</option>
+                      <option value="senior_manager">Senior Manager</option>
+                      <option value="general_manager">General Manager</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={handleGenerateInviteCode}
+                      disabled={generateLoading || !generateDivision}
+                      className="w-full px-5 py-2.5 bg-primary text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition-all flex items-center gap-2 justify-center shadow-lg shadow-primary/20 disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">{generateLoading ? 'hourglass_empty' : 'add'}</span>
+                      {generateLoading ? 'Membuat...' : 'Generate Kode'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
                   <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">
                     <th className="px-6 py-4">Kode</th>
+                    <th className="px-6 py-4">Divisi / Role</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Dibuat Oleh</th>
                     <th className="px-6 py-4">Digunakan Oleh</th>
@@ -827,16 +941,34 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                   {inviteCodesLoading ? (
-                    <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Memuat data...</td></tr>
+                    <tr><td colSpan={7} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Memuat data...</td></tr>
                   ) : inviteCodes.length === 0 ? (
-                    <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Belum ada kode undangan</td></tr>
+                    <tr><td colSpan={7} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">Belum ada kode undangan</td></tr>
                   ) : (
                     inviteCodes.map((ic: any) => {
                       const status = getInviteCodeStatus(ic);
+                      const roleLabels: Record<string, string> = {
+                        marketing: 'Admin',
+                        head_section: 'Head Section',
+                        approver: 'Approver',
+                        senior_manager: 'SR Manager',
+                        general_manager: 'GM',
+                        common: 'Umum',
+                      };
                       return (
                         <tr key={ic.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                           <td className="px-6 py-4">
                             <span className="font-mono font-bold text-sm tracking-wider" style={{ color: '#003868' }}>{ic.code}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col gap-1">
+                              {ic.division && <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{ic.division}</span>}
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight w-fit ${
+                                ic.role === 'marketing' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' :
+                                ic.role === 'common' ? 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400' :
+                                'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
+                              }`}>{roleLabels[ic.role] || 'Umum'}</span>
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border w-fit ${status.color}`}>
@@ -1011,15 +1143,30 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Divisi</label>
-                  <input
-                    type="text"
+                  <select
                     value={editingUser.division}
                     onChange={(e) => setEditingUser({ ...editingUser, division: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
                     required
-                  />
+                  >
+                    <option value="">Pilih Divisi...</option>
+                    <option value="Divisi Manajemen">Divisi Manajemen</option>
+                    <option value="Divisi Operasi">Divisi Operasi</option>
+                    <option value="Divisi Keuangan">Divisi Keuangan</option>
+                    <option value="Divisi Marketing & Sales">Divisi Marketing & Sales</option>
+                    <option value="Divisi SDM & Umum">Divisi SDM & Umum</option>
+                    <option value="IT">IT</option>
+                  </select>
                 </div>
                 
+                {/* Self-edit restriction notice */}
+                {isEditingSelf(editingUser) && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                    <span className="material-symbols-outlined text-blue-500 text-[16px]">info</span>
+                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">Anda dapat mengubah profil sendiri, tetapi tidak dapat mengubah role Anda sendiri.</span>
+                  </div>
+                )}
+
                 {/* Role Status Select */}
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Peran Akses (Role)</label>
@@ -1027,14 +1174,21 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                     value={editingUser.role === 'head_section' ? 'marketing' : editingUser.role}
                     onChange={(e) => {
                       const role = e.target.value as UserRoleType;
-                      setEditingUser({ 
+                      const updates: Partial<SystemUser> = { 
                         ...editingUser, 
                         role,
                         roleName: role === 'marketing' ? 'Marketing Staff' : role === 'approver' ? 'Senior Manager' : 'Surveyor'
-                      });
+                      };
+                      // Auto-couple: marketing/head_section → Divisi Marketing & Sales
+                      if (role === 'marketing' || role === 'head_section') {
+                        updates.division = 'Divisi Marketing & Sales';
+                      }
+                      setEditingUser(updates as SystemUser);
                     }}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                    disabled={isEditingSelf(editingUser)}
+                    className={`w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none ${isEditingSelf(editingUser) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
+                    {user?.role === 'super_admin' && <option value="super_admin">Super Admin (IT)</option>}
                     <option value="marketing">Administrator (Marketing)</option>
                     <option value="approver">Approver / Manajemen</option>
                     <option value="common">User Umum</option>
@@ -1055,7 +1209,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                       
                       setEditingUser({ ...editingUser, roleName: newRoleName, role: newRole });
                     }}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
+                    disabled={isEditingSelf(editingUser)}
+                    className={`w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none ${isEditingSelf(editingUser) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {(editingUser.role === 'marketing' || editingUser.role === 'head_section') && (
                       <>
@@ -1169,14 +1324,20 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                     value={newUser.role === 'head_section' ? 'marketing' : newUser.role}
                     onChange={(e) => {
                       const role = e.target.value as UserRoleType;
-                      setNewUser({ 
+                      const updates = { 
                         ...newUser, 
                         role,
-                        roleName: role === 'marketing' ? 'Marketing Staff' : role === 'approver' ? 'Senior Manager' : 'Surveyor'
-                      });
+                        roleName: (role === 'marketing' ? 'Marketing Staff' : role === 'approver' ? 'Senior Manager' : 'Surveyor') as UserRoleName
+                      };
+                      // Auto-couple: marketing/head_section → Divisi Marketing & Sales
+                      if (role === 'marketing' || role === 'head_section') {
+                        updates.division = 'Divisi Marketing & Sales';
+                      }
+                      setNewUser(updates);
                     }}
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
                   >
+                    {user?.role === 'super_admin' && <option value="super_admin">Super Admin (IT)</option>}
                     <option value="marketing">Administrator (Marketing)</option>
                     <option value="approver">Approver</option>
                     <option value="common">Umum</option>
@@ -1253,13 +1414,20 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Divisi</label>
-                  <input
-                    type="text"
+                  <select
                     value={newUser.division}
                     onChange={(e) => setNewUser({ ...newUser, division: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
                     required
-                  />
+                  >
+                    <option value="">Pilih Divisi...</option>
+                    <option value="Divisi Manajemen">Divisi Manajemen</option>
+                    <option value="Divisi Operasi">Divisi Operasi</option>
+                    <option value="Divisi Keuangan">Divisi Keuangan</option>
+                    <option value="Divisi Marketing & Sales">Divisi Marketing & Sales</option>
+                    <option value="Divisi SDM & Umum">Divisi SDM & Umum</option>
+                    <option value="IT">IT</option>
+                  </select>
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
