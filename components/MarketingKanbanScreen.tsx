@@ -57,9 +57,17 @@ const TaskCard: React.FC<{
           {card.date}
         </div>
         <div className="flex items-center">
-           <div className="size-6 rounded-full bg-slate-100 border border-white shadow-sm flex items-center justify-center text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase">
-             {card.assignee.initials}
-           </div>
+          {card.assignee.avatar ? (
+            <img 
+              src={card.assignee.avatar} 
+              alt={card.assignee.name}
+              className="size-6 rounded-full border border-white shadow-sm object-cover"
+            />
+          ) : (
+            <div className="size-6 rounded-full bg-slate-100 border border-white shadow-sm flex items-center justify-center text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase">
+              {card.assignee.initials}
+            </div>
+          )}
         </div>
       </div>
     </div>

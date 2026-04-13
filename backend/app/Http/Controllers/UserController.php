@@ -40,6 +40,35 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|max:5120',
+        ]);
+
+        $user = $request->user();
+        
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = 'avatar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('avatars', $filename, 'public');
+            
+            // Delete old avatar if exists and not default
+            if ($user->avatar && str_contains($user->avatar, '/storage/avatars/')) {
+                $oldPath = str_replace('/storage/', '', $user->avatar);
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
+            
+            $fullUrl = url('/storage/' . $path);
+            $user->update(['avatar' => $fullUrl]);
+            return response()->json(['avatar' => $fullUrl]);
+        }
+        
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
+
     public function updatePassword(Request $request)
     {
         try {

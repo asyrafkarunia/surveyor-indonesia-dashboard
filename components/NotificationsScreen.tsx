@@ -81,22 +81,25 @@ const NotificationItem: React.FC<{
       }`}
       onClick={() => onClick(item)}
     >
-      <div className="shrink-0 relative">
-        {item.user?.avatar ? (
-          <div className="size-12 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700 shadow-sm" style={{ backgroundImage: `url("${item.user.avatar}")` }}></div>
-        ) : (
-          <div className={`flex items-center justify-center rounded-full size-12 shadow-sm ${
-            item.type === 'assignment' ? 'bg-green-50 border border-green-100' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
-          }`}>
-            {getIcon()}
+        <div className="relative size-12 shrink-0">
+          {item.user?.avatar ? (
+            <img 
+              src={item.user.avatar} 
+              alt={item.user.name} 
+              className="size-12 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.opacity = '0';
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              }}
+              onLoad={(e) => {
+                (e.target as HTMLImageElement).style.opacity = '1';
+              }}
+            />
+          ) : null}
+          <div className={`absolute inset-0 size-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold border border-slate-200 dark:border-slate-700 shadow-sm ${item.user?.avatar ? 'hidden' : ''}`}>
+            {item.user?.name?.charAt(0) || '?'}
           </div>
-        )}
-        {item.type === 'comment' && (
-          <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-0.5 shadow-sm border border-slate-100 dark:border-slate-700">
-            {getIcon()}
-          </div>
-        )}
-      </div>
+        </div>
 
       <div className="flex flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-2">

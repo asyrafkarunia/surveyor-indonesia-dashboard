@@ -806,6 +806,27 @@ class ApiService {
     });
   }
 
+  async uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const token = this.token;
+    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
+      throw new Error(error.message || 'Upload failed');
+    }
+
+    return response.json();
+  }
+
   async updatePassword(currentPassword: string, newPassword: string) {
     return this.request('/users/password', {
       method: 'PUT',

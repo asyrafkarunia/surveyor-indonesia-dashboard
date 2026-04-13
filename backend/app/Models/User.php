@@ -40,6 +40,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $appends = ['role_name'];
 
+    public function getAvatarAttribute($value)
+    {
+        if (!$value) return null;
+        if (str_starts_with($value, 'http')) return $value;
+        return url($value);
+    }
+
     public function getRoleNameAttribute()
     {
         if ($this->name === 'Ibnu Khaldun' && $this->role === 'approver') {

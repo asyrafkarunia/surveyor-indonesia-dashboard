@@ -11,7 +11,6 @@ interface SettingsScreenProps {
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   const { user, isMarketing, isSuperAdmin } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
   const isAdmin = isMarketing();
 
   // Profile state
@@ -21,6 +20,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     division: user?.division || '',
   });
   const [profileLoading, setProfileLoading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Security state
   const [passwordData, setPasswordData] = useState({
@@ -158,6 +158,30 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     }
   };
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate size (max 5MB client-side)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal 5MB');
+      return;
+    }
+
+    setProfileLoading(true);
+    try {
+      await api.uploadAvatar(file);
+      alert('Foto profil berhasil diperbarui');
+      // Forcing a full page reload to safely refresh the global AuthContext state 
+      // with the new profile picture across the application
+      window.location.reload(); 
+    } catch (error: any) {
+      console.error('Avatar upload failed:', error);
+      alert('Gagal memperbarui foto profil: ' + (error.message || 'Unknown error'));
+      setProfileLoading(false); 
+    }
+  };
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -183,7 +207,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   const handlePreferencesSave = async () => {
     setPreferencesLoading(true);
     try {
-      await api.updatePreferences({ notifications, darkMode: isDarkMode });
+      await api.updatePreferences({ notifications });
       alert('Preferensi berhasil disimpan');
     } catch (error: any) {
       alert('Gagal menyimpan preferensi: ' + (error.message || 'Unknown error'));
@@ -482,33 +506,49 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
           <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <div className="relative group cursor-pointer">
-                <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-24 border-4 border-white dark:border-slate-800 shadow-md" style={{ backgroundImage: user?.avatar ? `url("${user.avatar}")` : 'none', backgroundColor: user?.avatar ? 'transparent' : '#e2e8f0' }}>
+                <div 
+                  className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-24 border-4 border-white dark:border-slate-800 shadow-md" 
+                  style={{ 
+                    backgroundImage: user?.avatar ? `url("${user.avatar}")` : 'none', 
+                    backgroundColor: user?.avatar ? 'transparent' : '#e2e8f0' 
+                  }}
+                >
                   {!user?.avatar && (
                     <div className="w-full h-full flex items-center justify-center text-slate-600 dark:text-slate-300 font-black text-2xl">
                       {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                     </div>
                   )}
                 </div>
-                <div className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full shadow-sm hover:bg-primary-dark transition-colors">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full shadow-sm hover:bg-primary-dark transition-colors"
+                >
                   <span className="material-symbols-outlined text-[18px]">photo_camera</span>
-                </div>
+                </button>
               </div>
               <div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">{user?.name || 'User'}</h2>
                 <p className="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-tight">
-                  {user?.role === 'super_admin' ? 'Super Admin' : 
-                   user?.role === 'head_section' ? 'Head Section' :
-                   user?.role === 'marketing' ? 'Administrator' : 
-                   user?.role === 'approver' ? 'Approver' : 'Umum'}
+                  {user?.division || 'Divisi Belum Diatur'}
                 </p>
                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 mt-1 uppercase tracking-widest">
                   ID Karyawan: {users.find(u => u.isCurrentUser)?.employeeId || user?.id || 'N/A'}
                 </p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors w-full md:w-auto shadow-sm border border-red-100 dark:border-red-800">
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors w-full md:w-auto shadow-sm border border-red-100 dark:border-red-800"
+            >
               Ubah Foto Profil
             </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleAvatarChange} 
+            />
           </div>
           
           <div className="p-8">
@@ -1069,33 +1109,80 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
           {/* Preferences Section */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 flex flex-col h-full">
             <h3 className="text-sm font-black text-slate-900 dark:text-white mb-8 flex items-center gap-2 uppercase tracking-widest">
-              <span className="material-symbols-outlined text-primary fill">tune</span>
-              Preferensi & Notifikasi
+              <span className="material-symbols-outlined text-primary fill">notifications</span>
+              Notifikasi Sistem
             </h3>
-              <div className="flex flex-col gap-6">
-                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-[0.2em] mb-1">Tampilan</h4>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Mode Tampilan</label>
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Dark Mode</span>
-                    <button
-                      onClick={toggleDarkMode}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                        isDarkMode ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-600'
-                      }`}
-                      role="switch"
-                      aria-checked={isDarkMode}
-                    >
-                      <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-800 shadow ring-0 transition duration-200 ease-in-out ${
-                        isDarkMode ? 'translate-x-5' : 'translate-x-0'
-                      }`}></span>
-                    </button>
+            <div className="flex flex-col gap-4 flex-1">
+              
+              {/* SPH Notifications - Only for Marketing & Management */}
+              {(isMarketing() || isSuperAdmin || ['senior_manager', 'general_manager', 'head_section', 'approver'].includes(user?.role || '')) && (
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+                  <div className="flex flex-col gap-1 pr-4">
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Aktivitas SPH</span>
+                    <span className="text-[10px] text-slate-500 font-medium tracking-wide">Update penawaran dan keputusan klien pada SPH.</span>
                   </div>
+                  <button
+                    onClick={() => setNotifications(prev => ({ ...prev, sphNew: !prev.sphNew }))}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${notifications.sphNew ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
+                  >
+                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notifications.sphNew ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                  </button>
+                </div>
+              )}
+
+              {/* Project Notifications - For Marketing, Finance, and Management */}
+              {(user?.division === 'Divisi Keuangan' || isMarketing() || isSuperAdmin) && (
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+                  <div className="flex flex-col gap-1 pr-4">
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Update Capaian Proyek</span>
+                    <span className="text-[10px] text-slate-500 font-medium tracking-wide">Notifikasi saat ada pembaruan pada performa & target proyek.</span>
+                  </div>
+                  <button
+                    onClick={() => setNotifications(prev => ({ ...prev, clientUpdate: !prev.clientUpdate }))}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${notifications.clientUpdate ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
+                  >
+                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notifications.clientUpdate ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                  </button>
+                </div>
+              )}
+
+              {/* Weekly Digest - For Everyone */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+                <div className="flex flex-col gap-1 pr-4">
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Ringkasan Mingguan</span>
+                  <span className="text-[10px] text-slate-500 font-medium tracking-wide">Kirim email rangkuman aktivitas proyek & timeline per minggu.</span>
+                </div>
+                <button
+                  onClick={() => setNotifications(prev => ({ ...prev, weeklyDigest: !prev.weeklyDigest }))}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${notifications.weeklyDigest ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}
+                >
+                  <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notifications.weeklyDigest ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                </button>
+              </div>
+
+              {/* System Announcements - For Everyone */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+                <div className="flex flex-col gap-1 pr-4">
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Pengumuman Sistem</span>
+                  <span className="text-[10px] text-slate-500 font-medium tracking-wide">Info penting terkait pemeliharaan & rilis fitur baru.</span>
+                </div>
+                <div className="relative inline-flex h-6 w-11 shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-primary opacity-50">
+                  <span className="inline-block h-5 w-5 translate-x-5 transform rounded-full bg-white shadow ring-0"></span>
                 </div>
               </div>
+
+            </div>
+            
+            <button 
+              onClick={handlePreferencesSave}
+              disabled={preferencesLoading}
+              className="w-full mt-6 py-3 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors shadow-sm disabled:opacity-50"
+            >
+              {preferencesLoading ? 'Menyimpan...' : 'Simpan Preferensi'}
+            </button>
+          </div>
+
         </div>
-      </div>
         {/* Danger Zone */}
         <div className="rounded-2xl border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col gap-1">
@@ -1284,7 +1371,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
             </div>
           </div>
         )}
-\n        {/* Add User Modal */}
+
+        {/* Add User Modal */}
         {showAddUserModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 max-w-md w-full mx-4">

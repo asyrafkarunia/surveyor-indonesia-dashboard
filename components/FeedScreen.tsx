@@ -148,13 +148,25 @@ const FeedItem: React.FC<{
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          {item.user.avatar ? (
-            <div className="size-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${item.user.avatar}")` }}></div>
-          ) : (
-            <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300 font-bold">
+          <div className="relative size-10">
+            {item.user.avatar ? (
+              <img 
+                src={item.user.avatar} 
+                alt={item.user.name} 
+                className="size-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 transition-opacity duration-300" 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.opacity = '0';
+                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                }}
+                onLoad={(e) => {
+                  (e.target as HTMLImageElement).style.opacity = '1';
+                }}
+              />
+            ) : null}
+            <div className={`absolute inset-0 size-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300 font-bold ${item.user.avatar ? 'hidden' : ''}`}>
               {item.user.name.charAt(0)}
             </div>
-          )}
+          </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-slate-900 dark:text-white">{item.user.name}</span>
@@ -303,13 +315,25 @@ const FeedItem: React.FC<{
           <div className="mt-4 space-y-4 border-t border-slate-100 dark:border-slate-700 pt-4">
             {item.comments && item.comments.map(comment => (
               <div key={comment.id} className="flex gap-3">
-                {comment.user.avatar ? (
-                  <div className="size-6 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${comment.user.avatar}")` }}></div>
-                ) : (
-                  <div className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                <div className="relative size-6">
+                  {comment.user.avatar ? (
+                    <img 
+                      src={comment.user.avatar} 
+                      alt={comment.user.name} 
+                      className="size-6 rounded-full object-cover border border-slate-200 dark:border-slate-700 transition-opacity duration-300" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.opacity = '0';
+                        (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                      }}
+                      onLoad={(e) => {
+                        (e.target as HTMLImageElement).style.opacity = '1';
+                      }}
+                    />
+                  ) : null}
+                  <div className={`absolute inset-0 size-6 flex items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 dark:text-slate-300 ${comment.user.avatar ? 'hidden' : ''}`}>
                     {comment.user.name.charAt(0)}
                   </div>
-                )}
+                </div>
                 <div className="flex-1 rounded-lg bg-slate-50 dark:bg-slate-900 p-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white">{comment.user.name}</span>
@@ -567,13 +591,25 @@ const FeedScreen: React.FC = () => {
         {/* Post Input */}
         <div id="post-input" className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
           <div className="flex gap-4">
-            {user?.avatar ? (
-              <div className="size-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url("${user.avatar}")` }}></div>
-            ) : (
-              <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300">
+            <div className="relative size-10">
+              {user?.avatar ? (
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="size-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 transition-opacity duration-300" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '0';
+                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                  }}
+                  onLoad={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '1';
+                  }}
+                />
+              ) : null}
+              <div className={`absolute inset-0 size-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:text-slate-300 ${user?.avatar ? 'hidden' : ''}`}>
                 <span className="material-symbols-outlined">person</span>
               </div>
-            )}
+            </div>
             <div className="flex-1">
               <textarea
                 value={newPostContent}
@@ -704,14 +740,24 @@ const FeedScreen: React.FC = () => {
               <div className="flex flex-col gap-4">
                 {onlineUsers.slice(0, 10).map(member => (
                   <div key={member.id} className="flex items-center gap-3">
-                    <div className="relative">
+                    <div className="relative size-9">
                       {member.avatar ? (
-                        <div className="size-9 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-700 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
-                      ) : (
-                        <div className="size-9 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center">
-                          <span className="material-symbols-outlined text-sm text-slate-600 dark:text-slate-300">person</span>
-                        </div>
-                      )}
+                        <img 
+                          src={member.avatar} 
+                          alt={member.name} 
+                          className="size-9 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '0';
+                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                          }}
+                          onLoad={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '1';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`absolute inset-0 size-9 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center ${member.avatar ? 'hidden' : ''}`}>
+                        <span className="material-symbols-outlined text-sm text-slate-600 dark:text-slate-300">person</span>
+                      </div>
                       <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-white bg-green-500"></span>
                     </div>
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{member.name}</span>
@@ -748,14 +794,24 @@ const FeedScreen: React.FC = () => {
               <div className="flex flex-col gap-4">
                 {onlineUsers.map(member => (
                   <div key={member.id} className="flex items-center gap-4">
-                    <div className="relative">
+                    <div className="relative size-12">
                       {member.avatar ? (
-                        <div className="size-12 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-700 shadow-sm" style={{ backgroundImage: `url("${member.avatar}")` }}></div>
-                      ) : (
-                        <div className="size-12 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center">
-                          <span className="material-symbols-outlined text-lg text-slate-600 dark:text-slate-300">person</span>
-                        </div>
-                      )}
+                        <img 
+                          src={member.avatar} 
+                          alt={member.name} 
+                          className="size-12 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '0';
+                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                          }}
+                          onLoad={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '1';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`absolute inset-0 size-12 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center ${member.avatar ? 'hidden' : ''}`}>
+                        <span className="material-symbols-outlined text-lg text-slate-600 dark:text-slate-300">person</span>
+                      </div>
                       <span className="absolute bottom-0 right-0 size-3.5 rounded-full border-2 border-white bg-green-500"></span>
                     </div>
                     <div>

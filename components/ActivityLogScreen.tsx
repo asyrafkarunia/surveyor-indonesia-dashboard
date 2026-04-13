@@ -786,10 +786,26 @@ const ActivityLogScreen: React.FC = () => {
                         </td>
                         <td className="p-6">
                           <div className="flex items-center gap-3">
-                            {log.adminAvatar
-                              ? <img src={log.adminAvatar} className="size-9 rounded-full object-cover border border-slate-200 dark:border-slate-700" alt={log.adminName} />
-                              : <div className="size-9 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary text-xs font-black border border-blue-100 dark:border-blue-800">{log.adminInitials}</div>
-                            }
+                            <div className="relative size-9">
+                              {log.adminAvatar ? (
+                                <img 
+                                  src={log.adminAvatar} 
+                                  className="size-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+                                  alt={log.adminName}
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.opacity = '0';
+                                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                  onLoad={(e) => {
+                                    (e.target as HTMLImageElement).style.opacity = '1';
+                                  }}
+                                />
+                              ) : null}
+                              <div className={`absolute inset-0 size-9 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary text-[10px] font-black border border-blue-100 dark:border-blue-800 uppercase ${log.adminAvatar ? 'hidden' : ''}`}>
+                                {log.adminInitials}
+                              </div>
+                            </div>
                             <div className="overflow-hidden">
                               <span className="text-sm font-black text-slate-900 dark:text-white truncate block">{log.adminName}</span>
                               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.adminId}</span>
@@ -889,10 +905,25 @@ const ActivityLogScreen: React.FC = () => {
                     </div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pengguna Terkait</label>
                     <div className="flex items-center gap-4 relative z-10">
-                      {selectedLog.adminAvatar
-                        ? <img src={selectedLog.adminAvatar} className="size-16 rounded-2xl object-cover border-2 border-white dark:border-slate-700 shadow-md" alt={selectedLog.adminName} />
-                        : <div className="size-16 rounded-2xl bg-primary text-white flex items-center justify-center text-xl font-black shadow-lg shadow-primary/20 border-2 border-white dark:border-slate-700">{selectedLog.adminInitials}</div>
-                      }
+                      <div className="relative size-16">
+                        {selectedLog.adminAvatar ? (
+                          <img 
+                            src={selectedLog.adminAvatar} 
+                            className="size-16 rounded-2xl object-cover border-2 border-white dark:border-slate-700 shadow-md transition-opacity duration-300" 
+                            alt={selectedLog.adminName} 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.opacity = '0';
+                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                            }}
+                            onLoad={(e) => {
+                              (e.target as HTMLImageElement).style.opacity = '1';
+                            }}
+                          />
+                        ) : null}
+                        <div className={`absolute inset-0 size-16 rounded-2xl bg-primary text-white flex items-center justify-center text-xl font-black shadow-lg shadow-primary/20 border-2 border-white dark:border-slate-700 ${selectedLog.adminAvatar ? 'hidden' : ''}`}>
+                          {selectedLog.adminInitials}
+                        </div>
+                      </div>
                       <div className="overflow-hidden">
                         <p className="text-lg font-black text-slate-900 dark:text-white truncate">{selectedLog.adminName}</p>
                         <p className="text-xs font-bold text-slate-500 truncate mb-1">{selectedLog.adminEmail}</p>

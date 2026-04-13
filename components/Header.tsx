@@ -170,7 +170,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
             </div>
             <div className="size-9 overflow-hidden rounded-full border-2 border-slate-100 dark:border-slate-700 bg-slate-200 dark:bg-slate-700 shadow-sm">
               <img 
-                src="https://picsum.photos/seed/admin/100/100" 
+                src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0D8ABC&color=fff`} 
                 alt="Profile" 
                 className="h-full w-full object-cover"
               />
@@ -194,7 +194,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
               <div className="flex items-center gap-3">
                 <div className="size-11 overflow-hidden rounded-full border-2 border-primary/20 bg-slate-200 dark:bg-slate-700 shadow-sm shrink-0">
                   <img 
-                    src="https://picsum.photos/seed/admin/100/100" 
+                    src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=0D8ABC&color=fff`} 
                     alt="Profile" 
                     className="h-full w-full object-cover"
                   />

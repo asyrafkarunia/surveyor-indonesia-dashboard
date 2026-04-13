@@ -349,12 +349,24 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-baseline">
                           <div className="flex items-center gap-2">
-                            <div className="size-6 rounded-full bg-slate-200 border border-slate-300 dark:border-slate-600 bg-cover bg-center overflow-hidden">
+                            <div className="relative size-6">
                               {item.user?.avatar ? (
-                                <img src={item.user.avatar} alt={userName} className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-[10px] font-black text-slate-700 dark:text-slate-200 flex items-center justify-center w-full h-full">{initials}</span>
-                              )}
+                                <img 
+                                  src={item.user.avatar} 
+                                  alt={userName} 
+                                  className="size-6 rounded-full object-cover transition-opacity duration-300" 
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.opacity = '0';
+                                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                  onLoad={(e) => {
+                                    (e.target as HTMLImageElement).style.opacity = '1';
+                                  }}
+                                />
+                              ) : null}
+                              <div className={`absolute inset-0 size-6 flex items-center justify-center text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase ${item.user?.avatar ? 'hidden' : ''}`}>
+                                {initials}
+                              </div>
                             </div>
                             <span className="text-sm font-black text-slate-900 dark:text-white">{userName}</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.action}</span>
@@ -384,16 +396,25 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Assignees</p>
                 <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
-                  {task.assignee.avatar ? (
-                    <div
-                      className="size-10 rounded-full border-2 border-slate-50 shadow-sm bg-cover bg-center"
-                      style={{ backgroundImage: `url(${task.assignee.avatar})` }}
-                    ></div>
-                  ) : (
-                    <div className="size-10 rounded-full border-2 border-slate-50 shadow-sm bg-slate-200 flex items-center justify-center text-[11px] font-black text-slate-600 dark:text-slate-300">
+                  <div className="relative size-10">
+                    {task.assignee.avatar ? (
+                      <img 
+                        src={task.assignee.avatar} 
+                        alt={task.assignee.name}
+                        className="size-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover transition-opacity duration-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.opacity = '0';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                        onLoad={(e) => {
+                          (e.target as HTMLImageElement).style.opacity = '1';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`absolute inset-0 size-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm bg-slate-200 flex items-center justify-center text-[11px] font-black text-slate-600 dark:text-slate-300 uppercase ${task.assignee.avatar ? 'hidden' : ''}`}>
                       {task.assignee.initials}
                     </div>
-                  )}
+                  </div>
                   <div className="overflow-hidden">
                     <p className="text-sm font-black text-slate-900 dark:text-white truncate">{task.assignee.name}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Assignee</p>
@@ -451,12 +472,24 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
 
                     return (
                       <div key={comment.id} className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 border border-white shadow-sm shrink-0 flex items-center justify-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter overflow-hidden">
+                        <div className="relative size-8">
                           {comment.user?.avatar ? (
-                            <img src={comment.user.avatar} alt={userName} className="w-full h-full object-cover" />
-                          ) : (
-                            initials
-                          )}
+                            <img 
+                              src={comment.user.avatar} 
+                              alt={userName} 
+                              className="size-8 rounded-full object-cover border border-white dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.opacity = '0';
+                                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                              }}
+                              onLoad={(e) => {
+                                (e.target as HTMLImageElement).style.opacity = '1';
+                              }}
+                            />
+                          ) : null}
+                          <div className={`absolute inset-0 size-8 rounded-full bg-slate-200 border border-white dark:border-slate-700 shadow-sm shrink-0 flex items-center justify-center text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter ${comment.user?.avatar ? 'hidden' : ''}`}>
+                            {initials}
+                          </div>
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-baseline mb-1">

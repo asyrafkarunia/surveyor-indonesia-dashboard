@@ -146,6 +146,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     // Users & Settings
     Route::get('/users/profile', [UserController::class, 'profile']);
     Route::put('/users/profile', [UserController::class, 'updateProfile']);
+    Route::post('/users/avatar', [UserController::class, 'updateAvatar']);
     Route::put('/users/password', [UserController::class, 'updatePassword']);
     Route::get('/users', [UserController::class, 'index'])->middleware('role:marketing');
     Route::post('/users', [UserController::class, 'store'])->middleware('role:marketing');
