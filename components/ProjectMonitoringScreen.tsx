@@ -377,6 +377,14 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   ];
 
   const filteredProjects = projects.filter((project: any) => {
+    // Client-side search filtering for strict matching
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      const code = (project.code || '').toLowerCase();
+      const title = (project.title || '').toLowerCase();
+      if (!code.includes(query) && !title.includes(query)) return false;
+    }
+
     if (picFilter && (project.pic?.name || '') !== picFilter) return false;
     if (picMarketingFilter && (project.marketing_pic?.name || '') !== picMarketingFilter) return false;
     if (statusFilter && (project.status || '') !== statusFilter) return false;

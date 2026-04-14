@@ -195,10 +195,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">PIC (Person In Charge)</label>
               <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                <div className="size-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center shrink-0">
-                  <span className="text-sm font-black text-primary">
-                    {event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-                  </span>
+                <div className="size-12 rounded-full bg-primary/10 border-2 border-primary/20 overflow-hidden flex items-center justify-center shrink-0">
+                  {event.user.avatar ? (
+                    <img src={event.user.avatar} alt={event.user.name} className="size-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-black text-primary">
+                      {event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-black text-slate-900 dark:text-white truncate">{event.user.name}</p>
@@ -220,10 +224,14 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {event.team_member_users.map((member: any) => (
                   <div key={member.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                    <div className="size-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-black text-slate-600 dark:text-slate-300">
-                        {member.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-                      </span>
+                    <div className="size-8 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-600">
+                      {member.avatar ? (
+                        <img src={member.avatar} alt={member.name} className="size-full object-cover" />
+                      ) : (
+                        <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                          {member.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{member.name}</p>

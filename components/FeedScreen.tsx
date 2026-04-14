@@ -64,6 +64,30 @@ interface Deadline {
   project?: string;
 }
 
+const translateDateIndo = (dateStr: string) => {
+  if (!dateStr) return '';
+  return dateStr
+    .replace(/Sunday/gi, 'Minggu')
+    .replace(/Monday/gi, 'Senin')
+    .replace(/Tuesday/gi, 'Selasa')
+    .replace(/Wednesday/gi, 'Rabu')
+    .replace(/Thursday/gi, 'Kamis')
+    .replace(/Friday/gi, 'Jumat')
+    .replace(/Saturday/gi, 'Sabtu')
+    .replace(/January/gi, 'Januari')
+    .replace(/February/gi, 'Februari')
+    .replace(/March/gi, 'Maret')
+    .replace(/April/gi, 'April')
+    .replace(/May/gi, 'Mei')
+    .replace(/June/gi, 'Juni')
+    .replace(/July/gi, 'Juli')
+    .replace(/August/gi, 'Agustus')
+    .replace(/September/gi, 'September')
+    .replace(/October/gi, 'Oktober')
+    .replace(/November/gi, 'November')
+    .replace(/December/gi, 'Desember');
+};
+
 const FeedItem: React.FC<{ 
   item: Activity;
   onLike: (id: number) => void;
@@ -71,7 +95,8 @@ const FeedItem: React.FC<{
   onEdit: (id: number, content: string) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
   currentUserId: number;
-}> = ({ item, onLike, onComment, onEdit, onDelete, currentUserId }) => {
+  onNavigate?: (tab: string, data?: any) => void;
+}> = ({ item, onLike, onComment, onEdit, onDelete, currentUserId, onNavigate }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
@@ -176,11 +201,20 @@ const FeedItem: React.FC<{
                 </span>
               )}
               {item.type === 'meeting' && (
-                <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-600">
-                  Meeting
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-600">
+                    Meeting
+                  </span>
+                  <button 
+                    onClick={() => onNavigate && onNavigate('calendar')}
+                    title="Buka di Kalender"
+                    className="flex size-5 items-center justify-center rounded-full bg-white border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary transition-colors shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-[12px]">calendar_month</span>
+                  </button>
+                </div>
               )}
-              {item.is_urgent && (
+              {!!item.is_urgent && (
                 <span className="rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-600 flex items-center gap-1">
                   <span className="material-symbols-outlined text-[12px]">error</span>
                   Urgent
@@ -257,18 +291,40 @@ const FeedItem: React.FC<{
           </div>
         ) : (
           <>
-            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap">{item.content}</p>
+            <div className="space-y-3">
+              {item.type === 'meeting' && item.content.includes('Tanggal:') ? (
+                <>
+                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap">
+                    {item.content.split('Tanggal:')[0].trim()}
+                  </p>
+                  <div className="inline-flex items-center gap-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 px-3 py-2 border border-purple-100 dark:border-purple-800">
+                    <span className="material-symbols-outlined text-purple-500 text-[18px]">event</span>
+                    <div>
+                      <p className="text-[10px] font-bold text-purple-500 uppercase tracking-wider">Jadwal Event</p>
+                      <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
+                        {translateDateIndo(item.content.split('Tanggal:')[1].trim())}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap">{item.content}</p>
+              )}
+            </div>
             
             {item.project && (
-              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2">
-                <div className="flex size-8 items-center justify-center rounded bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm">
+              <button 
+                onClick={() => onNavigate && onNavigate('monitoring', { projectCode: item.project?.code })}
+                className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm group"
+              >
+                <div className="flex size-8 items-center justify-center rounded bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm group-hover:text-primary transition-colors">
                   {item.project.code.substring(0, 2)}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{item.project.code}</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors">{item.project.code}</p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 max-w-[200px]">{item.project.title}</p>
                 </div>
-              </div>
+              </button>
             )}
 
             {item.attachments && item.attachments.length > 0 && (
@@ -367,7 +423,9 @@ const FeedItem: React.FC<{
   );
 };
 
-const FeedScreen: React.FC = () => {
+const FeedScreen: React.FC<{
+  onNavigate?: (tab: string, data?: any) => void;
+}> = ({ onNavigate }) => {
   const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
@@ -669,6 +727,7 @@ const FeedScreen: React.FC = () => {
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 currentUserId={user?.id || 0}
+                onNavigate={onNavigate}
               />
             ))
           )}

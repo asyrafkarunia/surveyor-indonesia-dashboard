@@ -104,7 +104,7 @@ export const CALENDAR_STEPS: Step[] = [
   },
   {
     target: '#calendar-header',
-    content: 'Gunakan tombol navigasi bulan untuk berpindah bulan, tombol "Today" untuk kembali ke hari ini, dan pilih tampilan Bulan/Minggu/Hari.',
+    content: 'Gunakan tombol navigasi terpadu untuk berpindah bulan (panah), kembali ke hari ini (ikon kalender), atau klik pada nama bulan untuk memilih bulan dan tahun spesifik.',
     title: 'Navigasi Kalender',
     disableBeacon: true,
     placement: 'bottom',

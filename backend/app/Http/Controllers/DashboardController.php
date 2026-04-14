@@ -145,20 +145,34 @@ class DashboardController extends Controller
 
     public function recentActivities(Request $request)
     {
-        $activities = Cache::remember('dashboard_recent_activities', 30, function () {
-            return Activity::with(['user', 'project'])
-                ->latest()
-                ->limit(5)
-                ->get()
-                ->map(fn($a) => [
-                    'id'     => $a->id,
-                    'type'   => $a->type,
-                    'user'   => $a->user->name,
-                    'action' => $a->content,
-                    'target' => $a->project->title ?? 'General',
-                    'time'   => $a->created_at->diffForHumans(),
-                ]);
-        });
+        $user = $request->user();
+
+        $query = Activity::with(['user', 'project']);
+
+        // Privasi Feed: Aktivitas selain "post" hanya dapat dilihat oleh pembuat atau orang yang di-tag, Dikecualikan untuk Super Admin
+        if ($user && !$user->isSuperAdmin()) {
+            $query->where(function($q) use ($user) {
+                $q->where('type', 'post')
+                  ->orWhere('user_id', $user->id)
+                  ->orWhereIn('id', function($q2) use ($user) {
+                      $q2->select('activity_id')
+                         ->from('activity_mentions')
+                         ->where('user_id', $user->id);
+                  });
+            });
+        }
+
+        $activities = $query->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn($a) => [
+                'id'     => $a->id,
+                'type'   => $a->type,
+                'user'   => $a->user->name,
+                'action' => $a->content,
+                'target' => $a->project->title ?? 'General',
+                'time'   => $a->created_at->diffForHumans(),
+            ]);
 
         return response()->json($activities);
     }

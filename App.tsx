@@ -59,7 +59,7 @@ const LoadingScreen = () => (
 );
 
 const DashboardHome: React.FC<{
-  onNavigate?: (tab: string) => void;
+  onNavigate?: (tab: string, data?: any) => void;
   onOpenProject?: (projectId: string | number) => void;
 }> = ({ onNavigate, onOpenProject }) => {
   const { user } = useAuth();
@@ -98,6 +98,30 @@ const DashboardHome: React.FC<{
   useEffect(() => {
     fetchDashboardData();
   }, [startMonth, startYear, endMonth, endYear]);
+
+  const translateDateIndo = (dateStr: string) => {
+    if (!dateStr) return '';
+    return dateStr
+      .replace(/Sunday/gi, 'Minggu')
+      .replace(/Monday/gi, 'Senin')
+      .replace(/Tuesday/gi, 'Selasa')
+      .replace(/Wednesday/gi, 'Rabu')
+      .replace(/Thursday/gi, 'Kamis')
+      .replace(/Friday/gi, 'Jumat')
+      .replace(/Saturday/gi, 'Sabtu')
+      .replace(/January/gi, 'Januari')
+      .replace(/February/gi, 'Februari')
+      .replace(/March/gi, 'Maret')
+      .replace(/April/gi, 'April')
+      .replace(/May/gi, 'Mei')
+      .replace(/June/gi, 'Juni')
+      .replace(/July/gi, 'Juli')
+      .replace(/August/gi, 'Agustus')
+      .replace(/September/gi, 'September')
+      .replace(/October/gi, 'Oktober')
+      .replace(/November/gi, 'November')
+      .replace(/December/gi, 'Desember');
+  };
 
   const handleDateRangeChange = (newStartMonth: number, newStartYear: number, newEndMonth: number, newEndYear: number) => {
     setStartMonth(newStartMonth);
@@ -247,7 +271,7 @@ const DashboardHome: React.FC<{
                       <p className="text-sm font-bold text-slate-900 dark:text-white">{activity.user}</p>
                       <p className="text-[10px] font-medium text-slate-400 whitespace-nowrap">{activity.time}</p>
                     </div>
-                    <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">{activity.action}</p>
+                    <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">{translateDateIndo(activity.action)}</p>
                   </div>
                 </div>
               ))}
@@ -504,7 +528,12 @@ const AppContent: React.FC = () => {
       case 'dashboard':
         return (
           <DashboardHome
-            onNavigate={(tab) => setActiveTab(tab)}
+            onNavigate={(tab, data) => {
+              setActiveTab(tab);
+              if (tab === 'monitoring' && data?.projectCode) {
+                setGlobalProjectSearch(data.projectCode);
+              }
+            }}
             onOpenProject={(projectId) => {
               setSelectedProjectId(String(projectId));
               setActiveTab('monitoring');
@@ -559,7 +588,22 @@ const AppContent: React.FC = () => {
       );
       case 'marketing_kanban': return <MarketingKanbanScreen onAddTask={() => setIsCreatingMarketingTask(true)} />;
       case 'essential_docs': return isAdmin ? <BerkasDokumenScreen /> : <DashboardHome />;
-      case 'activity': return <FeedScreen />;
+      case 'activity': return (
+        <FeedScreen 
+          onNavigate={(tab, data) => {
+            setActiveTab(tab);
+            if (tab === 'calendar' && data?.eventId) {
+              setPendingCalendarEventId(data.eventId);
+            }
+            if (tab === 'monitoring' && data?.projectCode) {
+              setGlobalProjectSearch(data.projectCode);
+            }
+            if (tab === 'project_detail' && data?.projectId) {
+              setSelectedProjectId(data.projectId);
+            }
+          }}
+        />
+      );
       case 'notifications': return (
         <NotificationsScreen 
           onNavigate={(tab, data) => {

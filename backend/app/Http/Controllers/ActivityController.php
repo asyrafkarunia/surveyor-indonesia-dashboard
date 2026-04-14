@@ -20,9 +20,9 @@ class ActivityController extends Controller
     {
         $query = Activity::with(['user', 'project', 'likes.user', 'comments.user', 'attachments', 'mentionedUsers']);
 
-        // Privasi Feed: Aktivitas selain "post" hanya dapat dilihat oleh pembuat atau orang yang di-tag
+        // Privasi Feed: Aktivitas selain "post" hanya dapat dilihat oleh pembuat atau orang yang di-tag, Dikecualikan untuk Super Admin
         $user = $request->user();
-        if ($user) {
+        if ($user && !$user->isSuperAdmin()) {
             $query->where(function($q) use ($user) {
                 $q->where('type', 'post')
                   ->orWhere('user_id', $user->id)
