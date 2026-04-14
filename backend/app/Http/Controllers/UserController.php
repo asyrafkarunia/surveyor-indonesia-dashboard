@@ -35,6 +35,10 @@ class UserController extends Controller
             $validated['password'] = Hash::make($request->password);
         }
 
+        if ($request->has('division') && $user->role !== 'super_admin') {
+            unset($validated['division']);
+        }
+
         $user->update($validated);
 
         return response()->json($user);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import UserProfileModal from './UserProfileModal';
 
 interface Activity {
   id: number;
@@ -435,9 +436,14 @@ const FeedScreen: React.FC<{
   const [isPosting, setIsPosting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [showAllOnlineUsers, setShowAllOnlineUsers] = useState(false);
+  const [showDirectory, setShowDirectory] = useState(false);
+  const [selectedPreviewUser, setSelectedPreviewUser] = useState<any>(null);
+  const [directoryUsers, setDirectoryUsers] = useState<any[]>([]);
+  const [directorySearch, setDirectorySearch] = useState('');
+  const [isDirectoryLoading, setIsDirectoryLoading] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef(0);
   const isDragging = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -501,6 +507,21 @@ const FeedScreen: React.FC<{
     } catch (error) {
       console.error('Error fetching feed data:', error);
       setIsLoading(false);
+    }
+  };
+
+  const fetchDirectoryUsers = async () => {
+    setIsDirectoryLoading(true);
+    try {
+      const response: any = await api.getUsers();
+      const data = response.data || response;
+      const list = Array.isArray(data) ? data : (data.data || []);
+      const sortedList = [...list].sort((a, b) => a.name.localeCompare(b.name));
+      setDirectoryUsers(sortedList);
+    } catch (error) {
+      console.error('Error fetching directory:', error);
+    } finally {
+      setIsDirectoryLoading(false);
     }
   };
 
@@ -569,7 +590,7 @@ const FeedScreen: React.FC<{
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const selectedFiles = Array.from(e.target.files);
+      const selectedFiles = Array.from(e.target.files) as File[];
       const validFiles: File[] = [];
       let hasOversizedFile = false;
 
@@ -795,103 +816,153 @@ const FeedScreen: React.FC<{
           {onlineUsers.length === 0 ? (
             <div className="text-center text-slate-400 py-8 text-sm">Tidak ada yang online</div>
           ) : (
-            <>
-              <div className="flex flex-col gap-4">
-                {onlineUsers.slice(0, 10).map(member => (
-                  <div key={member.id} className="flex items-center gap-3">
-                    <div className="relative size-9">
-                      {member.avatar ? (
-                        <img 
-                          src={member.avatar} 
-                          alt={member.name} 
-                          className="size-9 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.opacity = '0';
-                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                          }}
-                          onLoad={(e) => {
-                            (e.target as HTMLImageElement).style.opacity = '1';
-                          }}
-                        />
-                      ) : null}
-                      <div className={`absolute inset-0 size-9 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center ${member.avatar ? 'hidden' : ''}`}>
-                        <span className="material-symbols-outlined text-sm text-slate-600 dark:text-slate-300">person</span>
-                      </div>
-                      <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-white bg-green-500"></span>
-                    </div>
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{member.name}</span>
-                  </div>
-                ))}
-              </div>
-              {onlineUsers.length > 10 && (
-                <button 
-                  onClick={() => setShowAllOnlineUsers(true)}
-                  className="mt-6 w-full rounded-xl bg-slate-50 dark:bg-slate-900 py-2.5 text-[11px] font-black text-slate-500 dark:text-slate-400 hover:bg-slate-100 transition-colors uppercase tracking-widest border border-slate-200 dark:border-slate-700/50"
+            <div className="flex flex-col gap-4 mb-6">
+              {onlineUsers.slice(0, 5).map(member => (
+                <div 
+                  key={member.id} 
+                  className="flex items-center gap-3 cursor-pointer group"
+                  onClick={() => setSelectedPreviewUser({ ...member, status: 'Aktif' })}
                 >
-                  Lihat Semua Anggota
-                </button>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Online Users Modal */}
-      {showAllOnlineUsers && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-5">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Semua Anggota Online ({onlineUsers.length})</h3>
-              <button 
-                onClick={() => setShowAllOnlineUsers(false)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-slate-600 dark:text-slate-300 transition-colors"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
-              <div className="flex flex-col gap-4">
-                {onlineUsers.map(member => (
-                  <div key={member.id} className="flex items-center gap-4">
-                    <div className="relative size-12">
-                      {member.avatar ? (
-                        <img 
-                          src={member.avatar} 
-                          alt={member.name} 
-                          className="size-12 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.opacity = '0';
-                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                          }}
-                          onLoad={(e) => {
-                            (e.target as HTMLImageElement).style.opacity = '1';
-                          }}
-                        />
-                      ) : null}
-                      <div className={`absolute inset-0 size-12 rounded-full bg-slate-100 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-center ${member.avatar ? 'hidden' : ''}`}>
-                        <span className="material-symbols-outlined text-lg text-slate-600 dark:text-slate-300">person</span>
+                  <div className="relative size-9 transition-transform group-hover:scale-110">
+                    {member.avatar ? (
+                      <img 
+                        src={member.avatar} 
+                        alt={member.name} 
+                        className="size-9 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm" 
+                      />
+                    ) : (
+                      <div className="size-9 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <span className="material-symbols-outlined text-[18px] text-slate-400">person</span>
                       </div>
-                      <span className="absolute bottom-0 right-0 size-3.5 rounded-full border-2 border-white bg-green-500"></span>
-                    </div>
-                    <div>
-                      <span className="block text-base font-bold text-slate-900 dark:text-white">{member.name}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{member.email || 'Anggota Tim'}</span>
-                    </div>
+                    )}
+                    <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-white dark:border-slate-800 bg-green-500"></span>
                   </div>
-                ))}
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate group-hover:text-primary transition-colors">{member.name}</span>
+                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">Sistem Online</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <button 
+            onClick={() => {
+              if (directoryUsers.length === 0) fetchDirectoryUsers();
+              setShowDirectory(true);
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 py-2.5 text-[11px] font-black text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-primary/50 hover:text-primary transition-all uppercase tracking-widest active:scale-95 group"
+          >
+            <span className="material-symbols-outlined text-[18px] text-slate-400 group-hover:text-primary transition-colors">person_search</span>
+            <span>Direktori Pegawai</span>
+          </button>
+        </div>
+      </div>      {/* Employee Directory Modal - Fun Grid Approach */}
+      {showDirectory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowDirectory(false)} />
+          
+          <div className="relative w-full max-w-4xl bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in slide-in-from-bottom-8 duration-500">
+            {/* Header with search */}
+            <div className="flex flex-col p-8 border-b border-slate-100 dark:border-slate-700 gap-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">Direktori Pegawai</h3>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Temukan dan hubungi rekan kerja Anda di seluruh divisi PT SI.</p>
+                </div>
+                <button 
+                  onClick={() => setShowDirectory(false)}
+                  className="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                <input 
+                  type="text" 
+                  value={directorySearch}
+                  onChange={(e) => setDirectorySearch(e.target.value)}
+                  placeholder="Cari nama, divisi, atau email..."
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+                />
               </div>
             </div>
-            <div className="border-t border-slate-100 dark:border-slate-700 p-5">
-              <button 
-                onClick={() => setShowAllOnlineUsers(false)}
-                className="w-full rounded-xl bg-slate-900 py-3 text-sm font-bold text-white hover:bg-slate-800 transition-colors"
-              >
-                Tutup
-              </button>
+
+            {/* Content - Engage & Fun Grid */}
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/20">
+              {isDirectoryLoading ? (
+                <div className="h-full flex flex-col items-center justify-center gap-4 py-12">
+                  <div className="size-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                  <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Sinkronisasi data pegawai...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {directoryUsers.filter(u => 
+                    u.name.toLowerCase().includes(directorySearch.toLowerCase()) || 
+                    (u.division && u.division.toLowerCase().includes(directorySearch.toLowerCase())) ||
+                    u.email.toLowerCase().includes(directorySearch.toLowerCase())
+                  ).map(emp => (
+                    <div 
+                      key={emp.id}
+                      onClick={() => setSelectedPreviewUser(emp)}
+                      className="group relative bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 cursor-pointer overflow-hidden transform hover:-translate-y-1"
+                    >
+                      {/* Decorative background element on hover */}
+                      <div className="absolute top-0 right-0 size-24 bg-gradient-to-br from-primary/5 to-teal-500/5 rounded-bl-full translate-x-12 -translate-y-12 group-hover:translate-x-4 group-hover:-translate-y-4 transition-transform duration-500" />
+                      
+                      <div className="flex items-center gap-4 relative z-10">
+                        <div className="size-16 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 border-2 border-slate-50 dark:border-slate-800 shadow-md">
+                          {emp.avatar ? (
+                            <img src={emp.avatar} alt={emp.name} className="size-full object-cover" />
+                          ) : (
+                            <div className="size-full flex items-center justify-center text-2xl font-black text-slate-300">
+                              {emp.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <h4 className="font-black text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors">{emp.name}</h4>
+                          <span className="text-[10px] font-black text-primary uppercase tracking-wider mt-0.5">{emp.division || 'Umum'}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-6 flex flex-col gap-2 relative z-10">
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                          <span className="material-symbols-outlined text-[16px]">mail</span>
+                          <span className="truncate">{emp.email}</span>
+                        </div>
+                        {emp.phone && (
+                          <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                            <span className="material-symbols-outlined text-[16px]">call</span>
+                            <span>{emp.phone}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
+                        <span className="material-symbols-outlined text-primary">arrow_forward</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="p-8 border-t border-slate-100 dark:border-slate-700 flex justify-center bg-white dark:bg-slate-800">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Total Pegawai SIS-TEAM: {directoryUsers.length}</p>
             </div>
           </div>
         </div>
       )}
+
+      {/* Profile Detail Preview Modal */}
+      <UserProfileModal 
+        user={selectedPreviewUser}
+        isOpen={selectedPreviewUser !== null}
+        onClose={() => setSelectedPreviewUser(null)}
+      />
     </div>
   );
 };

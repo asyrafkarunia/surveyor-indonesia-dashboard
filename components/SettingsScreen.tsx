@@ -593,12 +593,21 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Divisi</label>
-                <input 
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none transition-all" 
-                  type="text" 
-                  value={profileData.division}
-                  onChange={(e) => setProfileData({ ...profileData, division: e.target.value })}
-                />
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-400">
+                    <span className="material-symbols-outlined text-[20px]">corporate_fare</span>
+                  </span>
+                  <input 
+                    className={`w-full rounded-xl border border-slate-200 dark:border-slate-700 ${!isSuperAdmin ? 'bg-slate-100 dark:bg-slate-900/50 cursor-not-allowed text-slate-500 dark:text-slate-400' : 'bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20'} pl-10 pr-4 py-3 text-sm font-bold outline-none transition-all`}
+                    type="text" 
+                    value={profileData.division}
+                    onChange={(e) => setProfileData({ ...profileData, division: e.target.value })}
+                    disabled={!isSuperAdmin()}
+                  />
+                </div>
+                {!isSuperAdmin() && (
+                  <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium italic">Divisi tidak dapat diubah secara mandiri. Hubungi Super Admin untuk pembaruan.</p>
+                )}
               </div>
               <div className="md:col-span-2 flex justify-end mt-4">
                 <button 
