@@ -69,6 +69,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [picOptions, setPicOptions] = useState<string[]>([]);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [selectedExportIds, setSelectedExportIds] = useState<string[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [clientIdFilter, setClientIdFilter] = useState<string>('');
   const projectListRef = useRef<HTMLDivElement | null>(null);
 
   const VISIBLE_YEARS_COUNT = 4;
@@ -139,6 +141,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         year: selectedYear,
         search: searchQuery || undefined,
         page: currentPage,
+        client_id: clientIdFilter || undefined,
       });
       
       if (response && response.data) {
@@ -175,7 +178,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
   useEffect(() => {
     fetchProjects();
-  }, [selectedYear, searchQuery, currentPage]);
+  }, [selectedYear, searchQuery, currentPage, clientIdFilter]);
 
   useEffect(() => {
     const fetchPicOptions = async () => {
@@ -195,26 +198,25 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
         if (names.length > 0) {
           setPicOptions(names);
-          return;
         }
       } catch (error) {
         console.error('Failed to load PIC options from API:', error);
       }
+    };
 
-      const fallbackNames = Array.from(
-        new Set(
-          projects
-            .map((p: any) => p?.pic?.name)
-            .filter((name: any) => typeof name === 'string' && name.trim().length > 0)
-        ) as Set<string>
-      ).sort((a, b) => a.localeCompare(b, 'id-ID'));
-
-      if (fallbackNames.length > 0) {
-        setPicOptions(fallbackNames);
+    const fetchClients = async () => {
+      try {
+        const res: any = await api.getClients({ page: 1, limit: 100 } as any);
+        const data = res?.data || res;
+        const list = data.data || data;
+        setClients(Array.isArray(list) ? list : []);
+      } catch (error) {
+        console.error('Failed to load clients:', error);
       }
     };
 
     fetchPicOptions();
+    fetchClients();
   }, []);
 
   useEffect(() => {
@@ -599,12 +601,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
               <div className="flex items-center gap-2 pr-3 border-r border-slate-100 dark:border-slate-700 h-10 shrink-0"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Filter:</span></div>
+              <FilterSelect label="Klien" icon="corporate_fare" value={clientIdFilter} onChange={setClientIdFilter} options={clients.map(c => ({ value: c.id.toString(), label: c.company_name }))} />
               <FilterSelect label="Portofolio" icon="category" value={projectTypeFilter} onChange={setProjectTypeFilter} options={projectTypeOptions} />
               <FilterSelect label="PIC Proyek" icon="badge" value={picFilter} onChange={setPicFilter} options={picOptions} />
               <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
               <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} />
               <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} />
-              <button type="button" onClick={() => { setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); }} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
+              <button type="button" onClick={() => { setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setClientIdFilter(''); }} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
                 <span className="material-symbols-outlined text-[18px]">restart_alt</span>
                 Atur Ulang
               </button>
@@ -624,7 +627,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               <thead>
                 <tr id="project-table-header" className="bg-gray-50 dark:bg-slate-900/50 border-b border-[#e2e8f0] dark:border-slate-700">
                   <th className="px-4 py-5 w-10 text-center"><input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={allVisibleSelected} onChange={handleToggleSelectAllVisible} onClick={(e) => e.stopPropagation()} /></th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Nama Proyek & ID</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Klien & Proyek</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Portofolio</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Proyek</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Status Terkini</th>
@@ -649,9 +652,26 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                           <input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={selectedExportIds.includes(projectId)} onChange={(e) => { e.stopPropagation(); setSelectedExportIds(prev => prev.includes(projectId) ? prev.filter(id => id !== projectId) : [...prev, projectId]); }} onClick={(e) => e.stopPropagation()} />
                         </td>
                         <td className="px-6 py-5">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors">{highlightText(project.title || '', searchQuery)}</span>
-                            <span className="text-xs font-bold text-[#64748b] dark:text-slate-300 uppercase tracking-widest mt-0.5">{highlightText(project.code || '', searchQuery)}</span>
+                          <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-xl flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
+                              {project.client?.logo ? (
+                                <img 
+                                  src={project.client.logo.startsWith('http') ? project.client.logo : `${((import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${project.client.logo}`} 
+                                  alt={project.client.company_name}
+                                  className="size-full object-contain p-1.5"
+                                />
+                              ) : (
+                                <span className="material-symbols-outlined text-slate-300 dark:text-slate-600">domain</span>
+                              )}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors truncate">{highlightText(project.title || '', searchQuery)}</span>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">{highlightText(project.code || '', searchQuery)}</span>
+                                <span className="text-slate-300 dark:text-slate-600 text-[10px]">•</span>
+                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate">{project.client?.company_name || 'N/A'}</span>
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-5 whitespace-nowrap">

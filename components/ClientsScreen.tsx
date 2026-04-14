@@ -319,11 +319,11 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                         <div className="flex items-center gap-3">
                           {client.logo ? (
                             <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0 shadow-sm">
-                              <img 
-                                src={client.logo} 
-                                alt={client.company_name} 
-                                className="w-full h-full object-cover"
-                              />
+                                <img 
+                                  src={client.logo} 
+                                  alt={client.company_name} 
+                                  className="w-full h-full object-contain p-1"
+                                />
                             </div>
                           ) : (
                             <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">

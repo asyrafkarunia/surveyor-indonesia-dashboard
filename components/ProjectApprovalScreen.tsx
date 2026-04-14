@@ -16,6 +16,7 @@ interface ApprovalItem {
   pic?: string; // creator name
   file_path?: string;
   is_new_application?: boolean;
+  client_logo?: string;
 }
 
 const ProjectApprovalScreen: React.FC = () => {
@@ -77,6 +78,7 @@ const ProjectApprovalScreen: React.FC = () => {
         pic: item.creator?.name || 'Unknown',
         file_path: item.generated_file_path,
         is_new_application: item.is_new_application,
+        client_logo: item.client?.logo || item.logo || null,
       }));
 
       setItems(normalized);
@@ -238,16 +240,31 @@ const ProjectApprovalScreen: React.FC = () => {
                         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50'
                     }`}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-bold text-slate-900 dark:text-white truncate pr-2">{item.title}</h4>
-                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">{item.number}</span>
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">{item.client_name}</p>
-                    <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-                      <span>PIC: {item.pic}</span>
-                      {item.value && (
-                        <span>Rp {item.value.toLocaleString('id-ID')}</span>
-                      )}
+                    <div className="flex items-center gap-4">
+                      <div className="size-10 rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 overflow-hidden shrink-0">
+                        {item.client_logo ? (
+                          <img 
+                            src={item.client_logo.startsWith('http') ? item.client_logo : `${((import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${item.client_logo}`} 
+                            alt={item.client_name}
+                            className="size-full object-contain p-1"
+                          />
+                        ) : (
+                          <span className="material-symbols-outlined text-slate-400">domain</span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between mb-0.5">
+                          <h4 className="font-bold text-slate-900 dark:text-white truncate pr-2 text-sm">{item.title}</h4>
+                          <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 whitespace-nowrap uppercase tracking-widest">{item.number}</span>
+                        </div>
+                        <p className="text-xs font-semibold text-primary mb-1 truncate">{item.client_name}</p>
+                        <div className="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                          <span>PIC: {item.pic}</span>
+                          {item.value && (
+                            <span className="text-emerald-600 dark:text-emerald-400">Rp {item.value.toLocaleString('id-ID')}</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -266,9 +283,22 @@ const ProjectApprovalScreen: React.FC = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Client</h4>
-                    <p className="text-slate-600 dark:text-slate-300">{selectedItem.client_name}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700">
+                    <div className="size-16 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm shrink-0">
+                      {selectedItem.client_logo ? (
+                        <img 
+                          src={selectedItem.client_logo.startsWith('http') ? selectedItem.client_logo : `${((import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${selectedItem.client_logo}`} 
+                          alt={selectedItem.client_name}
+                          className="size-full object-contain p-2"
+                        />
+                      ) : (
+                        <span className="material-symbols-outlined text-3xl text-slate-300">domain</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Nama Klien / Instansi</h4>
+                      <p className="text-lg font-black text-slate-900 dark:text-white leading-tight">{selectedItem.client_name}</p>
+                    </div>
                   </div>
 
                   <div>

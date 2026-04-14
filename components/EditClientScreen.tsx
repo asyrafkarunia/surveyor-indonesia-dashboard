@@ -36,9 +36,9 @@ const EditClientScreen: React.FC<EditClientScreenProps> = ({ client, onBack, onS
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
-      // Validate size (200KB)
-      if (file.size > 200 * 1024) {
-        alert('Ukuran file maksimal 200KB');
+      // Validate size (1MB)
+      if (file.size > 1024 * 1024) {
+        alert('Ukuran file maksimal 1MB');
         e.target.value = '';
         return;
       }
@@ -110,7 +110,7 @@ const EditClientScreen: React.FC<EditClientScreenProps> = ({ client, onBack, onS
             <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50">
               <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden mb-4 shadow-sm relative group">
                 {logoPreview ? (
-                  <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-cover" />
+                  <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain p-2" />
                 ) : (
                   <span className="material-symbols-outlined text-4xl text-slate-300">domain</span>
                 )}
@@ -135,7 +135,7 @@ const EditClientScreen: React.FC<EditClientScreenProps> = ({ client, onBack, onS
               >
                 Upload Logo Perusahaan
               </button>
-              <p className="text-xs text-slate-400 mt-1">Maksimal 200KB. Format JPG, PNG.</p>
+              <p className="text-xs text-slate-400 mt-1">Maksimal 1MB. Format JPG, PNG.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

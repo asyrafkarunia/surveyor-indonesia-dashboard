@@ -268,9 +268,22 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                         {sph.date_created ? format(new Date(sph.date_created), 'dd MMM yyyy', { locale: id }) : '-'}
                       </td>
                       <td className="px-6 py-5">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-slate-900 dark:text-white truncate">{sph.client?.company_name || '-'}</span>
-                          <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate uppercase tracking-tight">{sph.project_name || sph.project?.title || '-'}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="size-8 rounded flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 text-slate-500 overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                            {sph.client?.logo ? (
+                              <img 
+                                src={sph.client.logo.startsWith('http') ? sph.client.logo : `${(((import.meta as any).env.VITE_API_URL) || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${sph.client.logo}`} 
+                                alt={sph.client.company_name}
+                                className="size-full object-contain p-1"
+                              />
+                            ) : (
+                              <span className="material-symbols-outlined text-lg">domain</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-slate-900 dark:text-white truncate">{sph.client?.company_name || '-'}</span>
+                            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate uppercase tracking-tight">{sph.project_name || sph.project?.title || '-'}</span>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-5 text-right font-black text-slate-900 dark:text-white tabular-nums">

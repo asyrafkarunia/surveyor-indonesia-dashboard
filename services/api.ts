@@ -161,12 +161,13 @@ class ApiService {
   }
 
   // Projects
-  async getProjects(params?: { status?: string; search?: string; page?: number; year?: number }) {
+  async getProjects(params?: { status?: string; search?: string; page?: number; year?: number; client_id?: string | number }) {
     const query = new URLSearchParams();
     if (params?.status) query.append('status', params.status);
     if (params?.search) query.append('search', params.search);
     if (params?.page) query.append('page', params.page.toString());
     if (params?.year) query.append('year', params.year.toString());
+    if (params?.client_id) query.append('client_id', params.client_id.toString());
     const queryString = query.toString();
     return this.request(`/projects${queryString ? `?${queryString}` : ''}`);
   }
@@ -358,6 +359,25 @@ class ApiService {
     });
   }
 
+  async createClientWithLogo(data: FormData) {
+    const token = this.token;
+    const response = await fetch(`${API_BASE_URL}/clients`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+      body: data,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
+      throw new Error(error.message || 'Request failed');
+    }
+
+    return response.json();
+  }
+
   async updateClient(id: string, data: any) {
     return this.request(`/clients/${id}`, {
       method: 'PUT',
@@ -372,6 +392,7 @@ class ApiService {
       method: 'POST', 
       headers: {
         'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
         // Content-Type is set automatically by browser with boundary for FormData
       },
       body: data,
@@ -394,12 +415,13 @@ class ApiService {
   }
 
   // SPH
-  async getSphList(params?: { status?: string; search?: string; date?: string; page?: number }) {
+  async getSphList(params?: { status?: string; search?: string; date?: string; page?: number; client_id?: string | number }) {
     const query = new URLSearchParams();
     if (params?.status) query.append('status', params.status);
     if (params?.search) query.append('search', params.search);
     if (params?.date) query.append('date', params.date);
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.client_id) query.append('client_id', params.client_id.toString());
     const queryString = query.toString();
     return this.request(`/sph${queryString ? `?${queryString}` : ''}`);
   }
@@ -483,12 +505,13 @@ class ApiService {
     return this.request('/audiensi/stats');
   }
 
-  async getAudiensiList(params?: { search?: string; status?: string; date?: string; page?: number }) {
+  async getAudiensiList(params?: { search?: string; status?: string; date?: string; page?: number; client_id?: string | number }) {
     const query = new URLSearchParams();
     if (params?.search) query.append('search', params.search);
     if (params?.status) query.append('status', params.status);
     if (params?.date) query.append('date', params.date);
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.client_id) query.append('client_id', params.client_id.toString());
     const queryString = query.toString();
     return this.request(`/audiensi${queryString ? `?${queryString}` : ''}`);
   }

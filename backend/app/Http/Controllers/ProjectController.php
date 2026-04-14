@@ -42,6 +42,10 @@ class ProjectController extends Controller
             });
         }
 
+        if ($request->has('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
         $projects = $query->latest()->paginate(15);
 
         return response()->json($projects);

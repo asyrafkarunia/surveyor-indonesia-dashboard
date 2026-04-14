@@ -235,8 +235,16 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
                         <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{formatDate(letter.date)}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className={`size-8 rounded flex items-center justify-center bg-slate-100 text-slate-500 dark:text-slate-400`}>
-                              <span className="material-symbols-outlined text-lg">domain</span>
+                            <div className="size-8 rounded flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 text-slate-500 overflow-hidden border border-slate-200 dark:border-slate-700">
+                              {letter.client?.logo ? (
+                                <img 
+                                  src={letter.client.logo.startsWith('http') ? letter.client.logo : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/api$/, '')}/storage/${letter.client.logo}`} 
+                                  alt={letter.company_name}
+                                  className="size-full object-contain p-1"
+                                />
+                              ) : (
+                                <span className="material-symbols-outlined text-lg">domain</span>
+                              )}
                             </div>
                             <span className="text-sm font-medium text-slate-900 dark:text-white">{letter.company_name}</span>
                           </div>

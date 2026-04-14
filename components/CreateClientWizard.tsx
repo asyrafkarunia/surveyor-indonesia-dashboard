@@ -24,6 +24,9 @@ interface FormData {
 const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFinish }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const totalSteps = 5;
 
   const [formData, setFormData] = useState<FormData>({
@@ -64,6 +67,26 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
 
   const updateFormData = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      
+      // Validate size (1MB)
+      if (file.size > 1024 * 1024) {
+        alert('Ukuran file maksimal 1MB');
+        e.target.value = '';
+        return;
+      }
+
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const nextStep = () => {
@@ -109,19 +132,22 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
 
     setSaving(true);
     try {
-      const clientData = {
-        company_name: formData.company_name,
-        type: formData.type,
-        industry: formData.industry || null,
-        contact_person: formData.contact_person,
-        contact_role: formData.contact_role || null,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address || null,
-        location: formData.location || null,
-      };
+      const data = new FormData();
+      data.append('company_name', formData.company_name);
+      data.append('type', formData.type);
+      if (formData.industry) data.append('industry', formData.industry);
+      data.append('contact_person', formData.contact_person);
+      if (formData.contact_role) data.append('contact_role', formData.contact_role);
+      data.append('email', formData.email);
+      data.append('phone', formData.phone);
+      if (formData.address) data.append('address', formData.address);
+      if (formData.location) data.append('location', formData.location);
+      
+      if (logoFile) {
+        data.append('logo', logoFile);
+      }
 
-      await api.createClient(clientData);
+      await api.createClientWithLogo(data);
       onFinish();
     } catch (error: any) {
       console.error('Error creating client:', error);
@@ -189,6 +215,38 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Informasi Dasar Perusahaan</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identitas legal dan profil industri klien.</p>
                   </div>
+                </div>
+
+                {/* Logo Upload Section */}
+                <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                  <div className="w-24 h-24 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden mb-4 shadow-sm relative group">
+                    {logoPreview ? (
+                      <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain p-2" />
+                    ) : (
+                      <span className="material-symbols-outlined text-4xl text-slate-300">domain</span>
+                    )}
+                    <div 
+                      className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <span className="material-symbols-outlined text-white">edit</span>
+                    </div>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    className="hidden" 
+                    accept="image/*"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-xs font-black text-primary hover:text-primary-dark uppercase tracking-widest"
+                  >
+                    Upload Logo Perusahaan
+                  </button>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Maksimal 1MB. Format JPG, PNG.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

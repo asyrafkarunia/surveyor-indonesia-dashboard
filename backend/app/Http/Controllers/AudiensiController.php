@@ -36,6 +36,10 @@ class AudiensiController extends Controller
             }
         }
 
+        if ($request->has('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
         if ($request->has('date')) {
             $query->whereDate('date', $request->date);
         }

@@ -93,8 +93,14 @@ class ClientController extends Controller
             'industry' => 'nullable|string',
             'location' => 'nullable|string',
             'address' => 'nullable|string',
-            'logo' => 'nullable|string',
+            'logo' => 'nullable|image|max:1024', // Changed from string to image with 1MB limit
         ]);
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('logos', 'public');
+            $validated['logo'] = url(\Illuminate\Support\Facades\Storage::url($path));
+        }
 
         $client = DB::transaction(function () use ($validated) {
             // Lock existing rows to prevent race condition on code numbering
@@ -220,14 +226,27 @@ class ClientController extends Controller
             'location' => 'nullable|string',
             'address' => 'nullable|string',
             'status' => 'sometimes|in:Aktif,Non-Aktif,Suspended',
-            'logo' => 'nullable|string',
+            'logo' => 'nullable|image|max:1024', // Changed from string to image with 1MB limit
         ]);
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($client->logo) {
+                $oldPath = str_replace(url('storage/'), '', $client->logo);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+
+            $path = $request->file('logo')->store('logos', 'public');
+            $validated['logo'] = url(\Illuminate\Support\Facades\Storage::url($path));
+        }
 
         $client->update($validated);
         
         // Log client update with changes
         $changes = [];
         foreach ($validated as $key => $value) {
+            if ($key === 'logo') continue; // Skip logo from direct comparison if it's a file
             if (isset($oldData[$key]) && $oldData[$key] != $value) {
                 $changes[$key] = ['old' => $oldData[$key], 'new' => $value];
             }

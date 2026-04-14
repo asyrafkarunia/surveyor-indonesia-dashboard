@@ -249,10 +249,13 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
         <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center flex-1">
-              <div 
-                className="bg-center bg-no-repeat bg-cover rounded-2xl size-24 shrink-0 border border-slate-100 dark:border-slate-700 shadow-sm" 
-                style={{ backgroundImage: `url("${client.logo}")` }}
-              ></div>
+              <div className="size-24 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
+                {client.logo ? (
+                  <img src={client.logo} alt={client.company_name} className="w-full h-full object-contain p-2" />
+                ) : (
+                  <span className="material-symbols-outlined text-4xl text-slate-300">domain</span>
+                )}
+              </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h2 className="text-2xl font-black text-slate-900 dark:text-white">{client.company_name}</h2>
