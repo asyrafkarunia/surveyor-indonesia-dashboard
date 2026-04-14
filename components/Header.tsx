@@ -14,6 +14,8 @@ import {
   KANBAN_STEPS,
   SETTINGS_STEPS,
   DOKUMEN_STEPS,
+  APPROVAL_STEPS,
+  ADMIN_LOG_STEPS,
 } from '../src/constants/tutorialSteps';
 
 interface HeaderProps {
@@ -85,6 +87,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
       marketing_kanban: { id: 'kanban',        steps: KANBAN_STEPS },
       settings:         { id: 'settings',      steps: SETTINGS_STEPS },
       essential_docs:   { id: 'dokumen',       steps: DOKUMEN_STEPS },
+      approval:         { id: 'approval',      steps: APPROVAL_STEPS },
+      admin_log:        { id: 'admin_log',     steps: ADMIN_LOG_STEPS },
     };
     const tutorial = tutorialMap[activeId];
     if (tutorial) {

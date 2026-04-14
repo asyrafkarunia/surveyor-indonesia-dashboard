@@ -615,18 +615,21 @@ const ActivityLogScreen: React.FC = () => {
               <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight leading-none">Log Aktivitas Sistem</h1>
               <p className="text-slate-500 dark:text-slate-400 text-base font-medium max-w-2xl">Monitor semua aktivitas, perubahan sistem, dan kejadian keamanan di seluruh platform.</p>
             </div>
-            <button
-              onClick={() => setShowExportModal(true)}
-              className="group flex items-center gap-3 bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30 text-primary px-6 py-3 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 font-black text-[10px] uppercase tracking-widest overflow-hidden relative"
-            >
-              <div className="absolute inset-0 bg-linear-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-              <span className="material-symbols-outlined text-[20px] transition-transform group-hover:scale-110">download</span>
-              <span>Ekspor CSV</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                id="activity-export-btn"
+                onClick={() => setShowExportModal(true)}
+                className="group flex items-center gap-3 bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30 text-primary px-6 py-3 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 font-black text-[10px] uppercase tracking-widest overflow-hidden relative"
+              >
+                <div className="absolute inset-0 bg-linear-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                <span className="material-symbols-outlined text-[20px] transition-transform group-hover:scale-110">download</span>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-5">
+          <div id="activity-filters" className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-5">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Search */}
               <div className="lg:col-span-1">
@@ -749,7 +752,7 @@ const ActivityLogScreen: React.FC = () => {
           </div>
 
           {/* Data Table */}
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
+          <div id="activity-table" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -845,7 +848,7 @@ const ActivityLogScreen: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-5 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/30">
+            <div id="activity-pagination" className="p-5 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 dark:bg-slate-900/30">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {logs.length === 0 ? 'Tidak ada hasil' : <>Menampilkan <span className="text-slate-900 dark:text-white">{startItem}</span>–<span className="text-slate-900 dark:text-white">{endItem}</span> dari <span className="text-slate-900 dark:text-white">{totalResults}</span> hasil</>}
               </div>

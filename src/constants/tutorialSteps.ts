@@ -279,6 +279,86 @@ export const SETTINGS_STEPS: Step[] = [
   },
 ];
 
+// ─── Persetujuan Proyek ───────────────────────────────────────────────────────
+export const APPROVAL_STEPS: Step[] = [
+  {
+    target: 'body',
+    placement: 'center',
+    content: 'Halaman Persetujuan adalah tempat bagi para pejabat berwenang untuk meninjau dan menandatangani dokumen SPH atau Surat Audiensi.',
+    title: 'Persetujuan Dokumen',
+    disableBeacon: true,
+  },
+  {
+    target: '#approval-tabs',
+    content: 'Pilih antara dokumen SPH atau Surat Audiensi yang memerlukan persetujuan Anda melalui tab ini.',
+    title: 'Pilihan Dokumen',
+    disableBeacon: true,
+    placement: 'bottom',
+  },
+  {
+    target: '#approval-list',
+    content: 'Daftar antrian dokumen yang menunggu persetujuan Anda akan muncul di kolom ini.',
+    title: 'Daftar Antrian',
+    disableBeacon: true,
+    placement: 'right',
+  },
+  {
+    target: '#approval-detail',
+    content: 'Detail lengkap dokumen, termasuk konten surat dan informasi PIC, dapat Anda tinjau di sini sebelum memberikan keputusan.',
+    title: 'Review Detail',
+    disableBeacon: true,
+    placement: 'left',
+  },
+  {
+    target: '#approval-actions',
+    content: 'Setelah meninjau, Anda bisa menyetujui (Approve & Sign) atau menolak (Reject) dokumen tersebut di bagian sini.',
+    title: 'Aksi Keputusan',
+    disableBeacon: true,
+    placement: 'top',
+  },
+];
+
+// ─── Log Aktivitas Sistem ───────────────────────────────────────────────────
+export const ADMIN_LOG_STEPS: Step[] = [
+  {
+    target: 'body',
+    placement: 'center',
+    content: 'Halaman ini mencatat setiap histori perubahan dan aksi penting yang dilakukan seluruh pengguna di dalam sistem.',
+    title: 'Log Aktivitas Sistem',
+    disableBeacon: true,
+  },
+  {
+    target: '#activity-filters',
+    content: 'Gunakan filter ini untuk menyaring log berdasarkan kata kunci, pengguna spesifik, rentang tanggal, atau kategori aksi tertentu.',
+    title: 'Filter Lanjutan',
+    disableBeacon: true,
+    placement: 'bottom',
+  },
+  {
+    target: '#activity-export-btn',
+    content: 'Anda dapat mengunduh seluruh data log yang sudah difilter ke dalam format CSV melalui tombol ini untuk pelaporan.',
+    title: 'Ekspor Data',
+    disableBeacon: true,
+    placement: 'left',
+  },
+  {
+    target: '#activity-table',
+    content: 'Data log ditampilkan secara kronologis mulai dari aksi terbaru. Anda dapat melihat detail metadata pada setiap baris log.',
+    title: 'Tabel Riwayat',
+    disableBeacon: true,
+    placement: 'top',
+    scrollOffset: 150,
+  },
+  {
+    target: '#activity-pagination',
+    content: 'Navigasi antar halaman log menggunakan kontrol paginasi di bagian bawah tabel ini.',
+    title: 'Navigasi Halaman',
+    disableBeacon: true,
+    placement: 'top',
+    scrollOffset: 200,
+  },
+];
+
 // ─── Header Help Button ───────────────────────────────────────────────────────
 export const HEADER_STEPS: Step[] = [
   {

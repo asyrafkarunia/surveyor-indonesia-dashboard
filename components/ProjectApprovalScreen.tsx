@@ -175,19 +175,21 @@ const ProjectApprovalScreen: React.FC = () => {
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Persetujuan Dokumen</h3>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Review and approve SPH and Audiensi letters</p>
           </div>
-          <button
-            onClick={loadApprovals}
-            disabled={loading}
-            className="flex items-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
-            title="Refresh Data"
-          >
-            <span className={`material-symbols-outlined text-lg ${loading ? 'animate-spin' : ''}`}>refresh</span>
-            {loading ? 'Refreshing...' : 'Refresh'}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={loadApprovals}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+              title="Refresh Data"
+            >
+              <span className={`material-symbols-outlined text-lg ${loading ? 'animate-spin' : ''}`}>refresh</span>
+              {loading ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-700">
+        <div id="approval-tabs" className="flex border-b border-slate-200 dark:border-slate-700">
           <button
             onClick={() => setActiveTab('sph')}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -220,7 +222,7 @@ const ProjectApprovalScreen: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* List */}
-            <div className="lg:col-span-1 space-y-4">
+            <div id="approval-list" className="lg:col-span-1 space-y-4">
               {items.length === 0 ? (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center">
                   <p className="text-slate-500 dark:text-slate-400">No pending approvals</p>
@@ -253,7 +255,7 @@ const ProjectApprovalScreen: React.FC = () => {
             </div>
 
             {/* Detail */}
-            <div className="lg:col-span-2">
+            <div id="approval-detail" className="lg:col-span-2">
               {selectedItem ? (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm space-y-6">
                   <div>
@@ -365,7 +367,7 @@ const ProjectApprovalScreen: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div id="approval-actions" className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                     {selectedItem.status === 'waiting_client' ? (
                       <>
                         <button
