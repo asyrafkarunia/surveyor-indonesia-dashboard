@@ -5,9 +5,10 @@ import { id } from 'date-fns/locale';
 
 interface AudiensiListScreenProps {
   onCreateNew: () => void;
+  onManageTemplates: () => void;
 }
 
-const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) => {
+const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, onManageTemplates }) => {
   const [letters, setLetters] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -134,14 +135,23 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew }) 
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Daftar Surat Audiensi</h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
             </div>
-            <button 
-              id="create-audiensi-btn"
-              onClick={onCreateNew}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95"
-            >
-              <span className="material-symbols-outlined text-lg">add</span>
-              Buat Surat Baru
-            </button>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={onManageTemplates}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-xs font-bold text-slate-600 dark:text-slate-300"
+              >
+                <span className="material-symbols-outlined text-lg">tune</span>
+                Kelola Template
+              </button>
+              <button 
+                id="create-audiensi-btn"
+                onClick={onCreateNew}
+                className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95"
+              >
+                <span className="material-symbols-outlined text-lg">add</span>
+                Buat Surat Baru
+              </button>
+            </div>
           </div>
 
           {/* Search & Toolbar */}

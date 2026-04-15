@@ -4,11 +4,10 @@ import { api } from '../services/api';
 import BackButton from './BackButton';
 
 interface AudiensiScreenProps {
-  onManageTemplates: () => void;
   onBack: () => void;
 }
 
-const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBack }) => {
+const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
@@ -200,13 +199,6 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onManageTemplates, onBa
                 <p className="text-slate-500 dark:text-slate-400 text-sm">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
               </div>
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={onManageTemplates}
-                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
-                >
-                  <span className="material-symbols-outlined text-[18px] text-slate-400">tune</span>
-                  Kelola Template Surat
-                </button>
                 <BackButton onClick={onBack} className="mb-0" />
               </div>
             </div>

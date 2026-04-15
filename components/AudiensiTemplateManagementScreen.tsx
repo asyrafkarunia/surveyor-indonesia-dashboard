@@ -74,30 +74,22 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
         <div className="max-w-[1200px] mx-auto flex flex-col gap-6 pb-20">
           
-          {/* Breadcrumbs */}
-          <div className="flex flex-wrap gap-2 items-center text-sm">
-            <button 
-              onClick={onBack}
-              className="text-gray-500 hover:text-primary transition-colors font-medium"
-            >
-              Dashboard
-            </button>
-            <span className="text-gray-400 font-medium">/</span>
-            <button 
-              onClick={onBack}
-              className="text-gray-500 hover:text-primary transition-colors font-medium"
-            >
-              Surat Audiensi
-            </button>
-            <span className="text-gray-400 font-medium">/</span>
-            <span className="text-primary font-semibold">Kelola Template</span>
-          </div>
+
 
           {/* Page Heading */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-gray-900 text-3xl font-bold tracking-tight">Kelola Template Surat Audiensi</h1>
-              <p className="text-gray-500 text-base">Atur dan kelola template surat untuk berbagai sektor bisnis.</p>
+            <div className="flex flex-col gap-4">
+              <button 
+                onClick={onBack}
+                className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest"
+              >
+                <span className="material-symbols-outlined text-lg">arrow_back</span>
+                Kembali
+              </button>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-gray-900 text-3xl font-bold tracking-tight">Kelola Template Surat Audiensi</h1>
+                <p className="text-gray-500 text-base">Atur dan kelola template surat untuk berbagai sektor bisnis.</p>
+              </div>
             </div>
             <button 
               onClick={onAddTemplate}

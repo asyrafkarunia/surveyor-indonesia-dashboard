@@ -669,7 +669,7 @@ const AppContent: React.FC = () => {
             />
           );
         }
-        return <AudiensiListScreen onCreateNew={() => setAudiensiView('create')} />;
+        return <AudiensiListScreen onCreateNew={() => setAudiensiView('create')} onManageTemplates={() => setAudiensiView('manage')} />;
       case 'settings': return <SettingsScreen onManagePermissions={(userId) => {
         // No-op or redirect to user management if needed, but removing logic for now
         setActiveTab('settings');
