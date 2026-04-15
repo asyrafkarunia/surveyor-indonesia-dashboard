@@ -14,6 +14,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<any>(null);
 
   useEffect(() => {
     fetchTemplates();
@@ -51,7 +52,13 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    setCurrentPage(1);
   };
+
+  const filteredTemplates = templates.filter(tpl => 
+    tpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tpl.sector.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -130,10 +137,10 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
                 <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
                   {loading ? (
                     <tr><td className="px-6 py-4 text-center text-gray-400" colSpan={5}>Memuat template...</td></tr>
-                  ) : templates.length === 0 ? (
-                    <tr><td className="px-6 py-4 text-center text-gray-400" colSpan={5}>Belum ada template</td></tr>
+                  ) : filteredTemplates.length === 0 ? (
+                    <tr><td className="px-6 py-4 text-center text-gray-400" colSpan={5}>Belum ada template yang sesuai</td></tr>
                   ) : (
-                    templates.map((tpl) => (
+                    filteredTemplates.map((tpl) => (
                       <tr key={tpl.id} className="group hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-start gap-3">
@@ -162,10 +169,18 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
                         </td>
                         <td className="px-6 py-4 text-right whitespace-nowrap">
                           <div className="flex justify-end gap-2">
-                            <button className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Preview">
+                            <button 
+                              onClick={() => setSelectedTemplateForPreview(tpl)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" 
+                              title="Preview"
+                            >
                               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>visibility</span>
                             </button>
-                            <button className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Hapus" onClick={() => handleDeleteTemplate(tpl.id)}>
+                            <button 
+                              className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" 
+                              title="Hapus" 
+                              onClick={() => handleDeleteTemplate(tpl.id)}
+                            >
                               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>delete</span>
                             </button>
                           </div>
@@ -182,7 +197,8 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Menampilkan <span className="font-medium">{templates.length > 0 ? ((currentPage - 1) * 10 + 1) : 0}</span> sampai <span className="font-medium">{Math.min(currentPage * 10, total)}</span> dari <span className="font-medium">{total}</span> hasil
+                    Menampilkan <span className="font-medium">{filteredTemplates.length > 0 ? ((currentPage - 1) * 10 + 1) : 0}</span> sampai <span className="font-medium">{Math.min(currentPage * 10, filteredTemplates.length)}</span> dari <span className="font-medium">{filteredTemplates.length}</span> hasil
+                    {searchQuery && <span className="ml-1 text-gray-400">(difilter dari {total} total)</span>}
                   </p>
                 </div>
                 <div>
@@ -240,6 +256,58 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
           </footer>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {selectedTemplateForPreview && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-2xl">description</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight">{selectedTemplateForPreview.name}</h3>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Pratinjau Template • {selectedTemplateForPreview.sector}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedTemplateForPreview(null)}
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200 transition-all"
+              >
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-12 bg-slate-50/30 dark:bg-slate-900/10 custom-scrollbar">
+              <div className="bg-white dark:bg-slate-800 rounded-sm shadow-xl border border-slate-200 dark:border-slate-700 p-12 min-h-[800px] max-w-[210mm] mx-auto">
+                <div 
+                  className="prose prose-slate dark:prose-invert max-w-none text-[11pt] leading-relaxed font-serif text-justify"
+                  dangerouslySetInnerHTML={{ 
+                    __html: selectedTemplateForPreview.template_content
+                      .replace(/\{\{Tanggal\}\}/g, 'Jakarta, 14 Februari 2025')
+                      .replace(/\{\{NamaPimpinan\}\}/g, 'Bpk. M Arif')
+                      .replace(/\{\{Jabatan\}\}/g, 'Manajer HSE')
+                      .replace(/\{\{NamaPerusahaan\}\}/g, 'PT Bumi Siak Pusako')
+                      .replace(/\{\{AlamatPerusahaan\}\}/g, 'Jl. Jend. Sudirman Lorong Utama, Simpang Tiga, Kec. Bukit Raya, Kota Pekanbaru, Riau 28282')
+                      .replace(/\{\{SektorBisnis\}\}/g, selectedTemplateForPreview.sector)
+                      .replace(/\{\{NamaPengirim\}\}/g, 'Wahyu')
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="px-8 py-5 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 flex justify-end gap-3">
+              <button 
+                onClick={() => setSelectedTemplateForPreview(null)}
+                className="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 transition-all"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -21,24 +21,98 @@ const AddAudiensiTemplateScreen: React.FC<AddAudiensiTemplateScreenProps> = ({ o
 
   useEffect(() => {
     // Set default content
-    const defaultContent = `Kepada Yth,<br/>
+    const defaultContent = `SRT-007/SIPKU-MKT/II/WHY/2025<br/>
+{{Tanggal}}<br/><br/>
+Kepada Yth.<br/>
 <strong>{{NamaPimpinan}}</strong><br/>
 {{Jabatan}}<br/>
 {{NamaPerusahaan}}<br/>
-di Tempat<br/><br/>
-Dengan hormat,<br/><br/>
-Sehubungan dengan program pengembangan bisnis strategis yang sedang kami jalankan, kami dari <strong>PT Surveyor Indonesia</strong> bermaksud mengajukan permohonan audiensi untuk mendiskusikan potensi kerjasama di bidang {{SektorBisnis}}.<br/><br/>
-Adapun waktu yang kami usulkan adalah sebagai berikut:<br/>
+{{AlamatPerusahaan}}<br/><br/>
+Perihal: Perkenalan dan Permohonan Audiensi PT Surveyor Indonesia terkait Penawaran Jasa Pekerjaan<br/><br/>
+Perkenankan kami, PT Surveyor Indonesia, perusahaan Holding Jasa Survei dan merupakan Badan Usaha Milik Negara (BUMN) yang bergerak di bidang survei, inspeksi, verifikasi, konsultansi dan sertifikasi pada berbagai sektor, termasuk penguatan institusi dan kelembagaan. Kegiatan utama kami sebagai pihak independen yang memastikan kesesuaian atas barang, jasa, sistem dan proses terhadap persyaratan Standar Industri Nasional/Internasional dan regulasi Pemerintah yang berlaku (Independent Assurance).<br/><br/>
+Selain memfokuskan pada penawaran layanan independent assurance, PT. Surveyor Indonesia memiliki produk jasa sertifikasi seperti dibawah ini:<br/><br/>
+<strong>Riksa Uji K3</strong><br/>
 <ul>
-<li>Hari/Tanggal: {{TanggalUsulan}}</li>
-<li>Waktu: {{WaktuUsulan}}</li>
-<li>Tempat: {{Lokasi}}</li>
+<li>Undang-undang dan Peraturan Uap Tahun 1930 tentang Pesawat Uap</li>
+<li>Permenakertrans No. 05 Tahun 1985 tentang Pesawat Angkat Angkut;</li>
+<li>Permenaker No. 31 Tahun 2015 tentang Pengawasan Instalasi Penyalur Petir;</li>
+<li>Permenaker No. 33 Tahun 2015 tentang K3 Listrik di Tempat Kerja;</li>
+<li>Permenaker No. 37 Tahun 2016 tentang K3 Bejana Tekan dan Tangki Timbun;</li>
+<li>Permenaker No. 38 Tahun 2016 tentang K3 Pesawat tenaga Produksi;</li>
+<li>Permenaker No. 06 Tahun 2017 tentang K3 Elevator dan Eskalator;</li>
+<li>Instruksi Menteri Tenaga Kerja No. 11 Tahun 1997 tentang Pengawasan Khusus K3 Penanggulangan Kebakaran.</li>
 </ul>
 <br/>
-Demikian permohonan ini kami sampaikan. Atas perhatian dan kesempatan yang diberikan, kami ucapkan terima kasih.<br/><br/>
-Hormat kami,<br/><br/>
-<strong>{{NamaPengirim}}</strong><br/>
-PT Surveyor Indonesia`;
+<strong>Pengujian Tidak Merusak atau NDT ( Non Destructive Test)</strong>, dengan metode: <br/>
+<ul>
+<li>Penetrant Test (PT)</li>
+<li>Magnetic Test ( MT)</li>
+<li>Ultrasonic Test ( UT)</li>
+<li>Radiography Test (RT)</li>
+<li>Vacuum Box Testing</li>
+</ul>
+<br/>
+<strong>Pengujian Lingkungan Kerja</strong><br/>
+<ul>
+<li>Peraturan Menteri Ketenagakerjaan Nomor 5 Tahun 2018 tentang Standar Nasional Keselamatan Kerja.</li>
+<li>Peraturan Menteri Ketenagakerjaan Nomor 7 Tahun 2016 tentang Keselamatan dan Kesehatan Kerja pada pekerjaan di ketinggian.</li>
+<li>Peraturan Menteri Kesehatan Nomor 70 Tahun 2016 tentang Tata Laksana Pengendalian Bahaya Asap Rokok di tempat kerja.</li>
+<li>Peraturan Pemerintah Nomor 44 Tahun 2015 tentang Penyelenggaraan Pengawasan Lingkungan Kerja.</li>
+</ul>
+<br/>
+<strong>AMDAL,UKL-UPL,RKL-RPL</strong><br/>
+<ul>
+<li>Peraturan Pemerintah Nomor 29 Tahun 1986 tentang Analisis Mengenai Dampak Lingkungan.</li>
+</ul>
+<br/>
+<strong>Sertifikat Laik Operasi (SLO)</strong><br/>
+<ul>
+<li>Undang-Undang No. 30 Tahun 2009 tentang Ketenagalistrikan</li>
+<li>Peraturan Pemerintah No.14 Tahun 2012 tentang Kegiatan Usaha Penyediaan Tenaga Listrik</li>
+<li>Peraturan Pemerintah Nomor 62 tahun 2012 tentang Usaha Jasa Penunjang Tenaga Listrik</li>
+<li>Peraturan Direktur Jenderal Ketenagalistrikan Nomor 556K/20/DJL.1/2014 tahun 2014 tentang Tata Cara Penomoran dan Registrasi Sertifikat di Bidang Ketenagalistrikan</li>
+</ul>
+<br/>
+<strong>Sertifikat Sistem Manajemen Keselamatan dan Kesehatan Kerja (SMK3)</strong><br/>
+<ul>
+<li>UU nomor 1 tahun 1970 tentang keselamatan kerja</li>
+<li>UU nomor 13 tahun 2003 tentang ketenagakerjaan, pada pasal 86-87</li>
+<li>PP nomor 50 tahun 2012 tentang Penerapan Sistem Manajemen Keselamatan dan Kesehatan Kerja</li>
+<li>Permen Ketenagakerjaan nomor 26 tahun 2014 tentang Penyelenggaraan Penilaian Penerapan Sistem Manajemen K3.</li>
+</ul>
+<br/>
+<strong>Konsultasi Sistem Manajemen Mutu</strong><br/>
+<ul>
+<li>Konsultasi Sistem Mutu ISO 9001, standar internasional yang digunakan untuk menetapkan kebijakan dan sasaran mutu (quality objective)</li>
+<li>Konsultasi Sistem Mutu ISO 31000, menetapkan prinsip dan pedoman untuk manajemen risiko dalam mengidentifikasi, menilai, dan memitigasi risiko yang dihadapi oleh organisasi.</li>
+<li>Konsultasi Sistem Mutu ISO 28000, standar nasional Indonesia yang menspesifikasikan sistem manajemen keamanan pada rantai pasokan.</li>
+<li>Konsultasi Sistem Mutu ISO 37001, standar yang secara khusus memandu untuk menerapkan prinsip-prinsip anti-penyuapan dengan menggunakan pendekatan proses.</li>
+<li>Konsultasi Sistem Mutu ISO 50001, standar yang digunakan untuk mengelola kinerja energi termasuk efisiensi dan konsumsi energi.</li>
+<li>Konsultasi Sistem Mutu ISO 45001, standar global dalam sistem manajemen Kesehatan dan Keselamatan (K3)</li>
+<li>Konsultasi Sistem Mutu ISO 14001, standar yang menekankan pada persyaratan-persyaratan sistem manajemen lingkungan.</li>
+</ul>
+<br/>
+<strong>Sertifikasi Laik Fungsi (SLF) atau Audit Struktur</strong><br/>
+<ul>
+<li>Peraturan Menteri Pekerjaan Umum dan Perumahan Rakyat Nomor 27/PRT/M/2018 Tahun 2018 tentang Sertifikat Laik Fungsi Bangunan Gedung.</li>
+</ul>
+<br/>
+<strong>Sertifikasi Halal</strong><br/>
+<ul>
+<li>Sertifikat Halal merupakan pengakuan kehalalan sebuah produk yang dikeluarkan oleh Badan Penyelenggara Jaminan Produk Halal (BPJPH) yang didasarkan fatwa halal tertulis yang dikeluarkan oleh MUI/Komite Fatwa Halal, sedangkan lembaga yang bertugas melakukan kegiatan pemeriksaan dan/atau pengujian terhadap kehalalan produk adalah Lembaga Pemeriksa Halal (LPH).</li>
+</ul>
+<br/>
+Besar harapan kami Bapak/Ibu dapat memberikan waktu kepada kami untuk melakukan audiensi.<br/><br/>
+Adapun jadwal dan tempat audiensi disesuaikan dengan ketersediaan waktu Bapak/Ibu. Untuk penjelasan lebih lanjut silahkan menghubungi Sdr/i.<br/><br/>
+1. Mutia - HP : 0821-6999-9880 email : m.asfarina@ptsi.co.id<br/>
+2. Arsy - HP : 0819-2979-0182 email : arsyrm@gmail.com<br/>
+3. Afrial - HP : 0853-6547-8801 email : a.syarli@ptsi.co.sid<br/>
+4. Sipku.marketing@gmail.com<br/><br/>
+Sebagai tambahan informasi, kami lampirkan Company Profile PT. Surveyor Indonesia untuk mengetahui lebih detail jasa-jasa / layanan yang kami berikan. Demikian kami sampaikan, atas perhatian dan kerjasama Bapak/Ibu diucapkan terima kasih.<br/><br/>
+PT Surveyor Indonesia<br/>
+Cabang Pekanbaru<br/><br/><br/>
+<strong>Wahyu</strong><br/>
+General Manager`;
     
     if (editorRef.current && !editorRef.current.innerHTML) {
       editorRef.current.innerHTML = defaultContent;
@@ -50,14 +124,13 @@ PT Surveyor Indonesia`;
   const updatePreview = (content: string) => {
     // Replace variables with sample data
     const sample = content
-      .replace(/\{\{NamaPimpinan\}\}/g, 'Bpk. Hartono')
-      .replace(/\{\{Jabatan\}\}/g, 'Direktur Operasional')
-      .replace(/\{\{NamaPerusahaan\}\}/g, 'PT Contoh Jaya')
+      .replace(/\{\{Tanggal\}\}/g, 'Jakarta, 14 Februari 2025')
+      .replace(/\{\{NamaPimpinan\}\}/g, 'Bpk. M Arif')
+      .replace(/\{\{Jabatan\}\}/g, 'Manajer HSE')
+      .replace(/\{\{NamaPerusahaan\}\}/g, 'PT Bumi Siak Pusako')
+      .replace(/\{\{AlamatPerusahaan\}\}/g, 'Jl. Jend. Sudirman Lorong Utama, Simpang Tiga, Kec. Bukit Raya, Kota Pekanbaru, Riau 28282')
       .replace(/\{\{SektorBisnis\}\}/g, 'Minyak & Gas')
-      .replace(/\{\{TanggalUsulan\}\}/g, '1 Januari 2026')
-      .replace(/\{\{WaktuUsulan\}\}/g, '10:00 WIB')
-      .replace(/\{\{Lokasi\}\}/g, 'Kantor Pusat PT Surveyor Indonesia')
-      .replace(/\{\{NamaPengirim\}\}/g, 'Rizky Pratama');
+      .replace(/\{\{NamaPengirim\}\}/g, 'Wahyu');
     setPreviewContent(sample);
   };
 
@@ -88,7 +161,8 @@ PT Surveyor Indonesia`;
     }
   };
 
-  const execCommand = (command: string, value?: string) => {
+  const execCommand = (e: React.MouseEvent, command: string, value?: string) => {
+    e.preventDefault(); // Prevent focus loss
     document.execCommand(command, false, value);
     if (editorRef.current) {
       editorRef.current.focus();
@@ -126,25 +200,7 @@ PT Surveyor Indonesia`;
     <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-6 md:py-8 flex flex-col">
         
-        {/* Breadcrumbs */}
-        <div className="flex flex-wrap items-center gap-2 mb-6 text-sm">
-          <button 
-            onClick={onBack}
-            className="text-slate-400 hover:text-primary transition-colors flex items-center gap-1 font-medium"
-          >
-            <span className="material-symbols-outlined text-[18px]">dashboard</span>
-            Dashboard
-          </button>
-          <span className="text-slate-300 material-symbols-outlined text-[16px]">chevron_right</span>
-          <button 
-            onClick={onBack}
-            className="text-slate-400 hover:text-primary transition-colors font-medium"
-          >
-            Template Surat
-          </button>
-          <span className="text-slate-300 material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white font-bold">Tambah Baru</span>
-        </div>
+
 
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -218,38 +274,40 @@ PT Surveyor Indonesia`;
                       <button onClick={() => insertVariable('Tanggal')} className="text-[10px] font-black uppercase bg-slate-100 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg hover:border-primary hover:text-primary transition-colors" type="button">{"{{Tanggal}}"}</button>
                       <button onClick={() => insertVariable('Jabatan')} className="text-[10px] font-black uppercase bg-slate-100 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg hover:border-primary hover:text-primary transition-colors" type="button">{"{{Jabatan}}"}</button>
                       <button onClick={() => insertVariable('NamaPerusahaan')} className="text-[10px] font-black uppercase bg-slate-100 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg hover:border-primary hover:text-primary transition-colors" type="button">{"{{NamaPerusahaan}}"}</button>
+                      <button onClick={() => insertVariable('AlamatPerusahaan')} className="text-[10px] font-black uppercase bg-slate-100 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg hover:border-primary hover:text-primary transition-colors" type="button">{"{{AlamatPerusahaan}}"}</button>
                       <button onClick={() => insertVariable('SektorBisnis')} className="text-[10px] font-black uppercase bg-slate-100 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg hover:border-primary hover:text-primary transition-colors" type="button">{"{{SektorBisnis}}"}</button>
                     </div>
                   </div>
 
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden flex flex-col min-h-[500px] shadow-sm focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden flex flex-col h-[650px] shadow-sm focus-within:ring-2 focus-within:ring-primary/10 transition-all">
                     {/* Toolbar */}
-                    <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-2 flex flex-wrap gap-1 items-center sticky top-0 z-10">
+                    <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-2 flex flex-wrap gap-1 items-center sticky top-0 z-20 shadow-sm">
                       <div className="flex items-center border-r border-slate-300 dark:border-slate-600 pr-2 mr-1 gap-1">
-                        <button onClick={() => execCommand('bold')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Bold" type="button">
+                        <button onMouseDown={(e) => execCommand(e, 'bold')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Bold" type="button">
                           <span className="material-symbols-outlined text-[20px] font-bold">format_bold</span>
                         </button>
-                        <button onClick={() => execCommand('italic')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Italic" type="button">
+                        <button onMouseDown={(e) => execCommand(e, 'italic')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Italic" type="button">
                           <span className="material-symbols-outlined text-[20px]">format_italic</span>
                         </button>
-                        <button onClick={() => execCommand('underline')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Underline" type="button">
+                        <button onMouseDown={(e) => execCommand(e, 'underline')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Underline" type="button">
                           <span className="material-symbols-outlined text-[20px]">format_underlined</span>
                         </button>
                       </div>
                       <div className="flex items-center border-r border-slate-300 dark:border-slate-600 pr-2 mr-1 gap-1">
-                        <button onClick={() => execCommand('justifyLeft')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Align Left" type="button">
+                        <button onMouseDown={(e) => execCommand(e, 'justifyLeft')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Align Left" type="button">
                           <span className="material-symbols-outlined text-[20px]">format_align_left</span>
                         </button>
-                        <button onClick={() => execCommand('justifyCenter')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Align Center" type="button">
+                        <button onMouseDown={(e) => execCommand(e, 'justifyCenter')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Align Center" type="button">
                           <span className="material-symbols-outlined text-[20px]">format_align_center</span>
                         </button>
                       </div>
-                      <button onClick={() => execCommand('insertUnorderedList')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all" title="Bullet List" type="button">
+                      <button onMouseDown={(e) => execCommand(e, 'insertUnorderedList')} className="p-2 rounded-lg hover:bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-all active:bg-primary/5" title="Bullet List" type="button">
                         <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
                       </button>
                       <div className="ml-auto">
-                        <button onClick={() => {
-                          const vars = ['NamaPimpinan', 'Jabatan', 'NamaPerusahaan', 'SektorBisnis', 'TanggalUsulan', 'WaktuUsulan', 'Lokasi', 'NamaPengirim'];
+                        <button onMouseDown={(e) => {
+                          e.preventDefault();
+                          const vars = ['NamaPimpinan', 'Jabatan', 'NamaPerusahaan', 'AlamatPerusahaan', 'SektorBisnis', 'Tanggal', 'NamaPengirim'];
                           const selected = prompt(`Pilih variabel:\n${vars.map((v, i) => `${i + 1}. ${v}`).join('\n')}`);
                           if (selected && vars[parseInt(selected) - 1]) {
                             insertVariable(vars[parseInt(selected) - 1]);
@@ -265,9 +323,9 @@ PT Surveyor Indonesia`;
                     <div 
                       ref={editorRef}
                       onInput={handleEditorChange}
-                      className="bg-white dark:bg-slate-800 flex-1 p-8 overflow-y-auto custom-scrollbar relative font-medium text-slate-700 dark:text-slate-200 leading-relaxed" 
+                      className="bg-white dark:bg-slate-800 flex-1 p-8 overflow-y-auto custom-scrollbar relative font-medium text-slate-700 dark:text-slate-200 leading-relaxed outline-none" 
                       contentEditable="true"
-                      style={{ minHeight: '500px' }}
+                      style={{ minHeight: '100%' }}
                     />
                   </div>
                 </div>
