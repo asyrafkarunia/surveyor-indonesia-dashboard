@@ -984,8 +984,8 @@ const FeedScreen: React.FC<{
 
       {/* Upcoming Activities Modal */}
       {showAllDeadlines && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowAllDeadlines(false)} />
+        <div className="fixed inset-0 z-60 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setShowAllDeadlines(false)}></div>
           
           <div className="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in slide-in-from-bottom-8 duration-500">
             {/* Header with search */}
@@ -1051,28 +1051,69 @@ const FeedScreen: React.FC<{
                     </div>
                     <div className="space-y-4">
                       {group.items.map(item => (
-                        <div key={item.id} className="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group cursor-pointer relative overflow-hidden transform hover:-translate-y-1">
-                          <div className={`flex flex-col items-center rounded-2xl px-3 py-2 text-center min-w-[54px] border border-white dark:border-slate-800 shadow-sm ${
-                            item.type === 'meeting' ? 'bg-purple-50 text-purple-600' : 'bg-red-50 text-primary'
+                        <div 
+                          key={item.id} 
+                          onClick={() => {
+                            if (onNavigate && typeof item.id === 'number') {
+                              setShowAllDeadlines(false);
+                              onNavigate('calendar', { eventId: item.id });
+                            }
+                          }}
+                          className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group cursor-pointer relative overflow-hidden active:scale-[0.98]"
+                        >
+                          {/* Date Badge */}
+                          <div className={`flex flex-col items-center justify-center rounded-xl size-14 shrink-0 border border-white dark:border-slate-800 shadow-sm ${
+                            item.type === 'meeting' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' : 
+                            item.type === 'audit' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
+                            item.type === 'visit' ? 'bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400' :
+                            item.type === 'inspection' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' :
+                            'bg-red-50 text-primary dark:bg-red-900/20 dark:text-red-400'
                           }`}>
-                            <span className="text-[9px] font-black opacity-60 uppercase tracking-tighter">{item.month}</span>
-                            <span className="text-xl font-black leading-none mt-0.5">{item.date}</span>
+                            <span className="text-[9px] font-black opacity-60 uppercase tracking-tighter leading-none">{item.month}</span>
+                            <span className="text-xl font-black leading-none mt-1">{item.day}</span>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors">{item.title}</h4>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{item.team}</span>
-                              {item.time && (
-                                <span className="text-[10px] font-black text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1 border border-slate-200/50 dark:border-slate-600">
-                                  <span className="material-symbols-outlined text-[12px] opacity-70">schedule</span>
-                                  {item.time}
-                                </span>
+
+                          <div className="flex-1 min-w-0 py-1">
+                            {/* Activity Type Badge & Title */}
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                                item.type === 'meeting' ? 'bg-purple-100/50 border-purple-200 text-purple-600' : 
+                                item.type === 'audit' ? 'bg-indigo-100/50 border-indigo-200 text-indigo-600' :
+                                item.type === 'visit' ? 'bg-teal-100/50 border-teal-200 text-teal-600' :
+                                item.type === 'inspection' ? 'bg-amber-100/50 border-amber-200 text-amber-600' :
+                                'bg-red-100/50 border-red-200 text-primary'
+                              }`}>
+                                {item.type}
+                              </span>
+                              {item.project && (
+                                <span className="text-[8px] font-bold text-slate-400 uppercase truncate max-w-[150px]">• {item.project}</span>
+                              )}
+                            </div>
+                            
+                            <h4 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors text-sm md:text-base mb-1.5">{item.title}</h4>
+                            
+                            <div className="flex flex-wrap items-center gap-4">
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="material-symbols-outlined text-[14px] text-slate-400">person</span>
+                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{item.team}</span>
+                              </div>
+                              
+                              {(item.start_time || item.time) && (
+                                <div className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-300 bg-slate-100/50 dark:bg-slate-900/50 px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                                  <span className="material-symbols-outlined text-[16px] opacity-70">schedule</span>
+                                  {item.start_time || item.time}
+                                  {item.end_time && ` - ${item.end_time}`}
+                                </div>
                               )}
                             </div>
                           </div>
-                          <div className="size-8 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:bg-primary/10 transition-all">
-                            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                          
+                          <div className="size-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:bg-primary/10 transition-all ml-auto">
+                            <span className="material-symbols-outlined text-[24px]">arrow_forward_ios</span>
                           </div>
+                          
+                          {/* Interactive Hover Decorative Element */}
+                          <div className="absolute top-0 right-0 w-24 h-full bg-linear-to-l from-primary/5 to-transparent translate-x-full group-hover:translate-x-0 transition-transform duration-500 -z-10" />
                         </div>
                       ))}
                     </div>

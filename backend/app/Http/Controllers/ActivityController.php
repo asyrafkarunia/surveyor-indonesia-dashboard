@@ -87,7 +87,7 @@ class ActivityController extends Controller
 
         // Parse mentions from content (@username format)
         if ($request->has('content')) {
-            $content = $request->content;
+            $content = $request->input('content');
             preg_match_all('/@(\w+)/', $content, $matches);
             if (!empty($matches[1])) {
                 $mentionedUsers = User::whereIn('name', $matches[1])
@@ -183,42 +183,37 @@ class ActivityController extends Controller
         return response()->json(['message' => 'Activity deleted successfully']);
     }
 
-    public function like(Request $request, $id)
+    // Update or Create Activity Like
+    public function like($id)
     {
-        $activity = Activity::findOrFail($id);
-        $user = $request->user();
-
-        $like = \App\Models\ActivityLike::where('activity_id', $id)
-            ->where('user_id', $user->id)
+        $like = ActivityLike::where('activity_id', $id)
+            ->where('user_id', auth()->id())
             ->first();
 
         if ($like) {
             $like->delete();
-            $liked = false;
-        } else {
-            \App\Models\ActivityLike::create([
-                'activity_id' => $id,
-                'user_id' => $user->id,
-            ]);
-            $liked = true;
+            return response()->json(['liked' => false]);
         }
 
-        return response()->json([
-            'liked' => $liked,
-            'likes_count' => $activity->likes()->count(),
+        ActivityLike::create([
+            'activity_id' => $id,
+            'user_id' => auth()->id()
         ]);
+
+        return response()->json(['liked' => true]);
     }
 
+    // Add Comment to Activity
     public function comment(Request $request, $id)
     {
         $request->validate([
-            'comment' => 'required|string',
+            'content' => 'required|string|max:1000'
         ]);
 
-        $comment = \App\Models\ActivityComment::create([
+        $comment = ActivityComment::create([
             'activity_id' => $id,
-            'user_id' => $request->user()->id,
-            'comment' => $request->comment,
+            'user_id' => auth()->id(),
+            'content' => $request->content
         ]);
 
         return response()->json($comment->load('user'), 201);
@@ -250,10 +245,9 @@ class ActivityController extends Controller
     {
         $user = $request->user();
         $now = Carbon::now();
-        $sevenDaysLater = Carbon::now()->addDays(7);
 
         // Filter: Type in defined categories, Date >= Today, and User is involved
-        $activities = CalendarEvent::whereBetween('date', [$now->toDateString(), $sevenDaysLater->toDateString()])
+        $activities = CalendarEvent::where('date', '>=', $now->toDateString())
             ->where(function($query) use ($user) {
                 $query->where('user_id', $user->id)
                       ->orWhereJsonContains('team_members', $user->id);
@@ -269,15 +263,16 @@ class ActivityController extends Controller
                     'date' => $event->date,
                     'month' => Carbon::parse($event->date)->translatedFormat('M'),
                     'day' => Carbon::parse($event->date)->translatedFormat('d'),
-                    'time' => $event->start_time ? Carbon::parse($event->start_time)->format('H:i') : null,
+                    'start_time' => $event->start_time ? Carbon::parse($event->start_time)->format('H:i') : null,
+                    'end_time' => $event->end_time ? Carbon::parse($event->end_time)->format('H:i') : null,
                     'team' => $event->user->name ?? 'N/A',
                     'project' => $event->project->title ?? null,
                 ];
             });
 
         // Add Audiensi Letters as meetings (implicitly 'meeting')
-        // Only if date is within range and user is creator
-        $audiensi = AudiensiLetter::whereBetween('date', [$now->toDateString(), $sevenDaysLater->toDateString()])
+        // Only if date is >= today and user is creator
+        $audiensi = AudiensiLetter::where('date', '>=', $now->toDateString())
             ->when(!$user->isSuperAdmin(), function($q) use ($user) {
                 return $q->where('user_id', $user->id);
             })

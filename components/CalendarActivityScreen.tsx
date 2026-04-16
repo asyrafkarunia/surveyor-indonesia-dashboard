@@ -306,11 +306,25 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                         }
                       };
 
-                      // For multi-day events, show a continuous bar
+                      // For multi-day events, show a continuous bar with avatar stack
                       if (duration > 1) {
                         const isFirstDayOfWeek = checkDateOnly.getDay() === 0;
                         const showText = isStart || isFirstDayOfWeek;
                         
+                        // User stack logic
+                        const team = event.team_member_users || [];
+                        const creator = event.user;
+                        const displayUsers = [];
+                        if (creator) displayUsers.push(creator);
+                        team.forEach((u: any) => {
+                          if (creator && u.id === creator.id) return;
+                          displayUsers.push(u);
+                        });
+                        
+                        const maxAvatars = 2;
+                        const visibleUsers = displayUsers.slice(0, maxAvatars);
+                        const remainingCount = displayUsers.length - maxAvatars;
+
                         return (
                           <div
                             key={event.id}
@@ -319,7 +333,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                               setSelectedEvent(event);
                               setIsDetailModalOpen(true);
                             }}
-                            className={`cursor-pointer h-7 flex items-center px-2 text-[9px] font-black uppercase tracking-tight transition-all border-y ${
+                            className={`cursor-pointer h-8 flex items-center justify-between px-2 text-[9px] font-black uppercase tracking-tight transition-all border-y ${
                               isStart ? 'rounded-l-md border-l-2 ml-1' : ''
                             } ${
                               isEnd ? 'rounded-r-md border-r-2 mr-1' : ''
@@ -327,17 +341,50 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                               !isStart ? '-ml-2' : ''
                             } ${
                               !isEnd ? '-mr-2' : ''
-                            } ${getColorClass(event.type)} hover:brightness-95 active:scale-[0.98] z-10`}
+                            } ${getColorClass(event.type)} hover:brightness-95 active:scale-[0.98] z-10 overflow-hidden group`}
                             title={`${event.title} (${duration} hari)`}
                           >
-                            <span className="truncate">
+                            <span className="truncate flex-1">
                               {showText ? event.title : ''}
                             </span>
+                            
+                            {(isEnd || (!isEnd && !showText && checkDateOnly.getDay() === 6)) && (
+                              <div className="flex -space-x-1.5 ml-2 shrink-0">
+                                {visibleUsers.map((u: any, i) => (
+                                  <div key={u.id} className="size-5 rounded-full border border-white dark:border-slate-800 bg-slate-200 dark:bg-slate-700 overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110" style={{ zIndex: 10 - i }}>
+                                    {u.avatar ? (
+                                      <img src={u.avatar} alt={u.name} className="size-full object-cover" />
+                                    ) : (
+                                      <div className="size-full flex items-center justify-center text-[6px] font-bold">
+                                        {u.name?.charAt(0)}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="size-5 rounded-full border border-white dark:border-slate-800 bg-slate-400 dark:bg-slate-600 flex items-center justify-center text-[7px] font-bold text-white shrink-0 shadow-sm z-0">
+                                    +{remainingCount}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         );
                       }
 
-                      // Single day event
+                      // Single day event with avatar stack
+                      const team = event.team_member_users || [];
+                      const creator = event.user;
+                      const displayUsers = [];
+                      if (creator) displayUsers.push(creator);
+                      team.forEach((u: any) => {
+                        if (creator && u.id === creator.id) return;
+                        displayUsers.push(u);
+                      });
+                      const maxAvatars = 2;
+                      const visibleUsers = displayUsers.slice(0, maxAvatars);
+                      const remainingCount = displayUsers.length - maxAvatars;
+
                       return (
                         <div
                           key={event.id}
@@ -346,22 +393,32 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                             setSelectedEvent(event);
                             setIsDetailModalOpen(true);
                           }}
-                          className={`cursor-pointer rounded-md border-l-4 p-2 hover:shadow-md hover:scale-[1.02] transition-all text-[10px] font-black uppercase tracking-tight ${getColorClass(event.type)}`}
+                          className={`cursor-pointer rounded-md border-l-4 p-2 pb-1 hover:shadow-md hover:scale-[1.02] transition-all text-[10px] font-black uppercase tracking-tight ${getColorClass(event.type)} group`}
                           title={`${event.title} - Klik untuk detail`}
                         >
-                          <p className="truncate">{event.title}</p>
-                          {event.user && (
-                            <div className="mt-1 flex items-center gap-1">
-                              <div className="size-4 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center text-[7px] font-black shrink-0 border border-white/20">
-                                {event.user.avatar ? (
-                                  <img src={event.user.avatar} alt={event.user.name} className="size-full object-cover" />
-                                ) : (
-                                  event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
-                                )}
-                              </div>
-                              <span className="text-[8px] font-bold opacity-70 truncate">{event.user.name}</span>
+                          <p className="truncate mb-2">{event.title}</p>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex -space-x-1.5">
+                              {visibleUsers.map((u: any, i) => (
+                                <div key={u.id} className="size-5 rounded-full border border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110" style={{ zIndex: 10 - i }}>
+                                  {u.avatar ? (
+                                    <img src={u.avatar} alt={u.name} className="size-full object-cover" />
+                                  ) : (
+                                    <div className="size-full flex items-center justify-center text-[6px] font-bold">
+                                      {u.name?.charAt(0)}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              {remainingCount > 0 && (
+                                <div className="size-5 rounded-full border border-white dark:border-slate-800 bg-slate-400 dark:bg-slate-500 flex items-center justify-center text-[7px] font-bold text-white shrink-0 shadow-sm z-0">
+                                  +{remainingCount}
+                                </div>
+                              )}
                             </div>
-                          )}
+                            {creator && <span className="text-[7px] font-bold opacity-60 truncate max-w-[50px]">{creator.name?.split(' ')[0]}</span>}
+                          </div>
                         </div>
                       );
                     })}
