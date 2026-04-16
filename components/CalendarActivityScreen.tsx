@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ActivityModal from './ActivityModal';
 import EventDetailModal from './EventDetailModal';
+import DayEventsListModal from './DayEventsListModal';
 import * as XLSX from 'xlsx';
 
 
@@ -26,6 +27,11 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isDayListModalOpen, setIsDayListModalOpen] = useState(false);
+  const [dayViewDate, setDayViewDate] = useState<Date | null>(null);
+  const [dayViewEvents, setDayViewEvents] = useState<any[]>([]);
+
+  const MAX_VISIBLE_EVENTS = 3;
 
   useEffect(() => {
     if (initialEventId && !loading && events.length > 0) {
@@ -247,6 +253,9 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
             cellDate.getMonth() === new Date().getMonth() &&
             cellDate.getFullYear() === new Date().getFullYear();
           const dayEvents = cellDate ? getEventsForDate(cellDate) : [];
+          
+          const visibleEvents = dayEvents.slice(0, MAX_VISIBLE_EVENTS);
+          const hiddenCount = dayEvents.length - MAX_VISIBLE_EVENTS;
 
           return (
             <div
@@ -257,9 +266,18 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
             >
               {day && (
                 <>
-                  <span className={`block text-right text-xs font-black mb-1 ${isToday ? 'text-primary' : ''}`}>
+                  <button 
+                    onClick={() => {
+                      if (dayEvents.length > 0) {
+                        setDayViewDate(cellDate);
+                        setDayViewEvents(dayEvents);
+                        setIsDayListModalOpen(true);
+                      }
+                    }}
+                    className={`block w-full text-right text-xs font-black mb-1 hover:text-primary transition-colors ${isToday ? 'text-primary' : ''}`}
+                  >
                     {day}
-                  </span>
+                  </button>
 
                   {/* Add button */}
                   <button
@@ -274,8 +292,8 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                   </button>
 
                   {/* Events */}
-                  <div className="mt-2 space-y-1.5">
-                    {dayEvents.map(event => {
+                  <div className="mt-2 space-y-1.5 pb-8">
+                    {visibleEvents.map(event => {
                       // Parse event dates in local timezone
                       const eventDateStr = event.date.includes('T') ? event.date.split('T')[0] : event.date;
                       const eventEndDateStr = event.end_date ? (event.end_date.includes('T') ? event.end_date.split('T')[0] : event.end_date) : eventDateStr;
@@ -284,7 +302,6 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                       const eventEnd = new Date(eventEndDateStr + 'T00:00:00');
                       const checkDate = new Date(cellDate!.getFullYear(), cellDate!.getMonth(), cellDate!.getDate());
                       
-                      // Compare dates only (ignore time)
                       const checkDateOnly = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
                       const eventStartOnly = new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate());
                       const eventEndOnly = new Date(eventEnd.getFullYear(), eventEnd.getMonth(), eventEnd.getDate());
@@ -383,7 +400,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                       });
                       const maxAvatars = 2;
                       const visibleUsers = displayUsers.slice(0, maxAvatars);
-                      const remainingCount = displayUsers.length - maxAvatars;
+                      const remainingCountCount = displayUsers.length - maxAvatars;
 
                       return (
                         <div
@@ -411,9 +428,9 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                                   )}
                                 </div>
                               ))}
-                              {remainingCount > 0 && (
+                              {remainingCountCount > 0 && (
                                 <div className="size-5 rounded-full border border-white dark:border-slate-800 bg-slate-400 dark:bg-slate-500 flex items-center justify-center text-[7px] font-bold text-white shrink-0 shadow-sm z-0">
-                                  +{remainingCount}
+                                  +{remainingCountCount}
                                 </div>
                               )}
                             </div>
@@ -422,6 +439,20 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                         </div>
                       );
                     })}
+                    
+                    {hiddenCount > 0 && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDayViewDate(cellDate);
+                          setDayViewEvents(dayEvents);
+                          setIsDayListModalOpen(true);
+                        }}
+                        className="w-full text-center py-1.5 mt-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 hover:text-primary transition-all text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700 shadow-sm active:scale-95"
+                      >
+                        + {hiddenCount} lainnya
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -513,6 +544,18 @@ return (
         event={selectedEvent}
         onDelete={() => {
           fetchEvents();
+        }}
+      />
+
+      <DayEventsListModal
+        isOpen={isDayListModalOpen}
+        onClose={() => setIsDayListModalOpen(false)}
+        date={dayViewDate}
+        events={dayViewEvents}
+        onSelectEvent={(event) => {
+          setSelectedEvent(event);
+          setIsDetailModalOpen(true);
+          setIsDayListModalOpen(false);
         }}
       />
     </main>
