@@ -296,63 +296,45 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
 
                       const getColorClass = (type: string) => {
                         switch (type) {
-                          case 'meeting': return 'border-purple-500 bg-purple-50 text-purple-900';
-                          case 'deadline': return 'border-red-500 bg-red-50 text-red-900';
-                          case 'activity': return 'border-blue-500 bg-blue-50 text-blue-900';
+                          case 'meeting': return 'border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300';
+                          case 'deadline': return 'border-red-400 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300';
+                          case 'activity': return 'border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300';
+                          case 'visit': return 'border-teal-400 bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-300';
+                          case 'inspection': return 'border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300';
+                          case 'audit': return 'border-indigo-400 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-300';
                           default: return 'border-slate-400 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300';
                         }
                       };
 
-                      // For multi-day events, show different UI
+                      // For multi-day events, show a continuous bar
                       if (duration > 1) {
-                        if (isStart) {
-                          // Show full event card at start
-                          return (
-                            <div
-                              key={event.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedEvent(event);
-                                setIsDetailModalOpen(true);
-                              }}
-                              className={`cursor-pointer rounded-lg border-l-[3px] p-2 hover:shadow-md hover:scale-[1.02] transition-all text-[10px] font-black uppercase tracking-tight ${getColorClass(event.type)}`}
-                              title={`${event.title} - Klik untuk detail`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <p className="truncate">{event.title}</p>
-                                <span className="text-[8px] font-bold opacity-70">{duration} hari</span>
-                              </div>
-                              {event.user && (
-                                <div className="mt-1 flex items-center gap-1">
-                                  <div className="size-4 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center text-[7px] font-black shrink-0 border border-white/20">
-                                    {event.user.avatar ? (
-                                      <img src={event.user.avatar} alt={event.user.name} className="size-full object-cover" />
-                                    ) : (
-                                      event.user.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
-                                    )}
-                                  </div>
-                                  <span className="text-[8px] font-bold opacity-70 truncate">{event.user.name}</span>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        } else if (isInRange || isEnd) {
-                          // Show continuation bar for middle/end days
-                          return (
-                            <div
-                              key={event.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedEvent(event);
-                                setIsDetailModalOpen(true);
-                              }}
-                              className={`cursor-pointer rounded-lg border-l-[3px] p-1 hover:shadow-md hover:scale-[1.02] transition-all ${getColorClass(event.type)}`}
-                              title={`${event.title} - Klik untuk detail`}
-                            >
-                              <div className="h-2 bg-current opacity-30 rounded"></div>
-                            </div>
-                          );
-                        }
+                        const isFirstDayOfWeek = checkDateOnly.getDay() === 0;
+                        const showText = isStart || isFirstDayOfWeek;
+                        
+                        return (
+                          <div
+                            key={event.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedEvent(event);
+                              setIsDetailModalOpen(true);
+                            }}
+                            className={`cursor-pointer h-7 flex items-center px-2 text-[9px] font-black uppercase tracking-tight transition-all border-y ${
+                              isStart ? 'rounded-l-md border-l-2 ml-1' : ''
+                            } ${
+                              isEnd ? 'rounded-r-md border-r-2 mr-1' : ''
+                            } ${
+                              !isStart ? '-ml-2' : ''
+                            } ${
+                              !isEnd ? '-mr-2' : ''
+                            } ${getColorClass(event.type)} hover:brightness-95 active:scale-[0.98] z-10`}
+                            title={`${event.title} (${duration} hari)`}
+                          >
+                            <span className="truncate">
+                              {showText ? event.title : ''}
+                            </span>
+                          </div>
+                        );
                       }
 
                       // Single day event
@@ -364,13 +346,13 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                             setSelectedEvent(event);
                             setIsDetailModalOpen(true);
                           }}
-                          className={`cursor-pointer rounded-lg border-l-[3px] p-2 hover:shadow-md hover:scale-[1.02] transition-all text-[10px] font-black uppercase tracking-tight ${getColorClass(event.type)}`}
+                          className={`cursor-pointer rounded-md border-l-4 p-2 hover:shadow-md hover:scale-[1.02] transition-all text-[10px] font-black uppercase tracking-tight ${getColorClass(event.type)}`}
                           title={`${event.title} - Klik untuk detail`}
                         >
                           <p className="truncate">{event.title}</p>
                           {event.user && (
                             <div className="mt-1 flex items-center gap-1">
-                              <div className="size-4 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center text-[7px] font-black shrink-0 border border-white/20">
+                              <div className="size-4 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center text-[7px] font-black shrink-0 border border-white/20">
                                 {event.user.avatar ? (
                                   <img src={event.user.avatar} alt={event.user.name} className="size-full object-cover" />
                                 ) : (

@@ -196,25 +196,38 @@ const FeedItem: React.FC<{
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-slate-900 dark:text-white">{item.user.name}</span>
-              {item.type === 'project_update' && (
-                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600">
-                  Update Proyek
-                </span>
-              )}
-              {item.type === 'meeting' && (
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-600">
-                    Meeting
-                  </span>
-                  <button 
-                    onClick={() => onNavigate && onNavigate('calendar')}
-                    title="Buka di Kalender"
-                    className="flex size-5 items-center justify-center rounded-full bg-white border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary transition-colors shadow-sm"
-                  >
-                    <span className="material-symbols-outlined text-[12px]">calendar_month</span>
-                  </button>
-                </div>
-              )}
+              {(() => {
+                const getTypeConfig = (type: string) => {
+                  switch (type) {
+                    case 'project_update': return { label: 'Update Proyek', color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' };
+                    case 'meeting': return { label: 'Meeting', color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400', isCalendar: true };
+                    case 'visit': return { label: 'Visitasi', color: 'bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400', isCalendar: true };
+                    case 'inspection': return { label: 'Inspeksi', color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400', isCalendar: true };
+                    case 'audit': return { label: 'Audit', color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400', isCalendar: true };
+                    case 'deadline': return { label: 'Deadline', color: 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400', isCalendar: true };
+                    case 'activity': return { label: 'Aktivitas', color: 'bg-slate-50 text-slate-600 dark:bg-slate-900/40 dark:text-slate-400' };
+                    default: return null;
+                  }
+                };
+                const config = getTypeConfig(item.type);
+                if (!config) return null;
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${config.color}`}>
+                      {config.label}
+                    </span>
+                    {config.isCalendar && (
+                      <button 
+                        onClick={() => onNavigate && onNavigate('calendar', { eventId: item.id })}
+                        title="Buka di Kalender"
+                        className="flex size-5 items-center justify-center rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary transition-colors shadow-sm"
+                      >
+                        <span className="material-symbols-outlined text-[12px]">calendar_month</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
               {!!item.is_urgent && (
                 <span className="rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-600 flex items-center gap-1">
                   <span className="material-symbols-outlined text-[12px]">error</span>
@@ -441,6 +454,8 @@ const FeedScreen: React.FC<{
   const [directoryUsers, setDirectoryUsers] = useState<any[]>([]);
   const [directorySearch, setDirectorySearch] = useState('');
   const [isDirectoryLoading, setIsDirectoryLoading] = useState(false);
+  const [showAllDeadlines, setShowAllDeadlines] = useState(false);
+  const [deadlineSearch, setDeadlineSearch] = useState('');
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -769,7 +784,7 @@ const FeedScreen: React.FC<{
             <div className="text-center text-slate-400 py-8 text-sm">Tidak ada aktivitas mendatang</div>
           ) : (
             <div className="flex flex-col gap-4">
-              {deadlines.map(deadline => (
+              {deadlines.slice(0, 5).map(deadline => (
                 <div key={deadline.id} className="flex items-start gap-3">
                   <div className={`flex flex-col items-center rounded-lg px-2 py-1.5 text-center min-w-[44px] border ${
                     deadline.type === 'meeting' 
@@ -797,6 +812,16 @@ const FeedScreen: React.FC<{
                   </div>
                 </div>
               ))}
+              
+              {deadlines.length > 5 && (
+                <button 
+                  onClick={() => setShowAllDeadlines(true)}
+                  className="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 py-2.5 text-[10px] font-black text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:border-primary/30 hover:text-primary transition-all uppercase tracking-widest active:scale-95 group"
+                >
+                  <span className="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-colors">event_note</span>
+                  <span>Lihat Semua Jadwal</span>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -810,7 +835,7 @@ const FeedScreen: React.FC<{
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex size-2 rounded-full bg-green-500"></span>
               </span>
-              {onlineUsers.length} Aktif
+              {onlineUsers.length} Online
             </span>
           </div>
           {onlineUsers.length === 0 ? (
@@ -839,7 +864,7 @@ const FeedScreen: React.FC<{
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate group-hover:text-primary transition-colors">{member.name}</span>
-                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">Sistem Online</span>
+                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">Online</span>
                   </div>
                 </div>
               ))}
@@ -956,6 +981,113 @@ const FeedScreen: React.FC<{
           </div>
         </div>
       )}
+
+      {/* Upcoming Activities Modal */}
+      {showAllDeadlines && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowAllDeadlines(false)} />
+          
+          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in slide-in-from-bottom-8 duration-500">
+            {/* Header with search */}
+            <div className="flex flex-col p-8 border-b border-slate-100 dark:border-slate-700 gap-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">Jadwal Aktivitas Mendatang</h3>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Daftar agenda dan tenggat waktu dalam waktu dekat.</p>
+                </div>
+                <button 
+                  onClick={() => setShowAllDeadlines(false)}
+                  className="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                <input 
+                  type="text" 
+                  value={deadlineSearch}
+                  onChange={(e) => setDeadlineSearch(e.target.value)}
+                  placeholder="Cari aktivitas, rapat, atau tim..."
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+
+            {/* Content List with Month Dividers */}
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/20">
+              {(() => {
+                const filtered = deadlines.filter(d => 
+                  d.title.toLowerCase().includes(deadlineSearch.toLowerCase()) ||
+                  d.team.toLowerCase().includes(deadlineSearch.toLowerCase())
+                );
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="h-full flex flex-col items-center justify-center gap-4 py-12">
+                      <span className="material-symbols-outlined text-4xl text-slate-300">event_busy</span>
+                      <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">Tidak ada aktivitas ditemukan</p>
+                    </div>
+                  );
+                }
+
+                // Group by month while maintaining original order
+                const groups: { month: string; items: Deadline[] }[] = [];
+                filtered.forEach(d => {
+                  let group = groups.find(g => g.month === d.month);
+                  if (!group) {
+                    group = { month: d.month, items: [] };
+                    groups.push(group);
+                  }
+                  group.items.push(d);
+                });
+
+                return groups.map((group) => (
+                  <div key={group.month} className="mb-10 last:mb-0">
+                    <div className="flex items-center gap-3 mb-5 sticky top-[-2px] bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md py-2 z-10 -mx-2 px-2 rounded-lg">
+                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{group.month} 2026</span>
+                      <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                    </div>
+                    <div className="space-y-4">
+                      {group.items.map(item => (
+                        <div key={item.id} className="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group cursor-pointer relative overflow-hidden transform hover:-translate-y-1">
+                          <div className={`flex flex-col items-center rounded-2xl px-3 py-2 text-center min-w-[54px] border border-white dark:border-slate-800 shadow-sm ${
+                            item.type === 'meeting' ? 'bg-purple-50 text-purple-600' : 'bg-red-50 text-primary'
+                          }`}>
+                            <span className="text-[9px] font-black opacity-60 uppercase tracking-tighter">{item.month}</span>
+                            <span className="text-xl font-black leading-none mt-0.5">{item.date}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors">{item.title}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{item.team}</span>
+                              {item.time && (
+                                <span className="text-[10px] font-black text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1 border border-slate-200/50 dark:border-slate-600">
+                                  <span className="material-symbols-outlined text-[12px] opacity-70">schedule</span>
+                                  {item.time}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="size-8 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+                            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+            
+            <div className="p-8 border-t border-slate-100 dark:border-slate-700 flex justify-center bg-white dark:bg-slate-800">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Agenda Terjadwal PT Surveyor Indonesia</p>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Profile Detail Preview Modal */}
       <UserProfileModal 

@@ -71,7 +71,7 @@ class ActivityController extends Controller
         }
 
         $validated = $request->validate([
-            'type' => 'required|in:project_update,alert,meeting,post',
+            'type' => 'required|in:project_update,alert,meeting,post,visit,inspection,audit,activity',
             'title' => 'nullable|string|max:255',
             'content' => 'required|string',
             'project_id' => 'nullable|exists:projects,id',
@@ -248,12 +248,16 @@ class ActivityController extends Controller
 
     public function getUpcomingDeadlines(Request $request)
     {
+        $user = $request->user();
         $now = Carbon::now();
         $sevenDaysLater = Carbon::now()->addDays(7);
 
-        // Filter: Type in ['meeting', 'deadline'] and Date between Now and +7 Days
-        $activities = CalendarEvent::whereIn('type', ['meeting', 'deadline'])
-            ->whereBetween('date', [$now->toDateString(), $sevenDaysLater->toDateString()])
+        // Filter: Type in defined categories, Date >= Today, and User is involved
+        $activities = CalendarEvent::whereBetween('date', [$now->toDateString(), $sevenDaysLater->toDateString()])
+            ->where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->orWhereJsonContains('team_members', $user->id);
+            })
             ->with(['user', 'project'])
             ->orderBy('date', 'asc')
             ->get()
@@ -263,8 +267,8 @@ class ActivityController extends Controller
                     'title' => $event->title,
                     'type' => $event->type,
                     'date' => $event->date,
-                    'month' => Carbon::parse($event->date)->format('M'),
-                    'day' => Carbon::parse($event->date)->format('d'),
+                    'month' => Carbon::parse($event->date)->translatedFormat('M'),
+                    'day' => Carbon::parse($event->date)->translatedFormat('d'),
                     'time' => $event->start_time ? Carbon::parse($event->start_time)->format('H:i') : null,
                     'team' => $event->user->name ?? 'N/A',
                     'project' => $event->project->title ?? null,
@@ -272,8 +276,11 @@ class ActivityController extends Controller
             });
 
         // Add Audiensi Letters as meetings (implicitly 'meeting')
-        // Only if date is within range
+        // Only if date is within range and user is creator
         $audiensi = AudiensiLetter::whereBetween('date', [$now->toDateString(), $sevenDaysLater->toDateString()])
+            ->when(!$user->isSuperAdmin(), function($q) use ($user) {
+                return $q->where('user_id', $user->id);
+            })
             ->with(['client', 'creator'])
             ->get()
             ->map(function ($letter) {
@@ -282,7 +289,7 @@ class ActivityController extends Controller
                     'title' => 'Audiensi: ' . $letter->company_name,
                     'type' => 'meeting',
                     'date' => $letter->date->format('Y-m-d'),
-                    'month' => $letter->date->format('M'),
+                    'month' => $letter->date->translatedFormat('M'),
                     'day' => $letter->date->format('d'),
                     'time' => null,
                     'team' => $letter->creator->name ?? 'Marketing',

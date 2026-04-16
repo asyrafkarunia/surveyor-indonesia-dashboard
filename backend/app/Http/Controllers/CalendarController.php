@@ -72,7 +72,7 @@ class CalendarController extends Controller
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i',
             'project_id' => 'nullable|exists:projects,id',
-            'type' => 'sometimes|in:meeting,deadline,activity,other',
+            'type' => 'sometimes|in:meeting,deadline,activity,visit,inspection,audit,other',
             'color' => 'sometimes|string',
             'is_recurring' => 'sometimes|boolean',
             'recurring_frequency' => 'nullable|in:daily,weekly,monthly,yearly',
@@ -94,12 +94,24 @@ class CalendarController extends Controller
 
         $event = CalendarEvent::create($validated);
 
-        // Auto-create feed activity for meetings
-        if ($event->type === 'meeting') {
+        // Auto-create feed activity for relevant types
+        $trackableTypes = ['meeting', 'visit', 'inspection', 'audit', 'activity', 'deadline'];
+        if (in_array($event->type, $trackableTypes)) {
+            $typeLabels = [
+                'meeting' => 'Rapat Terjadwal',
+                'visit' => 'Visitasi / Kunjungan',
+                'inspection' => 'Inspeksi Lapangan',
+                'audit' => 'Audit Sistem',
+                'activity' => 'Aktivitas Baru',
+                'deadline' => 'Deadline Penting'
+            ];
+            
+            $label = $typeLabels[$event->type] ?? 'Aktivitas Baru';
             $timeString = $event->start_time ? " Pukul " . \Carbon\Carbon::parse($event->start_time)->format('H:i') : "";
+            
             $activity = Activity::create([
-                'type' => 'meeting',
-                'content' => "Rapat Terjadwal: {$event->title}\nTanggal: " . Carbon::parse($event->date)->translatedFormat('l, d F Y') . $timeString,
+                'type' => $event->type === 'activity' ? 'post' : $event->type,
+                'content' => "{$label}: {$event->title}\nTanggal: " . Carbon::parse($event->date)->translatedFormat('l, d F Y') . $timeString,
                 'user_id' => $request->user()->id,
                 'project_id' => $event->project_id,
             ]);
@@ -158,7 +170,7 @@ class CalendarController extends Controller
             'date' => 'sometimes|date',
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i|after:start_time',
-            'type' => 'sometimes|in:meeting,deadline,activity,other',
+            'type' => 'sometimes|in:meeting,deadline,activity,visit,inspection,audit,other',
             'team_members' => 'nullable|array',
             'team_members.*' => 'exists:users,id',
         ]);

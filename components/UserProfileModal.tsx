@@ -98,17 +98,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, isOpen, onClo
               onClick={() => user.email && handleCopy(user.email, 'email')}
               className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 group hover:border-primary/50 transition-all text-left cursor-pointer relative overflow-hidden"
             >
-              <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-[20px]">{copiedType === 'email' ? 'check' : 'mail'}</span>
+              <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform relative">
+                <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${copiedType === 'email' ? 'scale-125' : 'scale-100'}`}>
+                  {copiedType === 'email' ? 'check' : 'mail'}
+                </span>
+                {copiedType === 'email' && <span className="absolute inset-0 rounded-xl bg-primary/20 animate-ping" />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Alamat Email</p>
                 <p className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">{user.email || 'Email tidak tersedia'}</p>
               </div>
-              <div className={`absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-primary text-white text-[8px] font-black uppercase tracking-wider transition-all ${copiedType === 'email' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+              <div className={`absolute right-4 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-full bg-primary text-white text-[8px] font-black uppercase tracking-wider transition-all duration-500 ${copiedType === 'email' ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-4 scale-90'}`}>
                 Copied!
               </div>
-              <span className={`material-symbols-outlined text-slate-300 group-hover:text-primary transition-all ${copiedType === 'email' ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>content_copy</span>
+              <span className={`material-symbols-outlined text-slate-300 group-hover:text-primary transition-all duration-300 ${copiedType === 'email' ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>content_copy</span>
+              {copiedType === 'email' && <div className="absolute inset-0 bg-primary/5 animate-in fade-in duration-300" />}
             </div>
 
             {/* Phone Card */}
@@ -116,17 +120,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, isOpen, onClo
               onClick={() => user.phone && handleCopy(user.phone, 'phone')}
               className={`flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 group transition-all text-left relative overflow-hidden ${user.phone ? 'hover:border-teal-500/50 cursor-pointer' : 'opacity-60 grayscale'}`}
             >
-              <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-teal-500 shadow-sm group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-[20px]">{copiedType === 'phone' ? 'double_check' : 'call'}</span>
+              <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-teal-500 shadow-sm group-hover:scale-110 transition-transform relative">
+                <span className={`material-symbols-outlined text-[20px] transition-all duration-300 ${copiedType === 'phone' ? 'scale-125' : 'scale-100'}`}>
+                  {copiedType === 'phone' ? 'check' : 'call'}
+                </span>
+                {copiedType === 'phone' && <span className="absolute inset-0 rounded-xl bg-teal-500/20 animate-ping" />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Nomor Telepon</p>
                 <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{user.phone || 'Belum diatur'}</p>
               </div>
-              <div className={`absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded-md bg-teal-600 text-white text-[8px] font-black uppercase tracking-wider transition-all ${copiedType === 'phone' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+              <div className={`absolute right-4 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-full bg-teal-600 text-white text-[8px] font-black uppercase tracking-wider transition-all duration-500 ${copiedType === 'phone' ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-4 scale-90'}`}>
                 Copied!
               </div>
-              {user.phone && <span className={`material-symbols-outlined text-slate-300 group-hover:text-teal-500 transition-all ${copiedType === 'phone' ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>content_copy</span>}
+              {user.phone && <span className={`material-symbols-outlined text-slate-300 group-hover:text-teal-500 transition-all duration-300 ${copiedType === 'phone' ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>content_copy</span>}
+              {copiedType === 'phone' && <div className="absolute inset-0 bg-teal-500/5 animate-in fade-in duration-300" />}
             </div>
             
           </div>
