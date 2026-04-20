@@ -248,7 +248,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
                             <div className="size-8 rounded flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 text-slate-500 overflow-hidden border border-slate-200 dark:border-slate-700">
                               {letter.client?.logo ? (
                                 <img 
-                                  src={letter.client.logo.startsWith('http') ? letter.client.logo : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/api$/, '')}/storage/${letter.client.logo}`} 
+                                  src={letter.client.logo.startsWith('http') ? letter.client.logo : `${((import.meta as any).env.VITE_API_URL || 'http://localhost:8000').replace(/\/api$/, '')}/storage/${letter.client.logo}`} 
                                   alt={letter.company_name}
                                   className="size-full object-contain p-1"
                                 />
@@ -265,7 +265,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            {(letter.status === 'waiting_client' || (letter.is_new_application && letter.status !== 'accepted' && letter.status !== 'rejected')) && (
+                            {(letter.status === 'waiting_client' || (!!letter.is_new_application && letter.status !== 'accepted' && letter.status !== 'rejected')) && (
                               <>
                                 <button
                                   onClick={() => handleDecision(letter.id, 'accepted')}
@@ -283,12 +283,12 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
                                 </button>
                               </>
                             )}
-                            <div className={`flex items-center justify-end gap-2 ${(letter.status === 'waiting_client' || letter.is_new_application) ? '' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                            <div className={`flex items-center justify-end gap-2 ${(letter.status === 'waiting_client' || !!letter.is_new_application) ? '' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
                               {letter.generated_file_path && (
                   <a
                     href={letter.generated_file_path.startsWith('http') 
                       ? letter.generated_file_path 
-                      : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/storage/${letter.generated_file_path}`}
+                      : `${((import.meta as any).env.VITE_API_URL || 'http://localhost:8000').replace(/\/api$/, '')}/storage/${letter.generated_file_path}`}
                     target="_blank"
                     rel="noreferrer"
                     className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import BackButton from './BackButton';
+import { showToast } from './Toast';
 
 interface AudiensiScreenProps {
   onBack: () => void;
@@ -20,7 +21,7 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
     position: '',
     template_id: '',
     content: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     is_new_application: false,
   });
 
@@ -151,11 +152,11 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
     }
   };
 
-  const handleSubmit = async (generate: boolean) => {
+  const handleSubmit = async (isDraft: boolean) => {
     setSaving(true);
     try {
       if (!form.company_name || !form.purpose || !form.position || !form.date) {
-        alert('Nama perusahaan, nama pimpinan, jabatan, dan tanggal wajib diisi');
+        showToast('Nama perusahaan, nama pimpinan, jabatan, dan tanggal wajib diisi', 'error');
         setSaving(false);
         return;
       }
@@ -169,15 +170,18 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
         date: form.date,
         client_id: form.client_id ? parseInt(form.client_id) : null,
         is_new_application: form.is_new_application,
+        is_draft: isDraft,
       };
       const letter: any = await api.createAudiensi(payload);
-      if (generate && letter?.id) {
-        await api.generateAudiensi(letter.id.toString());
+      if (isDraft) {
+        showToast('Draft surat berhasil disimpan. Anda dapat mengedit dan mengirimkannya nanti.', 'success');
+      } else {
+        showToast('Surat audiensi berhasil dibuat dan dikirim untuk persetujuan.', 'success');
       }
       onBack();
     } catch (e: any) {
       console.error(e);
-      alert(e.message || 'Gagal menyimpan surat audiensi');
+      showToast(e.message || 'Gagal menyimpan surat audiensi', 'error');
     } finally {
       setSaving(false);
     }
@@ -365,21 +369,23 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
                     />
                   </div>
 
-                  <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                    <label className="flex items-center gap-3 cursor-pointer group">
-                      <div className="relative flex items-center">
+                  <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all shadow-sm">
+                    <label className="flex items-center gap-4 cursor-pointer group select-none">
+                      <div className="relative flex items-center justify-center shrink-0">
                         <input
                           type="checkbox"
                           name="is_new_application"
                           checked={form.is_new_application}
                           onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                          className="peer appearance-none size-5 rounded border border-slate-300 dark:border-slate-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                          className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0"
                         />
-                        <span className="material-symbols-outlined absolute text-white text-[16px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">check</span>
+                        <div className="size-6 rounded-lg border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 group-hover:border-primary transition-all peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center pointer-events-none">
+                          <span className="material-symbols-outlined text-white text-[16px] opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                        </div>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
-                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">Ceklis jika surat tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
+                        <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ceklis jika surat tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
                       </div>
                     </label>
                   </div>
@@ -402,19 +408,19 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
               </button>
               <div className="flex gap-3 w-full sm:w-auto">
                 <button
-                  onClick={() => handleSubmit(false)}
+                  onClick={() => handleSubmit(true)}
                   disabled={saving}
                   className="flex-1 sm:flex-none px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 dark:bg-slate-900 transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Menyimpan...' : 'Simpan Draft'}
                 </button>
                 <button
-                  onClick={() => handleSubmit(true)}
+                  onClick={() => handleSubmit(false)}
                   disabled={saving}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-primary hover:bg-primary-dark text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[18px]">send</span>
-                  {saving ? 'Memproses...' : 'Buat Surat'}
+                  {saving ? 'Memproses...' : 'Kirim untuk Persetujuan'}
                 </button>
               </div>
             </div>

@@ -212,7 +212,7 @@
         <tr>
             <td>
                 <table class="desc-table">
-                    <tr><td class="desc-label">Validitas / <i>Quotation Validity</i></td><td class="desc-colon">:</td><td class="desc-value">{{ $sph->validity_text ?? '-' }}</td></tr>
+                    <tr><td class="desc-label">Validitas / <i>Quotation Validity</i></td><td class="desc-colon">:</td><td class="desc-value">{{ $validityText ?? '-' }}</td></tr>
                 </table>
             </td>
         </tr>
@@ -266,13 +266,22 @@
             </div>
             
             @php
-                $gmName = "Ibnu Khaldun"; // Replace with dynamic GM name if available from DB
+                $gm = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+                    $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+                })->latest('id')->first();
+                $gmName = $gm ? $gm->name : "General Manager";
+                $gmInitials = $gm ? strtoupper(substr(explode(' ', trim($gmName))[0], 0, 3)) : "GM";
+
+                $sm = \App\Models\User::where('role', 'senior_manager')->latest('id')->first();
+                $smName = $sm ? $sm->name : "Senior Manager";
+                $smInitials = $sm ? ucfirst(strtolower(substr(explode(' ', trim($smName))[0], 0, 3))) : "Sm";
             @endphp
             <strong><u>{{ $gmName }}</u></strong><br>
             <i>General Manager</i>
             
-            <div class="initials-block">
-                Paraf:<br>
+            <div class="initials-block mt-1">
+                <span style="font-size: 11px;">Dak / {{ $smInitials }} /</span>
+                <br>Paraf:<br>
                 Sr. Manager / Preparer: 
                 @if(isset($smSignaturePath) && $smSignaturePath)
                     <img src="{{ $smSignaturePath }}" style="max-height: 25px; margin-left: 5px; vertical-align: middle;">

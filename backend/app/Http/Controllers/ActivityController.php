@@ -274,7 +274,7 @@ class ActivityController extends Controller
         // Only if date is >= today and user is creator
         $audiensi = AudiensiLetter::where('date', '>=', $now->toDateString())
             ->when(!$user->isSuperAdmin(), function($q) use ($user) {
-                return $q->where('user_id', $user->id);
+                return $q->where('created_by', $user->id);
             })
             ->with(['client', 'creator'])
             ->get()

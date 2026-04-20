@@ -72,6 +72,17 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
     }
   };
 
+  const handleSubmitForApproval = async (id: number) => {
+    if (!confirm('Kirim SPH ini untuk disetujui oleh approver?')) return;
+    try {
+      await api.updateSph(id.toString(), { status: 'waiting_head_section' });
+      fetchSph();
+    } catch (e) {
+      console.error(e);
+      alert('Gagal mengirim SPH untuk persetujuan');
+    }
+  };
+
   const handleApprove = async (id: number) => {
     try {
       await api.approveSph(id.toString());
@@ -98,6 +109,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
       return 'Tanda Tangan Basah';
     }
     const statusMap: Record<string, string> = {
+      'draft': 'Draft',
       'Draft': 'Draft',
       'Sent': 'Menunggu Persetujuan',
       'waiting_head_section': 'Menunggu Head Section',
@@ -126,7 +138,8 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
       case 'waiting_general_manager':
       case 'waiting_client':
         return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
-      case 'Draft': 
+      case 'Draft':
+      case 'draft':
         return 'bg-slate-50 text-slate-700 border-slate-100 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20';
       case 'Rejected': 
       case 'rejected':
@@ -150,7 +163,8 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
       case 'waiting_general_manager':
       case 'waiting_client':
         return 'bg-amber-500';
-      case 'Draft': 
+      case 'Draft':
+      case 'draft':
         return 'bg-slate-500';
       case 'Rejected': 
       case 'rejected':
@@ -297,7 +311,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {sph.is_new_application && sph.status !== 'Approved' && sph.status !== 'Rejected' && (
+                          {!!sph.is_new_application && sph.status !== 'Approved' && sph.status !== 'Rejected' && (
                             <>
                               <button
                                 onClick={() => handleDecision(sph.id.toString(), 'accepted')}
@@ -315,8 +329,8 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                               </button>
                             </>
                           )}
-                          {sph.status === 'Draft' && (
-                            <button onClick={() => handleGenerate(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Kirim ke Approver">
+                          {(sph.status === 'Draft' || sph.status === 'draft') && (
+                            <button onClick={() => handleSubmitForApproval(sph.id)} className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors" title="Kirim untuk Persetujuan">
                               <span className="material-symbols-outlined text-[20px]">send</span>
                             </button>
                           )}

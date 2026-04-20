@@ -22,7 +22,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
     project_ref: '',
     pic_name: '',
     pic_position: '',
-    date_created: '',
+    date_created: new Date().toISOString().split('T')[0],
     description: '',
     items: [] as any[],
     validity_period: '',
@@ -196,7 +196,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
     }
   };
 
-  const handleSaveDraft = async (submitForApproval: boolean) => {
+  const handleSaveDraft = async (isDraft: boolean) => {
     setSaving(true);
     try {
       if (!form.client_id || !form.project_name || !form.date_created) {
@@ -209,7 +209,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         setSaving(false);
         return;
       }
-      if (!form.validity_period) {
+      if (!isDraft && !form.validity_period) {
         showToast('Masa berlaku penawaran wajib diisi', 'error');
         setSaving(false);
         return;
@@ -232,15 +232,15 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         bank_acc_no: form.bank_acc_no || null,
         terms_conditions: form.terms_conditions || null,
         is_new_application: form.is_new_application,
+        is_draft: isDraft,
       };
       
       const sph: any = await api.createSph(payload);
       
-      if (submitForApproval && sph?.id) {
-        // Status akan tetap 'Draft' dan perlu di-approve terlebih dahulu
-        showToast('Draft SPH berhasil dibuat. Silakan tunggu persetujuan dari approver sebelum dapat di-generate menjadi PDF.', 'success');
+      if (isDraft) {
+        showToast('Draft SPH berhasil disimpan. Anda dapat mengedit dan mengirimkannya nanti.', 'success');
       } else {
-        showToast('Draft SPH berhasil disimpan.', 'success');
+        showToast('SPH berhasil dikirim untuk persetujuan. Silakan tunggu persetujuan dari approver.', 'success');
       }
       
       onFinish();
@@ -852,7 +852,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
             </button>
             <div className="flex items-center gap-4">
               <button 
-                onClick={() => handleSaveDraft(false)}
+                onClick={() => handleSaveDraft(true)}
                 disabled={saving}
                 className="hidden sm:block text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-all disabled:opacity-50"
               >
@@ -863,11 +863,11 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
               </span>
               {currentStep === totalSteps ? (
                 <button 
-                  onClick={() => handleSaveDraft(true)}
+                  onClick={() => handleSaveDraft(false)}
                   disabled={saving}
                   className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 transition-all group disabled:opacity-50"
                 >
-                  {saving ? 'Menyimpan...' : 'Simpan Draft & Kirim ke Approver'}
+                  {saving ? 'Menyimpan...' : 'Kirim untuk Persetujuan'}
                   <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">send</span>
                 </button>
               ) : (

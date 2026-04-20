@@ -69,6 +69,16 @@
         <p>PT Surveyor Indonesia</p>
 
         <div class="signature-container">
+            @php
+                $gm = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+                    $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+                })->latest('id')->first();
+                $gmName = $gm ? $gm->name : "General Manager";
+
+                $sm = \App\Models\User::where('role', 'senior_manager')->latest('id')->first();
+                $smName = $sm ? $sm->name : "Senior Manager";
+                $smInitials = $sm ? ucfirst(strtolower(substr(explode(' ', trim($smName))[0], 0, 3))) : "Sm";
+            @endphp
             <div class="signature-box" style="width: 50%; text-align: left; float: left;">
                 <p>Senior Manager</p>
                 @if(isset($smSignaturePath) && $smSignaturePath)
@@ -76,7 +86,8 @@
                 @else
                     <div style="height: 70px;"></div>
                 @endif
-                <p style="margin: 0;"><u>( Senior Manager )</u></p>
+                <p style="margin: 0;"><strong><u>{{ $smName }}</u></strong></p>
+                <p style="margin: 0;">Senior Manager</p>
             </div>
 
             <div class="signature-box" style="width: 50%; text-align: left; float: left;">
@@ -86,7 +97,9 @@
                 @else
                     <div style="height: 70px;"></div>
                 @endif
-                <p style="margin: 0;"><u>( General Manager )</u></p>
+                <p style="margin: 0;"><strong><u>{{ $gmName }}</u></strong></p>
+                <p style="margin: 0;">General Manager</p>
+                <p style="margin: 5px 0 0 0; font-size: 11px; font-style: italic;">Dak   /{{ $smInitials }}   /</p>
             </div>
             <div class="clear"></div>
         </div>

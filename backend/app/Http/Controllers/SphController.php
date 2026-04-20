@@ -75,12 +75,26 @@ class SphController extends Controller
             'is_new_application' => 'nullable|boolean',
         ]);
 
-        $sph = DB::transaction(function () use ($validated, $request) {
+        $isDraft = $request->boolean('is_draft', false);
+
+        $sph = DB::transaction(function () use ($validated, $request, $isDraft) {
             $year = date('Y');
+            
+            $romanMonths = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+            $monthRoman = $romanMonths[date('n')];
+
+            // Get General Manager for initials
+            $gm = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+                $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+            })->latest('id')->first();
+            $gmInitials = $gm ? strtoupper(substr(explode(' ', trim($gm->name))[0], 0, 3)) : 'GM';
+
             // Lock existing rows to prevent race condition on numbering
             $count = Sph::whereYear('created_at', $year)->lockForUpdate()->count() + 1;
-            $validated['sph_no'] = 'SPH-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/PTSI/' . $year;
-            $validated['status'] = 'waiting_head_section';
+            
+            // Format: MKT-001/SIPKU-IBN/XII/2025
+            $validated['sph_no'] = 'MKT-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/SIPKU-' . $gmInitials . '/' . $monthRoman . '/' . $year;
+            $validated['status'] = $isDraft ? 'draft' : 'waiting_head_section';
             $validated['created_by'] = $request->user()->id;
             $validated['is_new_application'] = $request->input('is_new_application', false);
 
@@ -90,20 +104,22 @@ class SphController extends Controller
         // Log SPH creation
         LogActivity::logSphCreated($sph->id, $sph->sph_no, $request->user()->id);
 
-        // Notify Head Section
-        $headSections = User::where('role', 'head_section')->get();
-        foreach ($headSections as $approver) {
-            Notification::create([
-                'user_id' => $approver->id,
-                'project_id' => $sph->project_id,
-                'type' => 'alert',
-                'title' => 'Persetujuan SPH Dibutuhkan',
-                'content' => "SPH Baru ({$sph->sph_no}) untuk proyek '{$sph->project_name}' membutuhkan persetujuan Anda.",
-                'project_name' => $sph->project_name,
-                'tag' => 'Approval',
-                'is_read' => false,
-                'data' => ['sph_id' => $sph->id, 'kind' => 'sph_needs_approval'],
-            ]);
+        // Only notify approvers if not saving as draft
+        if (!$isDraft) {
+            $headSections = User::where('role', 'head_section')->get();
+            foreach ($headSections as $approver) {
+                Notification::create([
+                    'user_id' => $approver->id,
+                    'project_id' => $sph->project_id,
+                    'type' => 'alert',
+                    'title' => 'Persetujuan SPH Dibutuhkan',
+                    'content' => "SPH Baru ({$sph->sph_no}) untuk proyek '{$sph->project_name}' membutuhkan persetujuan Anda.",
+                    'project_name' => $sph->project_name,
+                    'tag' => 'Approval',
+                    'is_read' => false,
+                    'data' => ['sph_id' => $sph->id, 'kind' => 'sph_needs_approval'],
+                ]);
+            }
         }
 
         return response()->json($sph->load(['client', 'project', 'creator']), 201);
@@ -130,7 +146,7 @@ class SphController extends Controller
             'term_payment' => 'nullable|string',
             'bank_name' => 'nullable|string',
             'bank_acc_no' => 'nullable|string',
-            'status' => 'sometimes|in:Draft,Sent,Approved,Rejected,waiting_head_section,waiting_senior_manager,waiting_general_manager,waiting_client,accepted,rejected',
+            'status' => 'sometimes|in:draft,Draft,Sent,Approved,Rejected,waiting_head_section,waiting_senior_manager,waiting_general_manager,waiting_client,accepted,rejected',
         ]);
 
         $sph->update($validated);
@@ -168,9 +184,17 @@ class SphController extends Controller
 
         $client = Client::find($validated['client_id']);
         
+        $romanMonths = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+        $monthRoman = $romanMonths[date('n')];
+
+        $gm = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+            $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+        })->latest('id')->first();
+        $gmInitials = $gm ? strtoupper(substr(explode(' ', trim($gm->name))[0], 0, 3)) : 'GM';
+
         // Create a temporary object for the view
         $sph = (object)[
-            'sph_no' => 'SPH-PREVIEW/PTSI/' . date('Y'),
+            'sph_no' => 'MKT-PREVIEW/SIPKU-' . $gmInitials . '/' . $monthRoman . '/' . date('Y'),
             'project_name' => $validated['project_name'],
             'value' => $validated['value'],
             'date_created' => Carbon::parse($validated['date_created']),
@@ -178,7 +202,7 @@ class SphController extends Controller
             'items' => $validated['items'],
             'validity_period' => $validated['validity_period'] ? Carbon::parse($validated['validity_period']) : null,
             'validity_months' => $validated['validity_months'] ?? null,
-            'validity_text' => $this->formatValidityMonths($validated['validity_months'] ?? null),
+
             'scope_of_work' => $validated['scope_of_work'] ?? null,
             'time_period' => $validated['time_period'] ?? null,
             'term_payment' => $validated['term_payment'] ?? null,
@@ -202,6 +226,7 @@ class SphController extends Controller
 
         $pdf = Pdf::loadView('sph.template', [
             'sph' => $sph,
+            'validityText' => $this->formatValidityMonths($validated['validity_months'] ?? null),
             'client' => $client,
             'coverPath' => $coverPath,
         ]);
@@ -352,12 +377,20 @@ class SphController extends Controller
         }
 
         if ($request->decision === 'accepted') {
-            $sph->update([
-                'status' => 'accepted',
-                'approved_at' => now(),
-            ]);
-            // Auto-generate PDF upon approval
-            $this->generatePDF($sph);
+            DB::beginTransaction();
+            try {
+                $sph->update([
+                    'status' => 'accepted',
+                    'approved_at' => now(),
+                ]);
+                // Auto-generate PDF upon approval
+                $this->generatePDF($sph);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('SPH Client Decision Error: ' . $e->getMessage(), ['sph_id' => $sph->id]);
+                return response()->json(['message' => 'Gagal memproses keputusan klien. Silakan coba lagi.'], 500);
+            }
         } else {
             $sph->update([
                 'status' => 'rejected',
@@ -454,10 +487,11 @@ class SphController extends Controller
                 $coverPath = 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
 
-            $sph->validity_text = $this->formatValidityMonths($sph->validity_months);
+            $validityText = $this->formatValidityMonths($sph->validity_months);
 
             $pdf = Pdf::loadView('sph.template', [
                 'sph' => $sph,
+                'validityText' => $validityText,
                 'client' => $sph->client,
                 'smSignaturePath' => $smSignaturePath,
                 'gmSignaturePath' => $gmSignaturePath,

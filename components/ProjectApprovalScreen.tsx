@@ -224,7 +224,7 @@ const ProjectApprovalScreen: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* List */}
-            <div id="approval-list" className="lg:col-span-1 space-y-4">
+            <div id="approval-list" className="lg:col-span-1 space-y-4 overflow-y-auto max-h-[calc(100vh-16rem)] custom-scrollbar">
               {items.length === 0 ? (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center">
                   <p className="text-slate-500 dark:text-slate-400">No pending approvals</p>
@@ -272,7 +272,7 @@ const ProjectApprovalScreen: React.FC = () => {
             </div>
 
             {/* Detail */}
-            <div id="approval-detail" className="lg:col-span-2">
+            <div id="approval-detail" className="lg:col-span-2 overflow-y-auto max-h-[calc(100vh-16rem)] custom-scrollbar">
               {selectedItem ? (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm space-y-6">
                   <div>

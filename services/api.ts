@@ -437,6 +437,13 @@ class ApiService {
     });
   }
 
+  async updateSph(id: string, data: any) {
+    return this.request(`/sph/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
   async previewSph(data: any) {
     const token = this.token;
     const response = await fetch(`${API_BASE_URL}/sph/preview`, {

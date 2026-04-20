@@ -78,14 +78,33 @@ class AudiensiController extends Controller
             'is_new_application' => 'nullable|boolean',
         ]);
 
-        $letter = DB::transaction(function () use ($validated, $request) {
+        $isDraft = $request->boolean('is_draft', false);
+
+        $letter = DB::transaction(function () use ($validated, $request, $isDraft) {
             $year = date('Y');
             $month = date('n');
+
+            $romanMonths = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+            $monthRoman = $romanMonths[$month];
+
+            // Get General Manager for initials
+            $gm = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+                $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+            })->latest('id')->first();
+            $gmInitials = $gm ? strtoupper(substr(explode(' ', trim($gm->name))[0], 0, 3)) : 'GM';
+
             // Lock existing rows to prevent race condition on numbering
-            $count = AudiensiLetter::whereYear('created_at', $year)->whereMonth('created_at', $month)->lockForUpdate()->count() + 1;
-            $validated['letter_number'] = 'AUD/SI/' . $year . '/' . $month . '/' . str_pad($count, 4, '0', STR_PAD_LEFT);
+            $count = AudiensiLetter::whereYear('created_at', $year)->lockForUpdate()->count() + 1;
+            
+            // Format: SRT-001/SIPKU-MKT/IV/IBN/2026
+            $validated['letter_number'] = 'SRT-' . str_pad($count, 3, '0', STR_PAD_LEFT) . '/SIPKU-MKT/' . $monthRoman . '/' . $gmInitials . '/' . $year;
             $validated['created_by'] = $request->user()->id;
-            $validated['status'] = $request->boolean('is_new_application') ? 'waiting_client' : 'waiting_head_section';
+
+            if ($isDraft) {
+                $validated['status'] = 'draft';
+            } else {
+                $validated['status'] = $request->boolean('is_new_application') ? 'waiting_client' : 'waiting_head_section';
+            }
 
             return AudiensiLetter::create($validated);
         });
@@ -371,25 +390,39 @@ class AudiensiController extends Controller
                         ? '<div style="font-size: 10px; color: #666; margin-top: 15px;"><i>Dokumen ini telah ditandatangani secara elektronik.</i></div>'
                         : '';
 
+                    $smUser = \App\Models\User::where('role', 'senior_manager')->latest('id')->first();
+                    $smInitials = $smUser ? ucfirst(strtolower(substr(explode(' ', trim($smUser->name))[0], 0, 3))) : 'Sm';
+                    $smName = $smUser ? $smUser->name : 'Senior Manager';
+
+                    $gmUser = \App\Models\User::where('role', 'general_manager')->orWhere(function($query) {
+                        $query->where('name', 'Ibnu Khaldun')->where('role', 'approver');
+                    })->latest('id')->first();
+                    $gmName = $gmUser ? $gmUser->name : 'General Manager';
+
                     $signatureHtml = '<div style="margin-top: 30px; width: 100%;">
-                        <p>Hormat kami,</p>
-                        <p><strong>PT Surveyor Indonesia</strong></p>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <p style="margin: 0;">Hormat kami,</p>
+                        <p style="margin: 0;"><strong>PT Surveyor Indonesia<br>Cabang Pekanbaru</strong></p>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
                             <tr>
                                 <td style="width: 50%; vertical-align: bottom;">
                                     ' . $smSignature . '
-                                    <p style="margin: 0;"><u>( Senior Manager )</u></p>
+                                    <p style="margin: 0;"><strong><u>' . $smName . '</u></strong></p>
                                     <p style="margin: 0; font-size: 11px;">Senior Manager</p>
                                 </td>
                                 <td style="width: 50%; vertical-align: bottom;">
                                     ' . $gmSignature . '
-                                    <p style="margin: 0;"><u>( General Manager )</u></p>
+                                    <p style="margin: 0;"><strong><u>' . $gmName . '</u></strong></p>
                                     <p style="margin: 0; font-size: 11px;">General Manager</p>
+                                    <p style="margin: 5px 0 0 0; font-size: 11px; font-style: italic;">Dak   /' . $smInitials . '   /</p>
                                 </td>
                             </tr>
                         </table>
                         ' . $noteHtml . '
                     </div>';
+                    
+                    // Remove redundant 'Hormat kami' from template content if it exists
+                    $content = preg_replace('/Hormat kami,\s*<br\/>\s*<br\/>\s*<strong>\{\{NamaPengirim\}\}<\/strong>\s*<br\/>\s*PT Surveyor Indonesia/s', '', $content);
+
                     
                     if (strpos($content, '[TANDA_TANGAN]') !== false) {
                         $placeholders['[TANDA_TANGAN]'] = $signatureHtml;
