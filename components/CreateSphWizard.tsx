@@ -209,7 +209,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         setSaving(false);
         return;
       }
-      if (!isDraft && !form.validity_period) {
+      if (!isDraft && !form.validity_months) {
         showToast('Masa berlaku penawaran wajib diisi', 'error');
         setSaving(false);
         return;
@@ -440,25 +440,25 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                     </div>
                     <div className="col-span-1 md:col-span-2">
                       <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all shadow-sm">
-                        <label className="flex items-center gap-4 cursor-pointer group select-none">
-                          <div className="relative flex items-center justify-center shrink-0">
+                        <div className="flex items-center gap-4 group">
+                          <div className="relative size-6 shrink-0 z-10">
                             <input
                               type="checkbox"
                               id="is_new_application_checkbox"
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
-                              className="peer absolute inset-0 opacity-0 cursor-pointer z-10"
+                              className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 m-0"
                             />
-                            <div className="size-6 rounded-lg border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 group-hover:border-primary transition-all peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center">
-                              <span className="material-symbols-outlined text-white text-[18px] opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                            <div className="absolute inset-0 rounded-lg border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 group-hover:border-primary transition-all peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center pointer-events-none z-10">
+                              <span className="material-symbols-outlined text-white text-[16px] opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                             </div>
                           </div>
-                          <div className="flex flex-col">
+                          <label htmlFor="is_new_application_checkbox" className="flex flex-col cursor-pointer select-none flex-1">
                             <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ceklis jika SPH tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
-                          </div>
-                        </label>
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>
