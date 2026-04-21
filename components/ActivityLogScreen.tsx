@@ -446,13 +446,19 @@ const ActivityLogScreen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [triggerFetch, setTriggerFetch] = useState(0);
 
   useEffect(() => {
     if (isAdmin) {
       loadLogs();
+    }
+  }, [isAdmin, currentPage, triggerFetch]);
+
+  useEffect(() => {
+    if (isAdmin) {
       loadUsers();
     }
-  }, [isAdmin, currentPage, selectedActionTypes, searchQuery, dateFrom, dateTo, userFilter]);
+  }, [isAdmin]);
 
   const loadUsers = async () => {
     try {
@@ -536,7 +542,13 @@ const ActivityLogScreen: React.FC = () => {
     }
   };
 
-  const handleFilter = () => { setCurrentPage(1); loadLogs(); };
+  const handleFilter = () => { 
+    if (currentPage === 1) {
+      setTriggerFetch(p => p + 1);
+    } else {
+      setCurrentPage(1); 
+    }
+  };
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -544,7 +556,11 @@ const ActivityLogScreen: React.FC = () => {
     setDateTo('');
     setSelectedActionTypes([]);
     setUserFilter('');
-    setCurrentPage(1);
+    if (currentPage === 1) {
+      setTriggerFetch(p => p + 1);
+    } else {
+      setCurrentPage(1);
+    }
   };
 
   const toggleActionType = (t: string) =>

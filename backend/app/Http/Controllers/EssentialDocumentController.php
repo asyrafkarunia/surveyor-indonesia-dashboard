@@ -23,8 +23,7 @@ class EssentialDocumentController extends Controller
                 $query->where('title', 'like', '%' . $search . '%');
             }
 
-            // Limit to top 100 for performance, ideally use pagination if dataset grows
-            return $query->limit(100)->get();
+            return $query->paginate(15);
         });
     }
 

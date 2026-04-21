@@ -30,13 +30,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
     fetchSph();
   }, [dateFilter, page]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (page === 1) fetchSph();
-      else setPage(1);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [search]);
+
 
   const fetchSph = async () => {
     setLoading(true);
@@ -202,7 +196,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
               <input 
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:bg-white dark:bg-slate-800 focus:border-primary rounded-lg text-sm transition-all outline-none" 
-                placeholder="Cari Doc No, Klien, atau Proyek..." 
+                placeholder="Cari Doc No, Klien, atau Proyek... (Tekan Enter)" 
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

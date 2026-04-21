@@ -32,12 +32,7 @@ const BerkasDokumenScreen: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewDoc, setPreviewDoc] = useState<EssentialDocument | null>(null);
 
-  useEffect(() => {
-    const h = setTimeout(() => {
-      loadDocuments(search.trim() || undefined);
-    }, 300);
-    return () => clearTimeout(h);
-  }, [search]);
+
 
   const isAdmin = isMarketing();
 
@@ -230,8 +225,14 @@ const BerkasDokumenScreen: React.FC = () => {
                   id="doc-search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      loadDocuments(search.trim() || undefined);
+                    }
+                  }}
                   className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary w-64"
-                  placeholder="Cari dokumen..."
+                  placeholder="Cari dokumen... (Tekan Enter)"
                 />
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{documents.length} item</span>

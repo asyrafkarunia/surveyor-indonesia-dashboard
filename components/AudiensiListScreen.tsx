@@ -24,13 +24,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
     fetchStats();
   }, [page, dateFilter]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (page === 1) fetchLetters();
-      else setPage(1);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [search]);
+
 
   const fetchLetters = async () => {
     setLoading(true);

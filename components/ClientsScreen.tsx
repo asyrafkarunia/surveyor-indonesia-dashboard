@@ -42,6 +42,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
   const [stats, setStats] = useState<ClientStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [selectedType, setSelectedType] = useState('Semua Tipe');
   const [selectedStatus, setSelectedStatus] = useState('Semua Status');
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,9 +124,12 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
     }
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }
   };
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -253,10 +257,11 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
               <input 
                 id="client-search"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary text-sm transition-all" 
-                placeholder="Cari nama klien, kontak, atau perusahaan..." 
+                placeholder="Cari nama klien, kontak, atau perusahaan... (Tekan Enter)" 
                 type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
               />
             </div>
             <div className="flex flex-wrap gap-2 w-full lg:w-auto">

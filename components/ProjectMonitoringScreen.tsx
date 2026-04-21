@@ -56,6 +56,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<any>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -225,6 +226,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     if (!trimmed) return;
     if (trimmed !== searchQuery) {
       setSearchQuery(trimmed);
+      setSearchInput(trimmed);
       setCurrentPage(1);
     }
     if (onExternalSearchHandled) {
@@ -249,9 +251,16 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     setCurrentPage(1);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }
+  };
+
+  const handleResetSearch = () => {
+    setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setSearchInput(''); setClientIdFilter('');
   };
 
   const formatDate = (dateString: string) => {
@@ -596,7 +605,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-5 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 flex flex-col gap-5 shadow-sm relative z-40 transition-all duration-300 hover:shadow-md">
           <div className="relative group w-full">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors duration-300">search</span>
-            <input className="w-full bg-slate-100/50 dark:bg-slate-900/50 border-transparent rounded-xl pl-12 pr-4 py-3 text-[13px] font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 border-none placeholder:text-slate-400 dark:text-white transition-all duration-300 outline-none" placeholder="Cari nama proyek, kode, atau kata kunci lainnya..." type="text" value={searchQuery} onChange={handleSearch} />
+            <input className="w-full bg-slate-100/50 dark:bg-slate-900/50 border-transparent rounded-xl pl-12 pr-4 py-3 text-[13px] font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 border-none placeholder:text-slate-400 dark:text-white transition-all duration-300 outline-none" placeholder="Cari nama proyek, kode, atau kata kunci lainnya... (Tekan Enter)" type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleSearchKeyPress} />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
@@ -607,7 +616,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
               <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
               <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} />
               <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} />
-              <button type="button" onClick={() => { setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setClientIdFilter(''); }} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
+              <button type="button" onClick={handleResetSearch} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
                 <span className="material-symbols-outlined text-[18px]">restart_alt</span>
                 Atur Ulang
               </button>

@@ -9,15 +9,31 @@ interface MarketingKanbanScreenProps {
 }
 
 const PriorityBadge: React.FC<{ priority: KanbanCard['priority'] }> = ({ priority }) => {
-  const styles = {
+  const styles: Record<string, string> = {
     High: 'bg-blue-50 text-blue-700 border-blue-100',
     Medium: 'bg-amber-50 text-amber-700 border-amber-100',
     Low: 'bg-emerald-50 text-emerald-700 border-emerald-100'
   };
   return (
-    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${styles[priority]}`}>
+    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${styles[priority] || styles.Medium}`}>
       {priority}
     </span>
+  );
+};
+
+const HighlightedText: React.FC<{ text: string; highlight: string }> = ({ text, highlight }) => {
+  if (!highlight.trim()) return <>{text}</>;
+  const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapeRegExp(highlight)})`, 'gi');
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((p, i) => 
+        p.toLowerCase() === highlight.toLowerCase() 
+          ? <mark key={i} className="bg-yellow-300 dark:bg-yellow-500/50 text-yellow-900 dark:text-yellow-50 rounded px-0.5">{p}</mark> 
+          : p
+      )}
+    </>
   );
 };
 
@@ -27,14 +43,21 @@ const TaskCard: React.FC<{
   onDelete: (e: React.MouseEvent) => void;
   onDragStart: (e: React.DragEvent) => void;
   onDragEnd: () => void;
-}> = ({ card, onClick, onDelete, onDragStart, onDragEnd }) => {
+  searchQuery?: string;
+}> = ({ card, onClick, onDelete, onDragStart, onDragEnd, searchQuery = '' }) => {
+  const isMatch = searchQuery.trim() !== '' && (card.title.toLowerCase().includes(searchQuery.toLowerCase()) || card.client.toLowerCase().includes(searchQuery.toLowerCase()));
+  const containerClass = isMatch 
+    ? "bg-yellow-50/80 dark:bg-yellow-900/20 p-4 rounded-xl border-2 border-yellow-400 dark:border-yellow-500/50 shadow-md transform transition-all cursor-move group relative z-10"
+    : (searchQuery.trim() !== '' ? "bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm transition-all cursor-move group opacity-60" : "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all cursor-move group");
+
   return (
     <div 
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onClick={onClick}
-      className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all cursor-move group"
+      className={containerClass}
+      data-search-match={isMatch ? "true" : undefined}
     >
       <div className="flex justify-between items-start mb-2">
         <PriorityBadge priority={card.priority} />
@@ -47,9 +70,11 @@ const TaskCard: React.FC<{
         </button>
       </div>
       <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug mb-1">
-        {card.title}
+        <HighlightedText text={card.title} highlight={searchQuery} />
       </h4>
-      <p className="text-[11px] font-medium text-slate-400 dark:text-slate-400 mb-4">{card.client}</p>
+      <p className="text-[11px] font-medium text-slate-400 dark:text-slate-400 mb-4">
+        <HighlightedText text={card.client} highlight={searchQuery} />
+      </p>
       
       <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50">
         <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
@@ -113,6 +138,7 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
   const [error, setError] = useState<string | null>(null);
   const [draggedCard, setDraggedCard] = useState<{ card: KanbanCard; sourceColumn: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const retryCountRef = useRef(0);
   const MAX_RETRIES = 2;
 
@@ -167,6 +193,26 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
   const handleRetry = () => {
     retryCountRef.current = 0;
     fetchColumns();
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setSearchQuery(searchInput);
+      
+      if (searchInput.trim()) {
+        setTimeout(() => {
+          const el = document.querySelector('[data-search-match="true"]');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            el.classList.add('ring-4', 'ring-yellow-400/50', 'scale-105', 'z-50');
+            setTimeout(() => {
+              el.classList.remove('ring-4', 'ring-yellow-400/50', 'scale-105', 'z-50');
+            }, 1500);
+          }
+        }, 100);
+      }
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, card: KanbanCard, sourceColumn: string) => {
@@ -291,10 +337,11 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             <div className="relative group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
               <input 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
                 className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold w-48 md:w-64 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400" 
-                placeholder="Cari kegiatan..." 
+                placeholder="Cari kegiatan... (Tekan Enter)" 
                 type="text"
               />
             </div>
@@ -360,12 +407,12 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
         ) : (
           <div className="flex gap-6 h-full min-w-max">
             {columns.map((column) => {
-              const filteredCards = searchQuery 
-                ? column.cards.filter(card => 
-                    card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    card.client.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                : column.cards;
+              // We no longer filter out cards, we show all but highlight matches.
+              const cardsToRender = column.cards;
+              const matchCount = searchQuery ? cardsToRender.filter(card => 
+                card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                card.client.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length : cardsToRender.length;
 
               return (
                 <div 
@@ -377,7 +424,9 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
                   <div className={`flex items-center justify-between border-b-2 ${column.color} pb-3 mb-2`}>
                     <div className="flex items-center gap-2">
                       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">{column.title}</h3>
-                      <span className="bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-black px-2 py-0.5 rounded-full">{filteredCards.length}</span>
+                      <span className="bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-black px-2 py-0.5 rounded-full">
+                        {searchQuery ? `${matchCount}/${cardsToRender.length}` : cardsToRender.length}
+                      </span>
                     </div>
                     <button 
                       onClick={onAddTask}
@@ -388,10 +437,11 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
                   </div>
 
                   <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar min-h-[200px]">
-                    {filteredCards.map((card) => (
+                    {cardsToRender.map((card) => (
                       <TaskCard 
                         key={card.id} 
                         card={card} 
+                        searchQuery={searchQuery}
                         onClick={() => setSelectedTask(card)}
                         onDelete={(e) => {
                           e.stopPropagation();
