@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { showToast } from './Toast';
 
 interface ProjectDetailModalProps {
   projectId: string;
@@ -39,6 +40,29 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
     description: '',
   });
 
+  const [activeTab, setActiveTab] = useState<'general' | 'scurve'>('general');
+  const [scheduleData, setScheduleData] = useState<any[]>([]);
+
+  const generateMonthTimeline = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return [];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const months = [];
+    
+    let current = new Date(start.getFullYear(), start.getMonth(), 1);
+    const last = new Date(end.getFullYear(), end.getMonth(), 1);
+
+    while (current <= last) {
+        months.push({
+          month_label: current.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }),
+          planned: 0,
+          actual: 0
+        });
+        current.setMonth(current.getMonth() + 1);
+    }
+    return months;
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     const run = async () => {
@@ -52,8 +76,9 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
           budget: data?.budget ? String(data.budget).split('.')[0] : '',
           actual_revenue: data?.actual_revenue ? String(data.actual_revenue).split('.')[0] : '',
           revenue_increment: '',
-          description: data?.description ?? '',
+          description: '',
         });
+        setScheduleData(data?.schedule_data?.timeline || generateMonthTimeline(data.start_date, data.end_date));
       } catch (e) {
         console.error('Failed to load project detail:', e);
       } finally {
@@ -84,16 +109,30 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
         progress: form.progress,
         budget: form.budget ? Number(form.budget) : null,
         actual_revenue: newTotalRevenue,
-        description: form.description || null,
+        schedule_data: { timeline: scheduleData }
       };
 
       const updatedDetails: any = await api.updateProject(projectId, payload);
+      
+      const oldProgress = Number(project?.progress ?? 0);
+      if (form.description.trim() || form.progress !== oldProgress) {
+        let note = `[Sistem] Capaian progres diperbarui menjadi ${form.progress}%.`;
+        if (form.description.trim()) {
+          note += `\nCatatan Tambahan: ${form.description.trim()}`;
+        }
+        try {
+          await api.addProjectComment(projectId, note);
+        } catch (e) {
+          console.error("Gagal menambahkan catatan capaian ke komentar:", e);
+        }
+      }
+
       setProject(updatedDetails);
       onUpdated?.(updatedDetails);
-      alert('Pembaruan capaian berhasil disimpan');
+      showToast('Pembaruan capaian berhasil disimpan', 'success');
       onClose();
     } catch (e: any) {
-      alert(`Gagal menyimpan: ${e?.message || 'Error tidak diketahui'}`);
+      showToast(e?.message || 'Gagal menyimpan error tidak diketahui', 'error');
     } finally {
       setSaving(false);
     }
@@ -103,26 +142,46 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose}>
-      <div
-        className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-7 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/20">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-teal-600 text-2xl font-bold">sync_alt</span>
+        <div className="p-7 pb-0 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20">
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-teal-500/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-teal-600 text-2xl font-bold">sync_alt</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white leading-none">Pembaruan Capaian</h3>
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1.5 truncate max-w-[300px]">
+                  {project?.title} • {project?.code}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white leading-none">Pembaruan Capaian</h3>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1.5 truncate max-w-[300px]">
-                {project?.title} • {project?.code}
-              </p>
-            </div>
+            <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+              <span className="material-symbols-outlined">close</span>
+            </button>
           </div>
-          <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-            <span className="material-symbols-outlined">close</span>
-          </button>
+          
+          <div className="flex gap-6 mt-4 border-b border-transparent">
+            <button 
+              onClick={() => setActiveTab('general')}
+              className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
+                ${activeTab === 'general' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+            >
+              Capaian Umum
+              {activeTab === 'general' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
+            </button>
+            <button 
+              onClick={() => setActiveTab('scurve')}
+              className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
+                ${activeTab === 'scurve' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+            >
+              Data Kurva S (Manual)
+              {activeTab === 'scurve' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -134,6 +193,89 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
           <>
             <div className="flex-1 overflow-y-auto p-7 custom-scrollbar space-y-8">
               {!isReviewing ? (
+                activeTab === 'scurve' ? (
+                  <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Tabel Data Kurva S</h4>
+                      <p className="text-[11px] text-slate-500 font-bold max-w-lg mt-1">Input akumulatif total persentase (%) Rencana dan Realisasi pada masing-masing bulan untuk dicetak di diagram S-Curve.</p>
+                    </div>
+                    <button 
+                      onClick={() => setScheduleData([...scheduleData, { month_label: 'Custom Bulan', planned: 0, actual: 0 }])}
+                      className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-[11px] font-black text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span>
+                      Bulan Ekstra
+                    </button>
+                  </div>
+                  
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          <th className="p-4 border-b border-slate-200 dark:border-slate-800">Bulan</th>
+                          <th className="p-4 border-b border-slate-200 dark:border-slate-800 w-32">Rencana (%)</th>
+                          <th className="p-4 border-b border-slate-200 dark:border-slate-800 w-32">Realisasi (%)</th>
+                          <th className="p-4 border-b border-slate-200 dark:border-slate-800 w-16 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {scheduleData.length === 0 ? (
+                           <tr><td colSpan={4} className="p-8 text-center text-xs font-bold text-slate-400">Belum ada data bulan yang di-generate.</td></tr>
+                        ) : (
+                          scheduleData.map((row, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0 group">
+                              <td className="p-2 px-4">
+                                <input 
+                                  className="w-full bg-transparent font-black text-xs text-slate-700 dark:text-slate-200 outline-none p-2 border border-transparent rounded hover:border-slate-200 dark:hover:border-slate-700 focus:border-teal-500 focus:bg-white dark:focus:bg-slate-800"
+                                  value={row.month_label}
+                                  onChange={(e) => {
+                                    const newData = [...scheduleData];
+                                    newData[idx].month_label = e.target.value;
+                                    setScheduleData(newData);
+                                  }}
+                                />
+                              </td>
+                              <td className="p-2 px-4">
+                                <input 
+                                  type="number"
+                                  className="w-full bg-slate-50 dark:bg-slate-800 font-bold text-sm text-slate-700 dark:text-slate-200 outline-none p-2 rounded border border-slate-200 dark:border-slate-700 focus:border-teal-500"
+                                  value={row.planned}
+                                  onChange={(e) => {
+                                    const newData = [...scheduleData];
+                                    newData[idx].planned = Number(e.target.value);
+                                    setScheduleData(newData);
+                                  }}
+                                />
+                              </td>
+                              <td className="p-2 px-4">
+                                <input 
+                                  type="number"
+                                  className="w-full bg-slate-50 dark:bg-slate-800 font-bold text-sm text-emerald-600 dark:text-emerald-400 outline-none p-2 rounded border border-slate-200 dark:border-slate-700 focus:border-emerald-500"
+                                  value={row.actual}
+                                  onChange={(e) => {
+                                    const newData = [...scheduleData];
+                                    newData[idx].actual = Number(e.target.value);
+                                    setScheduleData(newData);
+                                  }}
+                                />
+                              </td>
+                              <td className="p-2 px-4 text-center">
+                                <button
+                                  onClick={() => setScheduleData(scheduleData.filter((_, i) => i !== idx))}
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
                 <>
                   {/* Status & Progress Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -239,6 +381,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                     />
                   </div>
                 </>
+                )
               ) : (
                 /* Confirmation View */
                 <div className="p-4 space-y-6 animate-in fade-in slide-in-from-bottom-4">

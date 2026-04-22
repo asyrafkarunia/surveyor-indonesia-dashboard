@@ -40,6 +40,7 @@ class Project extends Model
         'pic_marketing_id',
         'team_members',
         'locations',
+        'schedule_data',
     ];
 
     protected $casts = [
@@ -53,6 +54,7 @@ class Project extends Model
         'target_margin' => 'decimal:2',
         'team_members' => 'array',
         'locations' => 'array',
+        'schedule_data' => 'array',
     ];
 
     public function client()

@@ -548,8 +548,6 @@ const AppContent: React.FC = () => {
         return (
           <ProjectMonitoringScreen
             onAddProject={() => setActiveTab('create_project')}
-            initialProjectId={selectedProjectId}
-            onInitialProjectHandled={() => setSelectedProjectId(null)}
             externalSearchQuery={globalProjectSearch}
             onExternalSearchHandled={() => setGlobalProjectSearch('')}
             onViewProjectDetail={(id) => {
@@ -563,8 +561,6 @@ const AppContent: React.FC = () => {
           return (
             <ProjectMonitoringScreen
               onAddProject={() => setActiveTab('create_project')}
-              initialProjectId={null}
-              onInitialProjectHandled={() => {}}
               externalSearchQuery={globalProjectSearch}
               onExternalSearchHandled={() => setGlobalProjectSearch('')}
               onViewProjectDetail={(id) => {

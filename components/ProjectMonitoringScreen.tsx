@@ -2,15 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import ActivityModal from './ActivityModal';
-import ProjectDetailModal from './ProjectDetailModal';
 import StatsCard from './StatsCard';
 import FilterSelect from './FilterSelect';
 import * as XLSX from 'xlsx';
 
 interface ProjectMonitoringScreenProps {
   onAddProject: () => void;
-  initialProjectId?: string | null;
-  onInitialProjectHandled?: () => void;
   externalSearchQuery?: string;
   onExternalSearchHandled?: () => void;
   onViewProjectDetail?: (projectId: string) => void;
@@ -39,8 +36,6 @@ const getTimelineText = (project: any) => {
 
 const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   onAddProject,
-  initialProjectId,
-  onInitialProjectHandled,
   externalSearchQuery,
   onExternalSearchHandled,
   onViewProjectDetail,
@@ -59,7 +54,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [searchInput, setSearchInput] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<any>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [actionMenuProjectId, setActionMenuProjectId] = useState<string | null>(null);
   const [picFilter, setPicFilter] = useState<string>('');
   const [picMarketingFilter, setPicMarketingFilter] = useState<string>('');
@@ -237,14 +231,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     }
   }, [externalSearchQuery]);
 
-  useEffect(() => {
-    if (initialProjectId) {
-      setSelectedProjectId(initialProjectId);
-      onInitialProjectHandled?.();
-    } else {
-      setSelectedProjectId(null);
-    }
-  }, [initialProjectId]);
+
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
@@ -341,9 +328,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     try {
       await api.deleteProject(projectId);
       setProjects((prev) => prev.filter((p: any) => String(p.id) !== String(projectId)));
-      if (selectedProjectId && String(selectedProjectId) === String(projectId)) {
-        setSelectedProjectId(null);
-      }
       setActionMenuProjectId(null);
       fetchStats();
     } catch (error: any) {
@@ -757,10 +741,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
         </div>
       </section>
-
-      {selectedProjectId && (
-        <ProjectDetailModal projectId={selectedProjectId} isOpen={!!selectedProjectId} onClose={() => setSelectedProjectId(null)} onUpdated={handleProjectUpdated} />
-      )}
     </main>
   );
 };

@@ -317,6 +317,7 @@ class ProjectController extends Controller
             'locations.*.address' => 'required|string',
             'locations.*.latitude' => 'required|numeric',
             'locations.*.longitude' => 'required|numeric',
+            'schedule_data' => 'nullable|array',
         ]);
 
         $oldActual = null;

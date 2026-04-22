@@ -3,6 +3,7 @@ import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import BackButton from './BackButton';
 import ProjectUpdateModal from './ProjectDetailModal'; // Reusing the over-hauled update modal
+import ProjectScheduleView from './ProjectScheduleView';
 
 interface ProjectDetailScreenProps {
   projectId: string;
@@ -38,6 +39,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editData, setEditData] = useState({
     budget: '',
@@ -61,8 +63,8 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     fetchProject();
   }, [projectId]);
 
-  const fetchProject = async () => {
-    setLoading(true);
+  const fetchProject = async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const data: any = await api.getProject(projectId);
@@ -82,7 +84,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     } catch (e: any) {
       setError(e?.message || 'Gagal memuat detail proyek');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -134,7 +136,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     try {
       setSubmittingComment(true);
       await api.addProjectComment(String(project.id), commentInput.trim());
-      await fetchProject();
+      await fetchProject(true);
       setCommentInput('');
     } catch (e: any) {
       alert(e?.message || 'Gagal menambahkan komentar');
@@ -148,7 +150,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     try {
       setSubmittingAttachment(true);
       await api.addProjectAttachmentLink(String(project.id), { url: attachmentUrl.trim(), label: attachmentLabel || null });
-      await fetchProject();
+      await fetchProject(true);
       setAttachmentLabel('');
       setAttachmentUrl('');
     } catch (e: any) {
@@ -190,6 +192,14 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         </div>
 
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsScheduleOpen(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:bg-orange-600 active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">timeline</span>
+            Lihat Schedule
+          </button>
+
           {canEdit && (
             <button 
               id="update-capaian-btn"
@@ -374,7 +384,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                   <span className="material-symbols-outlined text-teal-600">forum</span>
                   Kolaborasi (Komentar)
                 </h2>
-                <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+                <div className="space-y-4 mb-6 h-[320px] max-h-[320px] overflow-y-auto custom-scrollbar pr-2">
                    {project.comments?.map((c: any) => (
                      <div key={c.id} className="flex gap-4">
                         <div className="size-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-teal-600 shrink-0">
@@ -396,7 +406,12 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                     placeholder="Apa kabar proyek hari ini?"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSubmitComment();
+                      }
+                    }}
                   />
                    <button 
                     onClick={handleSubmitComment}
@@ -523,6 +538,13 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         onClose={() => setIsUpdateModalOpen(false)}
         projectId={projectId}
         onUpdated={() => fetchProject()}
+      />
+
+      {/* Holistic Executive Schedule Drawer */}
+      <ProjectScheduleView 
+        isOpen={isScheduleOpen}
+        onClose={() => setIsScheduleOpen(false)}
+        project={project}
       />
     </main>
   );
