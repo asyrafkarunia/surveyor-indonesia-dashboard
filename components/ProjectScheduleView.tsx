@@ -67,12 +67,37 @@ const ProjectScheduleView: React.FC<ProjectScheduleViewProps> = ({ isOpen, onClo
   // --- Auto Generate/Read S-Curve Data Logic ---
   const sCurveData = useMemo(() => {
     if (project?.schedule_data?.timeline && project.schedule_data.timeline.length > 0) {
-      // Use explicit manual schedule data
-      return project.schedule_data.timeline.map((row: any) => ({
-        name: row.month_label,
-        planned: Number(row.planned) || 0,
-        actual: Number(row.actual) || 0,
-      }));
+      const timeline = project.schedule_data.timeline;
+      
+      // Find the last index that has a real recorded progress > 0
+      let lastActualIdx = -1;
+      for (let i = timeline.length - 1; i >= 0; i--) {
+        const val = Number(timeline[i].actual);
+        if (!isNaN(val) && val > 0) {
+          lastActualIdx = i;
+          break;
+        }
+      }
+
+      return timeline.map((row: any, idx: number) => {
+        const rawActual = Number(row.actual);
+        let actualVal: number | null = isNaN(rawActual) ? null : rawActual;
+
+        // If this month is after the last recorded progress, or it's 0 after the start, treat as null to break the line
+        if (idx > lastActualIdx && lastActualIdx !== -1) {
+          actualVal = null;
+        } else if (idx > 0 && (actualVal === 0 || actualVal === null)) {
+          // If we are before the last actual but this specific month is 0/null, 
+          // we keep it as null to avoid dropping to zero unless it's the start
+          actualVal = null;
+        }
+
+        return {
+          name: row.month_label,
+          planned: Number(row.planned) || 0,
+          actual: actualVal,
+        };
+      });
     }
 
     // Fallback if no timeline data

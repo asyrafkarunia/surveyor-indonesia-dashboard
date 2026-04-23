@@ -63,6 +63,23 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
     return months;
   };
 
+  // Sync progress with latest actual value from scheduleData
+  useEffect(() => {
+    if (scheduleData.length > 0) {
+      // Find the latest entry that has an actual value (or just take the last one if we assume sequential)
+      // For simplicity and realism, we'll take the last entry in the list as the 'current' progress target
+      // but we search backwards for the first non-zero actual value to be more precise.
+      let latestProgress = 0;
+      for (let i = scheduleData.length - 1; i >= 0; i--) {
+        if (scheduleData[i].actual > 0) {
+          latestProgress = scheduleData[i].actual;
+          break;
+        }
+      }
+      setForm(f => ({ ...f, progress: latestProgress }));
+    }
+  }, [scheduleData]);
+
   useEffect(() => {
     if (!isOpen) return;
     const run = async () => {
@@ -164,24 +181,26 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
             </button>
           </div>
           
-          <div className="flex gap-6 mt-4 border-b border-transparent">
-            <button 
-              onClick={() => setActiveTab('general')}
-              className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
-                ${activeTab === 'general' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
-            >
-              Capaian Umum
-              {activeTab === 'general' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
-            </button>
-            <button 
-              onClick={() => setActiveTab('scurve')}
-              className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
-                ${activeTab === 'scurve' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
-            >
-              Data Kurva S (Manual)
-              {activeTab === 'scurve' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
-            </button>
-          </div>
+          {!isReviewing && (
+            <div className="flex gap-6 mt-4 border-b border-transparent">
+              <button 
+                onClick={() => setActiveTab('general')}
+                className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
+                  ${activeTab === 'general' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+              >
+                Capaian Umum
+                {activeTab === 'general' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
+              </button>
+              <button 
+                onClick={() => setActiveTab('scurve')}
+                className={`pb-4 px-2 text-[12px] font-black tracking-wider uppercase transition-colors relative
+                  ${activeTab === 'scurve' ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+              >
+                Data Kurva S (Manual)
+                {activeTab === 'scurve' && <div className="absolute bottom-0 left-0 w-full h-[3px] rounded-t-full bg-teal-500" />}
+              </button>
+            </div>
+          )}
         </div>
 
         {loading ? (
@@ -303,19 +322,31 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                         <span className="material-symbols-outlined text-sm">trending_up</span> Progress Kerja
                       </label>
-                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-2xl font-black text-teal-600">{form.progress}%</span>
-                          <span className="text-[10px] font-black text-slate-400 uppercase">Target 100%</span>
+                      <div className="bg-white dark:bg-slate-900/40 p-4 px-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-sm transition-all hover:shadow-md">
+                        <div className="flex items-center gap-6">
+                          <div className="flex flex-col">
+                            <span className="text-3xl font-black text-teal-600 tracking-tighter">{form.progress}%</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Progres Saat Ini</span>
+                          </div>
+                          
+                          <div className="h-10 w-[1px] bg-slate-100 dark:bg-slate-800" />
+                          
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-[11px] font-black text-slate-700 dark:text-slate-200 uppercase tracking-wider">Metode Sinkronisasi</h4>
+                              <span className="px-2 py-0.5 bg-teal-50 dark:bg-teal-500/10 text-teal-600 text-[8px] font-black rounded-full uppercase border border-teal-100 dark:border-teal-500/20">Otomatis</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 font-bold mt-1">Data terhubung langsung dengan timeline Kurva S</p>
+                          </div>
                         </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={form.progress}
-                          onChange={(e) => setForm(f => ({ ...f, progress: Number(e.target.value) }))}
-                          className="w-full transition-all appearance-none bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full accent-teal-500"
-                        />
+                        
+                        <button 
+                          onClick={() => setActiveTab('scurve')}
+                          className="px-5 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-500/10 border border-slate-200 dark:border-slate-700 hover:border-teal-200 dark:hover:border-teal-500/30 text-slate-600 dark:text-slate-300 hover:text-teal-600 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 active:scale-95"
+                        >
+                          <span className="material-symbols-outlined text-sm">tune</span>
+                          Edit Kurva S
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -397,10 +428,17 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
 
                   <div className="space-y-3">
                     <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-4">
-                      <div className="flex justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                        <span className="text-xs font-bold text-slate-400">Status & Progress</span>
-                        <span className="text-xs font-black text-teal-600">{form.status} • {form.progress}%</span>
+                      <div className="grid grid-cols-2 gap-4 pb-3 border-b border-slate-200 dark:border-slate-800">
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-black text-slate-400 uppercase">Status Proyek</span>
+                          <p className="text-xs font-black text-teal-600">{form.status}</p>
+                        </div>
+                        <div className="space-y-1 text-right">
+                          <span className="text-[9px] font-black text-slate-400 uppercase">Progress Akhir</span>
+                          <p className="text-xs font-black text-teal-600">{form.progress}%</p>
+                        </div>
                       </div>
+                      
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-bold text-slate-400">Nilai Kontrak Baru</span>
                         <span className="text-sm font-black text-slate-700 dark:text-white">
@@ -408,14 +446,24 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                         </span>
                       </div>
                       <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
-                        <p className="text-[10px] font-black text-emerald-600 uppercase">PENAMBAHAN REALISASI</p>
+                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">PENAMBAHAN REALISASI (NERACA)</p>
                         <div className="flex justify-between items-end">
-                          <span className="text-xs font-bold text-slate-400 mb-1">Total Realisasi Baru</span>
+                          <span className="text-xs font-bold text-slate-400 mb-1">Total Realisasi Akhir</span>
                           <div className="text-right">
                             <span className="text-[9px] text-slate-400 line-through block mb-0.5">{formatCurrency(project?.actual_revenue)}</span>
                             <span className="text-base font-black text-emerald-600">{formatCurrency(newTotalRevenue)}</span>
                           </div>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <span className="material-symbols-outlined">auto_graph</span>
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-blue-700 dark:text-blue-400">Data Jadwal & Kurva S Terintegrasi</p>
+                        <p className="text-[10px] text-blue-600/70 font-bold uppercase">Seluruh titik koordinat rencana & realisasi telah disinkronkan.</p>
                       </div>
                     </div>
                   </div>
