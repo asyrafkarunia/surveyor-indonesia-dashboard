@@ -857,7 +857,7 @@ const LoginScreen: React.FC = () => {
                           >
                             <div className="flex items-center gap-2 mb-2">
                               <span className="material-symbols-outlined text-sm" style={{ color: '#00B4AE' }}>verified</span>
-                              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#00B4AE' }}>Akses Ditentukan oleh Kode Undangan</span>
+                              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#00B4AE' }}>Tipe Akses Anda</span>
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                               {inviteCodeDivision && (
