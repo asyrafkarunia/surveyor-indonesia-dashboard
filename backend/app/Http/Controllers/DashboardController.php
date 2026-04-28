@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\ActivityLog;
 use App\Models\Project;
 use App\Models\Sph;
 use App\Models\AudiensiLetter;
@@ -90,6 +91,26 @@ class DashboardController extends Controller
             $startDate = sprintf('%04d-%02d-01', $startYear, $startMonth);
             $endDate   = date('Y-m-t', strtotime(sprintf('%04d-%02d-01', $endYear, $endMonth)));
 
+            // Pre-fetch: all actualization logs within the date range for per-month realization
+            $allLogs = ActivityLog::where('action', 'Project Actualization Updated')
+                ->where('status', 'Success')
+                ->whereBetween('created_at', [$startDate, $endDate . ' 23:59:59'])
+                ->get();
+
+            // Pre-compute: total delta ever tracked per project (ALL TIME, not just range)
+            // This is needed to calculate orphan amounts accurately
+            $totalDeltaByProject = [];
+            $allTimeLogs = ActivityLog::where('action', 'Project Actualization Updated')
+                ->where('status', 'Success')
+                ->get();
+            foreach ($allTimeLogs as $log) {
+                $meta = $log->metadata ?? [];
+                $pid = $meta['project_id'] ?? null;
+                if ($pid) {
+                    $totalDeltaByProject[$pid] = ($totalDeltaByProject[$pid] ?? 0) + (float) ($meta['delta_actual_revenue'] ?? 0);
+                }
+            }
+
             $result  = [];
             $current = strtotime($startDate);
             $end     = strtotime($endDate);
@@ -98,13 +119,38 @@ class DashboardController extends Controller
                 $monthStart = date('Y-m-01', $current);
                 $monthEnd   = date('Y-m-t', $current);
 
-                $projection  = Project::whereBetween('start_date', [$monthStart, $monthEnd])->sum('budget') ?? 0;
-                $realization = Project::whereBetween('start_date', [$monthStart, $monthEnd])->sum('actual_revenue') ?? 0;
+                // PROJECTION: Budget dari proyek yang start di bulan ini (tidak berubah)
+                $projection = Project::whereBetween('start_date', [$monthStart, $monthEnd])->sum('budget') ?? 0;
+
+                // REALIZATION LAYER 1: Delta dari activity_logs yang created_at di bulan ini
+                $logRealization = $allLogs
+                    ->filter(function ($log) use ($monthStart, $monthEnd) {
+                        $logDate = $log->created_at->format('Y-m-d');
+                        return $logDate >= $monthStart && $logDate <= $monthEnd;
+                    })
+                    ->sum(function ($log) {
+                        return (float) (($log->metadata ?? [])['delta_actual_revenue'] ?? 0);
+                    });
+
+                // REALIZATION LAYER 2: Orphan fallback — proyek yang start di bulan ini
+                // dan punya actual_revenue yang tidak sepenuhnya tercakup oleh logs
+                $orphanRealization = 0;
+                $projectsThisMonth = Project::whereBetween('start_date', [$monthStart, $monthEnd])
+                    ->where('actual_revenue', '>', 0)
+                    ->get(['id', 'actual_revenue']);
+
+                foreach ($projectsThisMonth as $p) {
+                    $tracked = $totalDeltaByProject[$p->id] ?? 0;
+                    $orphan = (float) $p->actual_revenue - $tracked;
+                    if ($orphan > 0) {
+                        $orphanRealization += $orphan;
+                    }
+                }
 
                 $result[] = [
                     'month'       => date('M', $current),
                     'projection'  => (float) $projection,
-                    'realization' => (float) $realization,
+                    'realization' => (float) ($logRealization + $orphanRealization),
                 ];
 
                 $current = strtotime('+1 month', $current);

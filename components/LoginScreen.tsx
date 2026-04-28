@@ -454,10 +454,18 @@ const LoginScreen: React.FC = () => {
       </div>
     )}
 
-    <div className="flex flex-col min-h-screen w-full relative overflow-hidden bg-[#003868]" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <style>{`
+      body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+      }
+    `}</style>
+    <div className="flex flex-col min-h-screen w-full relative bg-[#003868]" style={{ fontFamily: "'Inter', sans-serif" }}>
 
       {/* ═══════════ UNIFIED DYNAMIC BACKGROUND ═══════════ */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute inset-0 opacity-60" style={{
           background: 'radial-gradient(circle at 40% 50%, #005596 0%, #001d3d 100%)',
         }} />
@@ -480,12 +488,12 @@ const LoginScreen: React.FC = () => {
       </div>
 
       {/* Large watermark MARS logo */}
-      <div className="login-glow absolute inset-0 items-center justify-center pointer-events-none overflow-hidden z-0 mask-image-gradient hidden lg:flex">
+      <div className="login-glow fixed inset-0 items-center justify-center pointer-events-none overflow-hidden z-0 mask-image-gradient hidden lg:flex">
         <MarsWatermark style={{ width: '90%', maxWidth: 750, opacity: 0.03, transform: 'rotate(-5deg) translateX(-15%)' }} />
       </div>
 
       {/* ═══════════ TOP CORPORATE LOGO BAR (FLOATING BLEND) ═══════════ */}
-      <header className="absolute top-0 left-0 right-0 z-50 px-6 sm:px-12 pt-8 sm:pt-10 pb-6 flex justify-center w-full pointer-events-none">
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 pt-8 sm:pt-10 pb-6 flex justify-center w-full pointer-events-none">
         <div className="w-full max-w-7xl relative mx-auto flex items-center justify-between px-2 sm:px-6">
           
           <div className="relative flex items-center justify-center pointer-events-auto">
@@ -508,10 +516,10 @@ const LoginScreen: React.FC = () => {
       </header>
 
       {/* ═══════════ MAIN SEAMLESS CONTENT ═══════════ */}
-      <div className="flex flex-1 w-full relative z-10 max-w-7xl mx-auto pt-28 pb-8 sm:pt-32 lg:pt-24 lg:pb-12 h-full">
+      <div className="flex w-full relative z-10 max-w-7xl mx-auto min-h-screen pt-28 pb-8 sm:pt-32 lg:pt-24 lg:pb-12">
         
         {/* ─── LEFT BRAND PANEL (UNIFIED) ─── */}
-        <div className="hidden lg:flex w-1/2 flex-col items-start justify-center px-10 xl:px-16 login-fade-in relative z-10 h-full">
+        <div className="hidden lg:flex w-1/2 flex-col items-start justify-center px-10 xl:px-16 login-fade-in relative z-10">
           {/* MARS Logo Icon - Seamless Blend */}
           <div className="loading-logo-pulse loading-breathe mb-12 relative flex items-center justify-center ml-4 mt-8">
             <div className="absolute inset-0 bg-[#00B4AE] blur-2xl opacity-40 rounded-full scale-[1.2]"></div>
@@ -541,7 +549,7 @@ const LoginScreen: React.FC = () => {
         </div>
 
         {/* ─── RIGHT FORM PANEL (GLASS CARD) ─── */}
-        <div className="flex-1 lg:w-1/2 flex items-center justify-center relative px-4 sm:px-6 h-full">
+        <div className="w-full lg:w-1/2 flex items-start justify-center relative px-4 sm:px-6 py-4">
           
           <div className="w-full max-w-[460px] relative z-20 bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/60 p-6 sm:p-10 login-fade-in">
             {/* Mobile header (Inside Glass Card) */}
@@ -845,7 +853,7 @@ const LoginScreen: React.FC = () => {
 
                       {/* Rest of the form — only shown after invite code is validated */}
                       {inviteCodeValid && (
-                        <div className="space-y-4 login-fade-in mt-4 pt-4 border-t border-slate-100 max-h-[42vh] md:max-h-[50vh] overflow-y-auto custom-scrollbar pr-2 pb-2">
+                        <div className="space-y-4 login-fade-in mt-4 pt-4 border-t border-slate-100 pr-2 pb-2">
                           {/* Auto-assigned Role & Division Badge */}
                           <div
                             className="rounded-xl p-3.5 border-2 transition-all duration-300"

@@ -191,7 +191,7 @@ class ProjectController extends Controller
         ]);
 
         $validated['progress'] = 0;
-        $validated['status'] = 'PENDING';
+        $validated['status'] = 'RUNNING';
         $validated['approval_status'] = 'pending';
 
         // If custom PIC provided, override pic_id

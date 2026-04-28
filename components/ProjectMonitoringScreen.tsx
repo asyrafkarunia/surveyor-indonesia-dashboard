@@ -181,11 +181,13 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         const res: any = await (api as any).getUsers();
         const data = res?.data || res;
         const list = Array.isArray(data) ? data : (data?.data || []);
-        const allowedRoles = ['marketing', 'common', 'approver'];
         const names = Array.from(
           new Set(
             list
-              .filter((u: any) => allowedRoles.includes(u.role))
+              .filter((u: any) => {
+                const div = (u.division || '').toLowerCase();
+                return div.includes('operasi');
+              })
               .map((u: any) => u.name)
               .filter((name: any) => typeof name === 'string' && name.trim().length > 0)
           ) as Set<string>

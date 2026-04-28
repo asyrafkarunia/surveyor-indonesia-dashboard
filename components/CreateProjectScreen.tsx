@@ -945,12 +945,63 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Anggota Tim Tambahan (Ketik Manual)</label>
                     <textarea
                       value={customTeamNotes}
-                      onChange={(e) => setCustomTeamNotes(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
-                      rows={2}
-                      placeholder="Pisahkan dengan koma jika lebih dari satu. Contoh: Budi Santoso, Andi Setiawan"
+                      onChange={(e) => {
+                        let val = e.target.value;
+                        // Auto-add bullet on first character if field was empty
+                        if (val.length === 1 && !val.startsWith('• ')) {
+                          val = '• ' + val;
+                        }
+                        setCustomTeamNotes(val);
+                      }}
+                      onKeyDown={(e) => {
+                        const target = e.target as HTMLTextAreaElement;
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const { selectionStart, value } = target;
+                          const before = value.substring(0, selectionStart);
+                          const after = value.substring(selectionStart);
+                          const newValue = before + '\n• ' + after;
+                          setCustomTeamNotes(newValue);
+                          // Set cursor position after bullet
+                          setTimeout(() => {
+                            target.selectionStart = target.selectionEnd = before.length + 3;
+                          }, 0);
+                        } else if (e.key === 'Backspace') {
+                          const { selectionStart, value } = target;
+                          // If cursor is right after "• " on a line, delete the whole bullet prefix
+                          const before = value.substring(0, selectionStart);
+                          if (before.endsWith('\n• ') || (before === '• ' && selectionStart === 2)) {
+                            e.preventDefault();
+                            const charsToRemove = before === '• ' ? 2 : 3; // "• " or "\n• "
+                            const newValue = value.substring(0, selectionStart - charsToRemove) + value.substring(selectionStart);
+                            setCustomTeamNotes(newValue);
+                            setTimeout(() => {
+                              target.selectionStart = target.selectionEnd = selectionStart - charsToRemove;
+                            }, 0);
+                          }
+                        }
+                      }}
+                      onFocus={(e) => {
+                        // Auto-add bullet when focusing empty field
+                        if (!customTeamNotes) {
+                          setCustomTeamNotes('• ');
+                          setTimeout(() => {
+                            const target = e.target as HTMLTextAreaElement;
+                            target.selectionStart = target.selectionEnd = 2;
+                          }, 0);
+                        }
+                      }}
+                      onBlur={() => {
+                        // Clean up if only bullet remains
+                        if (customTeamNotes.trim() === '•' || customTeamNotes.trim() === '') {
+                          setCustomTeamNotes('');
+                        }
+                      }}
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none font-medium leading-relaxed"
+                      rows={3}
+                      placeholder="Klik di sini untuk mulai menambahkan nama..."
                     />
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tuliskan nama anggota tim yang belum memiliki akun pada sistem.</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tuliskan nama anggota tim yang belum memiliki akun pada sistem. Tekan Enter untuk menambah nama baru.</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

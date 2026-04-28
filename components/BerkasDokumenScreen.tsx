@@ -39,8 +39,10 @@ const BerkasDokumenScreen: React.FC = () => {
   const loadDocuments = async (keyword?: string) => {
     setLoading(true);
     try {
-      const data = await api.getEssentialDocuments(keyword ? { search: keyword } : undefined);
-      setDocuments(data as EssentialDocument[]);
+      const response: any = await api.getEssentialDocuments(keyword ? { search: keyword } : undefined);
+      // API returns paginated object { data: [...], ... } — extract the array
+      const docs = Array.isArray(response) ? response : (response?.data || []);
+      setDocuments(docs as EssentialDocument[]);
       setError(null);
     } catch (e: any) {
       setError(e?.message || 'Gagal memuat berkas dokumen.');
