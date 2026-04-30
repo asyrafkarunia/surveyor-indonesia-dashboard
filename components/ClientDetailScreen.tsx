@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { ClientData } from '../types';
 import BackButton from './BackButton';
+import { showToast } from './Toast';
 import { CLIENT_PROJECT_HISTORY, CLIENT_RECENT_ACTIVITY, CLIENT_CONTRACT_HISTORY } from '../constants';
 
 interface ClientDetailScreenProps {
@@ -35,6 +36,43 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
   const [newActivityContent, setNewActivityContent] = useState('');
   const [submittingActivity, setSubmittingActivity] = useState(false);
   const [noteActivity, setNoteActivity] = useState<any | null>(null);
+  const [showNotes, setShowNotes] = useState(false);
+  const [localNotes, setLocalNotes] = useState(client?.notes || '');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  useEffect(() => {
+    if (client) {
+      setLocalNotes(client.notes || '');
+    }
+  }, [client]);
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`${label} berhasil disalin!`, 'success');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      showToast('Gagal menyalin', 'error');
+    });
+  };
+
+  const saveNotes = async () => {
+    if (!client) return;
+    if (localNotes === (client.notes || '')) return; // No change
+    
+    setIsSavingNotes(true);
+    try {
+      await api.updateClient(String(client.id), { notes: localNotes });
+      // Update local client object if needed or just show toast
+      client.notes = localNotes;
+      showToast('Catatan tersimpan otomatis', 'success');
+    } catch (error) {
+      console.error('Error saving notes:', error);
+      showToast('Gagal menyimpan catatan', 'error');
+    } finally {
+      setIsSavingNotes(false);
+    }
+  };
 
   useEffect(() => {
     fetchClientDetails();
@@ -279,13 +317,22 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                     <span className="material-symbols-outlined text-[18px]">location_on</span>
                     <span>{client.location || 'Jakarta Selatan'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 group cursor-pointer" onClick={() => copyToClipboard(client.contact_person, 'Nama Kontak')}>
                     <span className="material-symbols-outlined text-[18px]">person</span>
                     <span>{client.contact_role || 'PIC'}: {client.contact_person}</span>
+                    <span className="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">content_copy</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  {client.email && (
+                    <div className="flex items-center gap-1.5 group cursor-pointer" onClick={() => copyToClipboard(client.email, 'Email')}>
+                      <span className="material-symbols-outlined text-[18px]">mail</span>
+                      <span>{client.email}</span>
+                      <span className="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">content_copy</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 group cursor-pointer" onClick={() => copyToClipboard(client.phone, 'Nomor Telepon')}>
                     <span className="material-symbols-outlined text-[18px]">call</span>
-                    <span>{client.phone}</span>
+                    <span className="text-[13px]">{client.phone}</span>
+                    <span className="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">content_copy</span>
                   </div>
                 </div>
               </div>
@@ -312,6 +359,17 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                 Edit Profile
               </button>
               <button 
+                onClick={() => setShowNotes(!showNotes)}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-colors shadow-sm ${
+                  showNotes 
+                    ? 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400 dark:border-yellow-700' 
+                    : 'border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 dark:bg-slate-800 dark:text-yellow-500 dark:border-slate-700'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">{showNotes ? 'drafts' : 'mail'}</span>
+                Tambah Catatan
+              </button>
+              <button 
                 onClick={() => onNewProject?.(client)}
                 className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:bg-primary-dark transition-colors shadow-sm shadow-red-200"
               >
@@ -321,6 +379,35 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
             </div>
           </div>
         </section>
+
+        {/* Animated Notes Section */}
+        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showNotes ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="bg-[#fffdf2] dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-700/30 rounded-2xl p-6 shadow-inner relative">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-800/30 rounded-2xl text-yellow-600 dark:text-yellow-400 shrink-0">
+                <span className="material-symbols-outlined text-2xl">description</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <h4 className="text-xs font-black text-yellow-800 dark:text-yellow-500 uppercase tracking-widest">Catatan Internal / Instruksi Khusus</h4>
+                    {isSavingNotes && <span className="text-[10px] text-yellow-600 font-bold animate-pulse">Menyimpan...</span>}
+                  </div>
+                  <button onClick={() => setShowNotes(false)} className="text-yellow-600/50 hover:text-yellow-600 transition-colors bg-transparent border-none">
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                  </button>
+                </div>
+                <textarea
+                  value={localNotes}
+                  onChange={(e) => setLocalNotes(e.target.value)}
+                  onBlur={saveNotes}
+                  placeholder="Ketik catatan atau instruksi khusus untuk klien ini... (Otomatis tersimpan)"
+                  className="w-full min-h-[100px] bg-transparent border-none text-sm text-yellow-900/80 dark:text-yellow-200/80 italic leading-relaxed whitespace-pre-wrap resize-y focus:ring-0 p-0 placeholder-yellow-600/30"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Stats Grid */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

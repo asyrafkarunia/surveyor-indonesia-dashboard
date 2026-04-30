@@ -439,12 +439,11 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                       />
                     </div>
                     <div className="col-span-1 md:col-span-2">
-                      <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all shadow-sm">
-                        <div className="flex items-center gap-4 group">
-                          <div className="relative size-6 shrink-0 z-10">
+                      <label className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all shadow-sm cursor-pointer block group">
+                        <div className="flex items-center gap-4">
+                          <div className="relative size-6 shrink-0">
                             <input
                               type="checkbox"
-                              id="is_new_application_checkbox"
                               name="is_new_application"
                               checked={form.is_new_application}
                               onChange={(e) => setForm(prev => ({ ...prev, is_new_application: e.target.checked }))}
@@ -454,12 +453,12 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
                               <span className="material-symbols-outlined text-white text-[16px] opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                             </div>
                           </div>
-                          <label htmlFor="is_new_application_checkbox" className="flex flex-col cursor-pointer select-none flex-1">
+                          <div className="flex flex-col select-none flex-1">
                             <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors">Pengajuan Baru (Tanda Tangan Basah)</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ceklis jika SPH tidak memerlukan persetujuan digital dan akan ditandatangani manual.</span>
-                          </label>
+                          </div>
                         </div>
-                      </div>
+                      </label>
                     </div>
                   </div>
                 </div>

@@ -24,8 +24,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import StatsCard from './components/StatsCard';
-import RevenueChart from './components/RevenueChart';
-import ProjectTable from './components/ProjectTable';
+const RevenueChart = lazy(() => import('./components/RevenueChart'));
+const ProjectTable = lazy(() => import('./components/ProjectTable'));
 const FeedScreen = lazy(() => import('./components/FeedScreen'));
 const NotificationsScreen = lazy(() => import('./components/NotificationsScreen'));
 const ClientsScreen = lazy(() => import('./components/ClientsScreen'));
@@ -251,7 +251,9 @@ const DashboardHome: React.FC<{
                 <div className="text-sm text-slate-500 dark:text-slate-400">Loading chart data...</div>
               </div>
             ) : (
-              <RevenueChart data={revenueData} />
+              <Suspense fallback={<div className="flex h-full items-center justify-center"><div className="text-sm text-slate-500">Memuat Grafik...</div></div>}>
+                <RevenueChart data={revenueData} />
+              </Suspense>
             )}
           </div>
         </div>
@@ -305,7 +307,9 @@ const DashboardHome: React.FC<{
         {loading ? (
           <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">Loading projects...</div>
         ) : (
-          <ProjectTable projects={topProjects} onSelectProjectId={(id) => onOpenProject?.(id)} />
+          <Suspense fallback={<div className="p-6 text-center text-sm text-slate-500">Memuat tabel...</div>}>
+            <ProjectTable projects={topProjects} onSelectProjectId={(id) => onOpenProject?.(id)} />
+          </Suspense>
         )}
       </div>
     </div>

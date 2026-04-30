@@ -6,7 +6,7 @@ return [
 
     'guard' => ['web'],
 
-    'expiration' => env('SANCTUM_TOKEN_EXPIRATION', 480), // 480 minutes = 8 jam kerja
+    'expiration' => env('SANCTUM_TOKEN_EXPIRATION', 60), // 60 minutes = 1 jam kerja
 
     'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
 

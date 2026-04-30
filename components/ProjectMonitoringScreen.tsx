@@ -55,6 +55,9 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<any>(null);
   const [actionMenuProjectId, setActionMenuProjectId] = useState<string | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<any | null>(null);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [picFilter, setPicFilter] = useState<string>('');
   const [picMarketingFilter, setPicMarketingFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -324,17 +327,25 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     fetchStats();
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    const confirmed = window.confirm('Apakah Anda yakin ingin menghapus proyek ini? Tindakan ini tidak dapat dibatalkan.');
-    if (!confirmed) return;
+  const confirmDeleteProject = (project: any) => {
+    setProjectToDelete(project);
+    setDeleteConfirmationText('');
+    setActionMenuProjectId(null);
+  };
+
+  const executeDeleteProject = async () => {
+    if (!projectToDelete || deleteConfirmationText !== 'HAPUS PROYEK') return;
     try {
-      await api.deleteProject(projectId);
-      setProjects((prev) => prev.filter((p: any) => String(p.id) !== String(projectId)));
-      setActionMenuProjectId(null);
+      setIsDeleting(true);
+      await api.deleteProject(projectToDelete.id);
+      setProjects((prev) => prev.filter((p: any) => String(p.id) !== String(projectToDelete.id)));
+      setProjectToDelete(null);
       fetchStats();
     } catch (error: any) {
       console.error('Failed to delete project:', error);
       alert(error?.message || 'Gagal menghapus proyek. Silakan coba lagi.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -724,7 +735,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                           </button>
                           {actionMenuProjectId === projectId && (
                             <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-lg shadow-lg z-50">
-                              <button onClick={(e) => { e.stopPropagation(); handleDeleteProject(projectId); }} className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
+                              <button onClick={(e) => { e.stopPropagation(); confirmDeleteProject(project); }} className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-sm">delete</span>
                                 Hapus Proyek
                               </button>
@@ -743,6 +754,75 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
           </div>
         </div>
       </section>
+
+      {/* Delete Confirmation Modal */}
+      {projectToDelete && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-red-50 dark:bg-red-900/20">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">warning</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Hapus Proyek?</h3>
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Proyek yang akan dihapus:</p>
+                <p className="text-sm font-black text-slate-900 dark:text-white">{projectToDelete.title}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{projectToDelete.code}</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                  Ketik <span className="font-black text-red-600 select-all">HAPUS PROYEK</span> untuk konfirmasi
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmationText}
+                  onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
+                  placeholder="HAPUS PROYEK"
+                />
+              </div>
+            </div>
+
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setProjectToDelete(null)}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                disabled={isDeleting}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={executeDeleteProject}
+                disabled={deleteConfirmationText !== 'HAPUS PROYEK' || isDeleting}
+                className="px-5 py-2.5 rounded-xl text-sm font-black text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-lg shadow-red-500/20"
+              >
+                {isDeleting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                    Menghapus...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                    Hapus Permanen
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -10,6 +10,12 @@ class ActivityLogController extends Controller
     public function index(Request $request)
     {
         $query = ActivityLog::with('user');
+        
+        $user = $request->user();
+        // Restrict marketing role to only see their own activity logs
+        if (!in_array($user->role, ['head_section', 'super_admin']) && $user->role === 'marketing') {
+            $query->where('user_id', $user->id);
+        }
 
         // Filter by module
         if ($request->has('module') && $request->module) {

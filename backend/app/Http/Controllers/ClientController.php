@@ -93,7 +93,8 @@ class ClientController extends Controller
             'industry' => 'nullable|string',
             'location' => 'nullable|string',
             'address' => 'nullable|string',
-            'logo' => 'nullable|image|max:1024', // Changed from string to image with 1MB limit
+            'notes' => 'nullable|string',
+            'logo' => 'nullable|image|max:1024',
         ]);
 
         // Handle logo upload
@@ -225,6 +226,7 @@ class ClientController extends Controller
             'industry' => 'nullable|string',
             'location' => 'nullable|string',
             'address' => 'nullable|string',
+            'notes' => 'nullable|string',
             'status' => 'sometimes|in:Aktif,Non-Aktif,Suspended',
             'logo' => 'nullable|image|max:1024', // Changed from string to image with 1MB limit
         ]);

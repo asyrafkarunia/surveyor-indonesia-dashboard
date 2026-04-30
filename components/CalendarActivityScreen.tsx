@@ -200,7 +200,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
 
   const getEventsForDate = (date: Date) => {
     const dateStr = formatDateLocal(date);
-    return events.filter(event => {
+    const filtered = events.filter(event => {
       // Parse event date in local timezone
       const eventDateStr = event.date.includes('T') ? event.date.split('T')[0] : event.date;
       const eventStart = new Date(eventDateStr + 'T00:00:00');
@@ -213,6 +213,12 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
       const eventEndOnly = new Date(eventEnd.getFullYear(), eventEnd.getMonth(), eventEnd.getDate());
       
       return checkDateOnly >= eventStartOnly && checkDateOnly <= eventEndOnly;
+    });
+
+    return filtered.sort((a, b) => {
+      const timeA = a.start_time || a.time ? new Date(`1970-01-01T${a.start_time || a.time}`).getTime() : 0;
+      const timeB = b.start_time || b.time ? new Date(`1970-01-01T${b.start_time || b.time}`).getTime() : 0;
+      return timeA - timeB;
     });
   };
 

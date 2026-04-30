@@ -1,4 +1,8 @@
+import { showToast } from '../components/Toast';
+
 const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
+
+let lastNetworkErrorTime = 0;
 
 class ApiService {
   private token: string | null = null;
@@ -43,6 +47,14 @@ class ApiService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        if (response.status === 401) {
+          this.setToken(null);
+          // Redirect to login if not already there
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
+        }
+
         let errorData: any;
         try {
           errorData = await response.json();
@@ -50,6 +62,15 @@ class ApiService {
           errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
         }
         
+        // Debounce 5xx errors to prevent infinite loops when API is down
+        if (response.status >= 500) {
+          const now = Date.now();
+          if (now - lastNetworkErrorTime > 5000) {
+            showToast('Sistem sedang mengalami gangguan. Silakan coba beberapa saat lagi.', 'error');
+            lastNetworkErrorTime = now;
+          }
+        }
+
         // Create error with more details
         const error = new Error(errorData.message || errorData.error || 'Request failed');
         (error as any).response = { data: errorData, status: response.status };
@@ -60,8 +81,23 @@ class ApiService {
     } catch (error: any) {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
+        const now = Date.now();
+        if (now - lastNetworkErrorTime > 5000) {
+          showToast('Koneksi terputus (Timeout). Periksa jaringan Anda.', 'error');
+          lastNetworkErrorTime = now;
+        }
         throw new Error('Request timed out');
       }
+      
+      // Handle "Failed to fetch" (API completely down)
+      if (error.message === 'Failed to fetch') {
+        const now = Date.now();
+        if (now - lastNetworkErrorTime > 5000) {
+          showToast('Tidak dapat terhubung ke server. Pastikan Anda online.', 'error');
+          lastNetworkErrorTime = now;
+        }
+      }
+      
       throw error;
     }
   }

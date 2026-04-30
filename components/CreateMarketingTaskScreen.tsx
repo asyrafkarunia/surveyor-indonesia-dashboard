@@ -23,6 +23,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
     status: 'ide_baru',
     project_id: '',
     client_id: '',
+    category: '',
   });
 
   useEffect(() => {
@@ -123,6 +124,10 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
       
       if (form.client_id && form.client_id !== '') {
         taskData.client_id = parseInt(form.client_id);
+      }
+
+      if (form.category) {
+        taskData.tags = [form.category];
       }
 
       await api.createMarketingTask(taskData);
@@ -287,6 +292,28 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
                         type="text"
                       />
                     </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Kategori Kegiatan</label>
+                  <div className="relative">
+                    <select 
+                      name="category"
+                      value={form.category}
+                      onChange={handleChange}
+                      className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary h-12 px-4 appearance-none transition-all outline-none"
+                    >
+                      <option value="">Pilih Kategori</option>
+                      <option value="Tender / Bidding">Tender / Bidding</option>
+                      <option value="Audiensi">Audiensi</option>
+                      <option value="SPH / Penawaran">SPH / Penawaran</option>
+                      <option value="Follow Up Klien">Follow Up Klien</option>
+                      <option value="Meeting Internal">Meeting Internal</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-400">
+                      <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                    </span>
                   </div>
                 </div>
                 <div>

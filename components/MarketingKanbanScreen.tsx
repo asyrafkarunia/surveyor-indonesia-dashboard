@@ -335,12 +335,12 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
           </div>
           <div className="flex items-center gap-3">
             <div className="relative group">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors duration-300">search</span>
               <input 
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleSearchKeyPress}
-                className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold w-48 md:w-64 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400" 
+                className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold w-48 focus:w-64 md:w-64 md:focus:w-80 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-slate-300 dark:focus:border-slate-600 outline-none transition-all duration-300 ease-out text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 placeholder="Cari kegiatan... (Tekan Enter)" 
                 type="text"
               />

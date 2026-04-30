@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { showToast } from './Toast';
@@ -42,6 +42,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
 
   const [activeTab, setActiveTab] = useState<'general' | 'scurve'>('general');
   const [scheduleData, setScheduleData] = useState<any[]>([]);
+  const overlayRef = useRef<boolean>(false);
 
   const generateMonthTimeline = (startDate: string, endDate: string) => {
     if (!startDate || !endDate) return [];
@@ -158,9 +159,20 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" 
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) overlayRef.current = true;
+      }}
+      onMouseUp={(e) => {
+        if (e.target === e.currentTarget && overlayRef.current) {
+          onClose();
+        }
+        overlayRef.current = false;
+      }}
+    >
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => { e.stopPropagation(); overlayRef.current = false; }}
       >
         {/* Header */}
         <div className="p-7 pb-0 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20">
@@ -213,7 +225,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
             <div className="flex-1 overflow-y-auto p-7 custom-scrollbar space-y-8">
               {!isReviewing ? (
                 activeTab === 'scurve' ? (
-                  <div className="space-y-4">
+                  <div key="scurve-tab" className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Tabel Data Kurva S</h4>
@@ -295,7 +307,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                   </div>
                 </div>
               ) : (
-                <>
+                <div key="general-tab" className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-300">
                   {/* Status & Progress Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">

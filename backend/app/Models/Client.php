@@ -22,6 +22,7 @@ class Client extends Model
         'industry',
         'location',
         'address',
+        'notes',
     ];
 
     public function projects()

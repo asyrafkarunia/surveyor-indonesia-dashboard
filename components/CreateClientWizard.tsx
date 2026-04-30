@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
 import BackButton from './BackButton';
+import { showToast } from './Toast';
 
 interface CreateClientWizardProps {
   onCancel: () => void;
@@ -75,7 +76,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
       
       // Validate size (1MB)
       if (file.size > 1024 * 1024) {
-        alert('Ukuran file maksimal 1MB');
+        showToast('Ukuran file maksimal 1MB', 'error');
         e.target.value = '';
         return;
       }
@@ -110,22 +111,22 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
   const handleSave = async () => {
     // Validation
     if (!formData.company_name.trim()) {
-      alert('Nama perusahaan harus diisi');
+      showToast('Nama perusahaan harus diisi', 'error');
       setCurrentStep(1);
       return;
     }
     if (!formData.contact_person.trim()) {
-      alert('Nama kontak person harus diisi');
+      showToast('Nama kontak person harus diisi', 'error');
       setCurrentStep(2);
       return;
     }
     if (!formData.email.trim()) {
-      alert('Email harus diisi');
+      showToast('Email harus diisi', 'error');
       setCurrentStep(2);
       return;
     }
     if (!formData.phone.trim()) {
-      alert('Nomor telepon harus diisi');
+      showToast('Nomor telepon harus diisi', 'error');
       setCurrentStep(2);
       return;
     }
@@ -151,7 +152,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
       onFinish();
     } catch (error: any) {
       console.error('Error creating client:', error);
-      alert(error.message || 'Gagal menyimpan klien. Silakan coba lagi.');
+      showToast(error.message || 'Gagal menyimpan klien. Silakan coba lagi.', 'error');
     } finally {
       setSaving(false);
     }

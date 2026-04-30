@@ -46,11 +46,20 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-900"
+        className={`flex items-center gap-2.5 rounded-xl border px-5 py-2.5 text-sm font-bold shadow-sm transition-all duration-300 ${
+          isOpen 
+            ? 'bg-primary/10 border-primary/50 text-primary ring-4 ring-primary/10 dark:bg-primary/20 dark:border-primary/50 dark:text-primary-light' 
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-primary/30 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700'
+        }`}
       >
-        <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-        <span>Tahun {selectedStartYear}</span>
-        <span className={`material-symbols-outlined text-[18px] transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+        <div className={`flex h-6 w-6 items-center justify-center rounded-md ${isOpen ? 'bg-primary/20 text-primary' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+          <span className="material-symbols-outlined text-[14px]">calendar_today</span>
+        </div>
+        <div className="flex flex-col items-start leading-tight">
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Filter Tahun</span>
+          <span>{selectedStartYear}</span>
+        </div>
+        <span className={`material-symbols-outlined text-[18px] ml-2 transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : 'text-slate-400'}`}>
           expand_more
         </span>
       </button>

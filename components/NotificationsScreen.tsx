@@ -498,7 +498,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                 onChange={handleSearchChange}
               />
             </div>
-            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto justify-end">
               <select 
                 value={selectedProject}
                 onChange={(e) => {
@@ -514,30 +514,31 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                   </option>
                 ))}
               </select>
-              <select 
-                value={selectedType}
-                onChange={(e) => {
-                  setSelectedType(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full sm:w-auto text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
-              >
-                <option>Semua Tipe</option>
-                <option>Komentar</option>
-                <option>Update Proyek</option>
-                <option>Assignment</option>
-                <option>Sistem</option>
-                <option>Finance</option>
-              </select>
-              <div className="relative">
-                <button 
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                  className={`flex items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-primary transition-colors shadow-sm ${
-                    selectedDate ? 'text-primary border-primary' : ''
-                  }`}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <select 
+                  value={selectedType}
+                  onChange={(e) => {
+                    setSelectedType(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="flex-1 sm:flex-none text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
                 >
-                  <span className="material-symbols-outlined">calendar_month</span>
-                </button>
+                  <option>Semua Tipe</option>
+                  <option>Komentar</option>
+                  <option>Update Proyek</option>
+                  <option>Assignment</option>
+                  <option>Sistem</option>
+                  <option>Finance</option>
+                </select>
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                    className={`flex items-center justify-center p-2.5 sm:p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-primary transition-colors shadow-sm ${
+                      selectedDate ? 'text-primary border-primary' : ''
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">calendar_month</span>
+                  </button>
                 {showDatePicker && (
                   <div className="absolute top-full right-0 mt-2 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-4">
                     <input

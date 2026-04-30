@@ -424,8 +424,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 const ActivityLogScreen: React.FC = () => {
-  const { isMarketing } = useAuth();
+  const { user, isMarketing } = useAuth();
   const isAdmin = isMarketing();
+  const isStrictlyMarketing = user?.role === 'marketing';
 
   const [logs, setLogs] = useState<ActivityLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -646,7 +647,7 @@ const ActivityLogScreen: React.FC = () => {
 
           {/* Filters */}
           <div id="activity-filters" className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-5">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className={`grid grid-cols-1 ${isStrictlyMarketing ? 'lg:grid-cols-2' : 'lg:grid-cols-3'} gap-4`}>
               {/* Search */}
               <div className="lg:col-span-1">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Cari Log</label>
@@ -664,14 +665,16 @@ const ActivityLogScreen: React.FC = () => {
               </div>
 
               {/* User Filter */}
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Filter Pengguna</label>
-                <UserSelect
-                  options={userOptions}
-                  value={userFilter}
-                  onChange={setUserFilter}
-                />
-              </div>
+              {!isStrictlyMarketing && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Filter Pengguna</label>
+                  <UserSelect
+                    options={userOptions}
+                    value={userFilter}
+                    onChange={setUserFilter}
+                  />
+                </div>
+              )}
 
               {/* Date Range Picker */}
               <div>
@@ -685,9 +688,10 @@ const ActivityLogScreen: React.FC = () => {
             </div>
 
             {/* Second Row: Action Type + Buttons */}
-            <div className="flex flex-col lg:flex-row items-end gap-4">
+            <div className={`flex flex-col lg:flex-row items-end gap-4 ${isStrictlyMarketing ? 'justify-end' : ''}`}>
               {/* Action Type Multi-Select */}
-              <div className="flex-1 min-w-[220px]">
+              {!isStrictlyMarketing && (
+                <div className="flex-1 min-w-[220px]">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kategori Aksi</label>
                 <div className="relative z-50">
                   <button
@@ -744,6 +748,7 @@ const ActivityLogScreen: React.FC = () => {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Buttons */}
               <div className="flex items-center gap-3 shrink-0">

@@ -333,6 +333,24 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     setLoading(true);
 
     try {
+      // Map Validation
+      if (locations.length === 0 && (!formData.location_address || !formData.latitude || !formData.longitude)) {
+        alert("Harap tentukan setidaknya satu lokasi proyek pada peta.");
+        setLoading(false);
+        return;
+      }
+
+      // Termin Validation
+      const validTerms = paymentTerms.filter(pt => pt.percentage || pt.amount || pt.term_date || pt.pic_name);
+      if (validTerms.length > 0) {
+        const totalPercentage = validTerms.reduce((sum, term) => sum + (Number(term.percentage) || 0), 0);
+        if (Math.abs(totalPercentage - 100) > 0.01) {
+          alert(`Total persentase termin pembayaran harus 100%. Saat ini: ${totalPercentage}%`);
+          setLoading(false);
+          return;
+        }
+      }
+
       // Prepare project data
       const projectData: any = {
         title: formData.title,

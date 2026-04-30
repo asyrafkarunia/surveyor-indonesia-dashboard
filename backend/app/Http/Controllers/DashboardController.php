@@ -58,8 +58,8 @@ class DashboardController extends Controller
             $sphTrend    = $prevSphIssued > 0 ? round((($sphIssued - $prevSphIssued) / $prevSphIssued) * 100, 1) : 0;
 
             $fmt = fn($v) => $v >= 1_000_000_000
-                ? 'Rp ' . number_format($v / 1_000_000_000, 1, ',', '.') . ' M'
-                : ($v >= 1_000_000 ? 'Rp ' . number_format($v / 1_000_000, 1, ',', '.') . ' JT' : 'Rp ' . number_format($v, 0, ',', '.'));
+                ? 'Rp ' . number_format($v / 1_000_000_000, 2, ',', '.') . ' M'
+                : ($v >= 1_000_000 ? 'Rp ' . number_format($v / 1_000_000, 2, ',', '.') . ' JT' : 'Rp ' . number_format($v, 0, ',', '.'));
 
             return [
                 'totalBudget'          => $totalBudget,
@@ -119,8 +119,17 @@ class DashboardController extends Controller
                 $monthStart = date('Y-m-01', $current);
                 $monthEnd   = date('Y-m-t', $current);
 
-                // PROJECTION: Budget dari proyek yang start di bulan ini (tidak berubah)
-                $projection = Project::whereBetween('start_date', [$monthStart, $monthEnd])->sum('budget') ?? 0;
+                // PROJECTION: Amount dari payment_terms di bulan ini
+                $projectionFromTerms = DB::table('payment_terms')
+                    ->whereBetween('term_date', [$monthStart, $monthEnd])
+                    ->sum('amount') ?? 0;
+                    
+                // PROJECTION FALLBACK: Proyek yang start di bulan ini tapi TIDAK memiliki payment_terms
+                $projectionFallback = Project::whereBetween('start_date', [$monthStart, $monthEnd])
+                    ->whereDoesntHave('paymentTerms')
+                    ->sum('budget') ?? 0;
+                    
+                $projection = $projectionFromTerms + $projectionFallback;
 
                 // REALIZATION LAYER 1: Delta dari activity_logs yang created_at di bulan ini
                 $logRealization = $allLogs
@@ -132,18 +141,21 @@ class DashboardController extends Controller
                         return (float) (($log->metadata ?? [])['delta_actual_revenue'] ?? 0);
                     });
 
-                // REALIZATION LAYER 2: Orphan fallback — proyek yang start di bulan ini
+                // REALIZATION LAYER 2: Orphan fallback — proyek yang di-update di bulan ini
                 // dan punya actual_revenue yang tidak sepenuhnya tercakup oleh logs
                 $orphanRealization = 0;
-                $projectsThisMonth = Project::whereBetween('start_date', [$monthStart, $monthEnd])
+                $projectsUpdatedThisMonth = Project::whereBetween('updated_at', [$monthStart . ' 00:00:00', $monthEnd . ' 23:59:59'])
                     ->where('actual_revenue', '>', 0)
                     ->get(['id', 'actual_revenue']);
 
-                foreach ($projectsThisMonth as $p) {
+                foreach ($projectsUpdatedThisMonth as $p) {
                     $tracked = $totalDeltaByProject[$p->id] ?? 0;
                     $orphan = (float) $p->actual_revenue - $tracked;
                     if ($orphan > 0) {
                         $orphanRealization += $orphan;
+                        // To prevent double counting orphans if they span multiple months,
+                        // we add them to tracked (since we only scan month by month sequentially)
+                        $totalDeltaByProject[$p->id] = $tracked + $orphan;
                     }
                 }
 
