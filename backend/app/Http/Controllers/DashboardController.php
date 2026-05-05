@@ -57,9 +57,22 @@ class DashboardController extends Controller
             $actualTrend = $prevTotalActual > 0 ? round((($totalActual - $prevTotalActual) / $prevTotalActual) * 100, 1) : 0;
             $sphTrend    = $prevSphIssued > 0 ? round((($sphIssued - $prevSphIssued) / $prevSphIssued) * 100, 1) : 0;
 
-            $fmt = fn($v) => $v >= 1_000_000_000
-                ? 'Rp ' . number_format($v / 1_000_000_000, 2, ',', '.') . ' M'
-                : ($v >= 1_000_000 ? 'Rp ' . number_format($v / 1_000_000, 2, ',', '.') . ' JT' : 'Rp ' . number_format($v, 0, ',', '.'));
+            $fmt = function($v) {
+                if ($v >= 1_000_000_000_000) {
+                    // Triliun: 1 decimal
+                    return 'Rp ' . number_format($v / 1_000_000_000_000, 1, ',', '.') . ' T';
+                } elseif ($v >= 100_000_000_000) {
+                    // 100M+: 2 decimals
+                    return 'Rp ' . number_format($v / 1_000_000_000, 2, ',', '.') . ' M';
+                } elseif ($v >= 1_000_000_000) {
+                    // 1-99M: 3 decimals for precision
+                    return 'Rp ' . number_format($v / 1_000_000_000, 3, ',', '.') . ' M';
+                } elseif ($v >= 1_000_000) {
+                    return 'Rp ' . number_format($v / 1_000_000, 3, ',', '.') . ' JT';
+                } else {
+                    return 'Rp ' . number_format($v, 0, ',', '.');
+                }
+            };
 
             return [
                 'totalBudget'          => $totalBudget,
@@ -227,6 +240,7 @@ class DashboardController extends Controller
                 'id'     => $a->id,
                 'type'   => $a->type,
                 'user'   => $a->user->name,
+                'avatar' => $a->user->avatar,
                 'action' => $a->content,
                 'target' => $a->project->title ?? 'General',
                 'time'   => $a->created_at->diffForHumans(),

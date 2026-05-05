@@ -22,33 +22,47 @@ interface RevenueChartProps {
 const RevenueChart: React.FC<RevenueChartProps> = ({ data = [] }) => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const formatCurrency = (value: number) => {
-        if (value >= 1000000000) {
-          return `Rp ${(value / 1000000000).toFixed(1)}M`;
-        } else if (value >= 1000000) {
-          return `Rp ${(value / 1000000).toFixed(1)}M`;
+      const formatExactCurrency = (value: number) => {
+        return 'Rp ' + value.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+      };
+
+      const formatShortCurrency = (value: number) => {
+        if (value >= 1_000_000_000_000) {
+          return `Rp ${(value / 1_000_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} T`;
+        } else if (value >= 100_000_000_000) {
+          return `Rp ${(value / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} M`;
+        } else if (value >= 1_000_000_000) {
+          return `Rp ${(value / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} M`;
+        } else if (value >= 1_000_000) {
+          return `Rp ${(value / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} JT`;
         } else {
-          return `Rp ${value.toLocaleString('id-ID')}`;
+          return formatExactCurrency(value);
         }
       };
       
       return (
-        <div className="rounded-xl border border-slate-100 dark:border-slate-700 bg-white/90 backdrop-blur-md dark:bg-slate-800/90 p-4 shadow-xl">
+        <div className="rounded-xl border border-slate-100 dark:border-slate-700 bg-white/95 backdrop-blur-md dark:bg-slate-800/95 p-4 shadow-xl min-w-[240px]">
           <p className="mb-3 text-sm font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">{label}</p>
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between gap-6 text-xs text-slate-600 dark:text-slate-300">
-              <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-200"></span>
-                <span>Nilai Kontrak</span>
-              </span>
-              <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(payload[0]?.value || 0)}</span>
+          <div className="space-y-3">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between gap-6 text-xs text-slate-600 dark:text-slate-300">
+                <span className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-slate-200"></span>
+                  <span>Nilai Kontrak</span>
+                </span>
+                <span className="font-bold text-slate-900 dark:text-white">{formatShortCurrency(payload[0]?.value || 0)}</span>
+              </div>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 pl-[18px] font-medium">{formatExactCurrency(payload[0]?.value || 0)}</p>
             </div>
-            <div className="flex items-center justify-between gap-6 text-xs text-slate-600 dark:text-slate-300">
-              <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span>
-                <span>Realisasi</span>
-              </span>
-              <span className="font-bold text-primary">{formatCurrency(payload[1]?.value || 0)}</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between gap-6 text-xs text-slate-600 dark:text-slate-300">
+                <span className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span>
+                  <span>Realisasi</span>
+                </span>
+                <span className="font-bold text-primary">{formatShortCurrency(payload[1]?.value || 0)}</span>
+              </div>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 pl-[18px] font-medium">{formatExactCurrency(payload[1]?.value || 0)}</p>
             </div>
           </div>
         </div>
@@ -94,8 +108,10 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data = [] }) => {
             tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
             domain={[0, yAxisMax]}
             tickFormatter={(value) => {
-              if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}M`;
-              if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+              if (value >= 1_000_000_000_000) return `${(value / 1_000_000_000_000).toFixed(1)}T`;
+              if (value >= 100_000_000_000) return `${(value / 1_000_000_000).toFixed(0)}M`;
+              if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}M`;
+              if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)}JT`;
               return value.toString();
             }}
           />

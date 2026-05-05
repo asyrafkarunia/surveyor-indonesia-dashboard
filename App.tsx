@@ -136,14 +136,16 @@ const DashboardHome: React.FC<{
     { 
       title: 'Nilai Kontrak', 
       value: stats.totalBudgetFormatted || 'Rp 0', 
+      rawValue: stats.totalBudget || 0,
       trend: stats.budgetTrend || 0, 
       trendLabel: 'vs periode sebelumnya', 
       icon: 'payments', 
       iconColor: 'text-primary' 
     },
     { 
-      title: 'Realisasi (Terserap)', 
+      title: 'Nilai Realisasi', 
       value: stats.totalActualFormatted || 'Rp 0', 
+      rawValue: stats.totalActual || 0,
       trend: stats.actualTrend || 0, 
       trendLabel: 'vs periode sebelumnya', 
       icon: 'account_balance_wallet', 
@@ -267,8 +269,24 @@ const DashboardHome: React.FC<{
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
               {recentActivities.map((activity) => (
                 <div key={activity.id} className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary dark:bg-primary/20">
-                    {activity.user.charAt(0).toUpperCase()}
+                  <div className="relative h-10 w-10 shrink-0">
+                    {activity.avatar ? (
+                      <img 
+                        src={activity.avatar} 
+                        alt={activity.user} 
+                        className="h-10 w-10 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.opacity = '0';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                        onLoad={(e) => {
+                          (e.target as HTMLImageElement).style.opacity = '1';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`absolute inset-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary dark:bg-primary/20 ${activity.avatar ? 'hidden' : ''}`}>
+                      {activity.user.charAt(0).toUpperCase()}
+                    </div>
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-1">

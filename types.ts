@@ -11,6 +11,7 @@ export interface NavItem {
 export interface StatCardData {
   title: string;
   value: string;
+  rawValue?: number;
   trend: number;
   trendLabel: string;
   icon: string;

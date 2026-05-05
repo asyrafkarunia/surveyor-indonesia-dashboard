@@ -561,6 +561,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                     )}
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>

@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StatCardData } from '../types';
 
 const StatsCard: React.FC<StatCardData> = ({ 
   title, 
   value, 
+  rawValue,
   trend = 0, 
   trendLabel, 
   icon, 
@@ -13,6 +14,8 @@ const StatsCard: React.FC<StatCardData> = ({
   subValue,
   subValueColor = 'text-slate-500'
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  
   // Automatically determine if negative if not explicitly provided
   // If trend is negative (e.g., -5.2), it's negative.
   // If explicitly set, use that (useful if higher number = bad, like "Klien Non-Aktif")
@@ -34,8 +37,19 @@ const StatsCard: React.FC<StatCardData> = ({
     return 'bg-slate-50';
   };
 
+  // Format raw value to full currency string (e.g., "Rp 3.862.500.000")
+  const formatFullCurrency = (val: number) => {
+    return 'Rp ' + val.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+  };
+
+  const hasTooltip = rawValue !== undefined && rawValue > 0;
+
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 p-5 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/20">
+    <div 
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 p-5 shadow-sm backdrop-blur-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary/20"
+      onMouseEnter={() => hasTooltip && setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
       {/* Decorative background icon */}
       <div className={`absolute -right-2 -top-2 p-4 opacity-[0.03] transition-all duration-500 group-hover:opacity-[0.08] group-hover:scale-110 group-hover:-rotate-12`}>
         <span className={`material-symbols-outlined text-8xl ${iconColor}`}>{icon}</span>
@@ -72,6 +86,18 @@ const StatsCard: React.FC<StatCardData> = ({
       
       {/* Bottom accent bar that appears on hover */}
       <div className={`absolute bottom-0 left-0 h-1 w-0 bg-linear-to-r from-primary to-cyan-400 transition-all duration-500 group-hover:w-full`}></div>
+      
+      {/* Hover Tooltip for exact currency value */}
+      {hasTooltip && showTooltip && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 z-50 pointer-events-none animate-fade-in">
+          <div className="relative bg-slate-900 dark:bg-slate-700 text-white rounded-xl px-4 py-3 shadow-2xl border border-slate-700/50 dark:border-slate-600/50 whitespace-nowrap">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-300 mb-1">Nilai Pasti</p>
+            <p className="text-sm font-black tracking-tight text-white">{formatFullCurrency(rawValue!)}</p>
+            {/* Tooltip arrow */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-slate-900 dark:border-t-slate-700"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
