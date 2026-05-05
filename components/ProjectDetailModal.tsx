@@ -341,7 +341,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Progres Saat Ini</span>
                           </div>
                           
-                          <div className="h-10 w-[1px] bg-slate-100 dark:bg-slate-800" />
+                          <div className="h-10 w-px bg-slate-100 dark:bg-slate-800" />
                           
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
@@ -423,7 +423,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, isOp
                       className="w-full min-h-[100px] bg-slate-50 dark:bg-slate-900/50 border-slate-100 dark:border-slate-700 rounded-2xl p-4 text-sm font-medium focus:ring-4 focus:ring-teal-500/10 outline-none transition-all resize-none"
                     />
                   </div>
-                </>
+                </div>
                 )
               ) : (
                 /* Confirmation View */

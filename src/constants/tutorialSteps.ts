@@ -11,6 +11,13 @@ export const DASHBOARD_STEPS: Step[] = [
     disableBeacon: true,
   },
   {
+    target: '#global-project-search',
+    content: 'Gunakan kolom pencarian global ini untuk menemukan proyek dengan cepat berdasarkan Nama Proyek, Kode, atau PIC dari halaman manapun.',
+    title: 'Pencarian Proyek Global',
+    disableBeacon: true,
+    placement: 'bottom',
+  },
+  {
     target: '#stats-metrics',
     content: 'Di sini Anda dapat melihat ringkasan performa bisnis seperti Nilai Kontrak, Realisasi, hingga Win Rate proyek.',
     title: 'Ringkasan Metrik',
@@ -347,7 +354,6 @@ export const ADMIN_LOG_STEPS: Step[] = [
     title: 'Tabel Riwayat',
     disableBeacon: true,
     placement: 'top',
-    scrollOffset: 150,
   },
   {
     target: '#activity-pagination',
@@ -355,7 +361,6 @@ export const ADMIN_LOG_STEPS: Step[] = [
     title: 'Navigasi Halaman',
     disableBeacon: true,
     placement: 'top',
-    scrollOffset: 200,
   },
 ];
 

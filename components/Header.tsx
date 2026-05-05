@@ -35,6 +35,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
   const [projectSearch, setProjectSearch] = React.useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleProjectSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onProjectSearch) {
@@ -55,6 +56,19 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isProfileOpen]);
+
+  // Keyboard shortcut for search focus (/)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Focus search if '/' is pressed and no input is active
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   const getUserRoleLabel = (usr: any) => {
     if (usr?.roleName) return usr.roleName;
@@ -110,11 +124,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex items-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-3.5 py-2.5 transition-all duration-300 focus-within:bg-white dark:focus-within:bg-slate-700 focus-within:shadow-md focus-within:shadow-slate-200/50 dark:focus-within:shadow-slate-900/50 focus-within:ring-1 focus-within:ring-slate-200 dark:focus-within:ring-slate-600 w-64 focus-within:w-80">
+        <div 
+          id="global-project-search"
+          className="hidden sm:flex items-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-3.5 py-2.5 transition-all duration-300 focus-within:bg-white dark:focus-within:bg-slate-700 focus-within:shadow-md focus-within:shadow-slate-200/50 dark:focus-within:shadow-slate-900/50 focus-within:ring-1 focus-within:ring-slate-200 dark:focus-within:ring-slate-600 w-64 focus-within:w-80 group/search"
+        >
           <span className="material-symbols-outlined text-[20px] text-slate-400 dark:text-slate-500 shrink-0">search</span>
           <input
+            ref={searchInputRef}
             type="text"
-            placeholder="Cari proyek..."
+            placeholder="Cari proyek (Nama, Kode, PIC)..."
             value={projectSearch}
             onChange={(e) => setProjectSearch(e.target.value)}
             onKeyDown={handleProjectSearchKeyDown}
@@ -122,13 +140,17 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
             style={{ boxShadow: 'none' }}
             aria-label="Cari proyek"
           />
-          {projectSearch && (
+          {projectSearch ? (
             <button 
               onClick={() => setProjectSearch('')}
               className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
             >
               <span className="material-symbols-outlined text-[16px]">close</span>
             </button>
+          ) : (
+            <div className="hidden group-focus-within/search:hidden lg:flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-[10px] font-bold text-slate-400 dark:text-slate-500 shadow-xs pointer-events-none transition-opacity duration-300 group-hover/search:border-slate-400 group-hover/search:text-slate-500">
+              /
+            </div>
           )}
         </div>
 
