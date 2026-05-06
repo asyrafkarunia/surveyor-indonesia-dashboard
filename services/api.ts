@@ -4,6 +4,54 @@ const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:
 
 let lastNetworkErrorTime = 0;
 
+/**
+ * ── Error Message Sanitizer ──
+ * Security best practice: NEVER show raw technical errors to end users.
+ * This function detects known technical patterns and replaces them with
+ * safe, human-readable messages in Indonesian.
+ */
+const TECHNICAL_PATTERNS = [
+  /SQLSTATE/i,
+  /QueryException/i,
+  /PDOException/i,
+  /Connection refused/i,
+  /target machine actively refused/i,
+  /select \* from/i,
+  /insert into/i,
+  /update .+ set/i,
+  /delete from/i,
+  /Undefined (variable|property|index|offset)/i,
+  /Class .+ not found/i,
+  /Call to undefined/i,
+  /Stack trace/i,
+  /vendor\/laravel/i,
+  /\.php:\d+/i,
+  /at .+\\\\[A-Z]/i,
+  /ErrorException/i,
+  /BadMethodCallException/i,
+  /TypeError/i,
+  /HTTP \d{3}:/i,
+];
+
+const sanitizeErrorMessage = (message: string): string => {
+  if (!message || typeof message !== 'string') {
+    return 'Terjadi kesalahan. Silakan coba lagi.';
+  }
+
+  // Check if message contains any technical patterns
+  const isTechnical = TECHNICAL_PATTERNS.some(pattern => pattern.test(message));
+  if (isTechnical) {
+    return 'Terjadi gangguan pada sistem. Silakan coba beberapa saat lagi.';
+  }
+
+  // Also sanitize very long error messages (likely stack traces)
+  if (message.length > 300) {
+    return 'Terjadi kesalahan yang tidak terduga. Silakan coba lagi.';
+  }
+
+  return message;
+};
+
 class ApiService {
   private token: string | null = null;
 
@@ -59,7 +107,7 @@ class ApiService {
         try {
           errorData = await response.json();
         } catch {
-          errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+          errorData = {};
         }
         
         // Debounce 5xx errors to prevent infinite loops when API is down
@@ -71,9 +119,17 @@ class ApiService {
           }
         }
 
-        // Create error with more details
-        const error = new Error(errorData.message || errorData.error || 'Request failed');
-        (error as any).response = { data: errorData, status: response.status };
+        // SECURITY: Always sanitize error messages before exposing to UI
+        const rawMessage = errorData.message || errorData.error || '';
+        const safeMessage = sanitizeErrorMessage(rawMessage);
+        const error = new Error(safeMessage);
+        (error as any).response = {
+          data: {
+            ...errorData,
+            message: safeMessage, // Override raw message with sanitized version
+          },
+          status: response.status,
+        };
         throw error;
       }
 
@@ -86,7 +142,7 @@ class ApiService {
           showToast('Koneksi terputus (Timeout). Periksa jaringan Anda.', 'error');
           lastNetworkErrorTime = now;
         }
-        throw new Error('Request timed out');
+        throw new Error('Koneksi ke server terputus. Silakan periksa jaringan Anda.');
       }
       
       // Handle "Failed to fetch" (API completely down)
@@ -96,6 +152,7 @@ class ApiService {
           showToast('Tidak dapat terhubung ke server. Pastikan Anda online.', 'error');
           lastNetworkErrorTime = now;
         }
+        throw new Error('Tidak dapat terhubung ke server. Pastikan Anda terhubung ke internet.');
       }
       
       throw error;

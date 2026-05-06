@@ -314,7 +314,7 @@ const DashboardHome: React.FC<{
       {/* Projects Table */}
       <div id="monitoring-table" className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Monitoring Project (Top 5)</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Proyek Aktif — Prioritas Deadline</h3>
           <button
             onClick={() => onNavigate?.('monitoring')}
             className="text-sm font-bold text-primary hover:underline"
@@ -335,21 +335,171 @@ const DashboardHome: React.FC<{
   );
 };
 
+// ── URL ↔ Tab Mapping for History API Routing ──
+const TAB_TO_PATH: Record<string, string> = {
+  dashboard: '/dashboard',
+  monitoring: '/monitoring',
+  project_detail: '/monitoring/detail',
+  create_project: '/monitoring/create',
+  approval: '/approval',
+  calendar: '/calendar',
+  activity: '/feed',
+  notifications: '/notifications',
+  marketing_kanban: '/kanban',
+  clients: '/clients',
+  sph: '/sph',
+  audiensi: '/audiensi',
+  essential_docs: '/documents',
+  settings: '/settings',
+  admin_log: '/admin/logs',
+};
+
+// Sub-view paths (appended to base tab path)
+const SUB_VIEW_PATHS: Record<string, string> = {
+  'sph:create': '/sph/create',
+  'clients:create': '/clients/create',
+  'clients:detail': '/clients/detail',
+  'clients:edit': '/clients/edit',
+  'marketing_kanban:create': '/kanban/create',
+  'audiensi:create': '/audiensi/create',
+  'audiensi:manage': '/audiensi/templates',
+  'audiensi:add-template': '/audiensi/templates/new',
+};
+
+// Reverse lookup: path → tab (and optional sub-state)
+const PATH_TO_STATE: Record<string, { tab: string; sub?: string }> = {
+  '/dashboard': { tab: 'dashboard' },
+  '/monitoring': { tab: 'monitoring' },
+  '/monitoring/detail': { tab: 'project_detail' },
+  '/monitoring/create': { tab: 'create_project' },
+  '/approval': { tab: 'approval' },
+  '/calendar': { tab: 'calendar' },
+  '/feed': { tab: 'activity' },
+  '/notifications': { tab: 'notifications' },
+  '/kanban': { tab: 'marketing_kanban' },
+  '/kanban/create': { tab: 'marketing_kanban', sub: 'create' },
+  '/clients': { tab: 'clients' },
+  '/clients/create': { tab: 'clients', sub: 'create' },
+  '/clients/detail': { tab: 'clients', sub: 'detail' },
+  '/clients/edit': { tab: 'clients', sub: 'edit' },
+  '/sph': { tab: 'sph' },
+  '/sph/create': { tab: 'sph', sub: 'create' },
+  '/audiensi': { tab: 'audiensi' },
+  '/audiensi/create': { tab: 'audiensi', sub: 'create' },
+  '/audiensi/templates': { tab: 'audiensi', sub: 'manage' },
+  '/audiensi/templates/new': { tab: 'audiensi', sub: 'add-template' },
+  '/documents': { tab: 'essential_docs' },
+  '/settings': { tab: 'settings' },
+  '/admin/logs': { tab: 'admin_log' },
+  '/login': { tab: 'dashboard' }, // fallback: if user is authed, go dashboard
+};
+
 const AppContent: React.FC = () => {
   const { user, loading, isMarketing, isApprover, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    // On mount: prefer URL path over localStorage for navigation state
+    const pathState = PATH_TO_STATE[window.location.pathname];
+    if (pathState && pathState.tab) return pathState.tab;
+    return localStorage.getItem('activeTab') || 'dashboard';
+  });
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
-  const [isCreatingSph, setIsCreatingSph] = useState(false);
-  const [isCreatingClient, setIsCreatingClient] = useState(false);
+  const [isCreatingSph, setIsCreatingSph] = useState(() => {
+    return window.location.pathname === '/sph/create';
+  });
+  const [isCreatingClient, setIsCreatingClient] = useState(() => {
+    return window.location.pathname === '/clients/create';
+  });
   const [isEditingClient, setIsEditingClient] = useState(false);
-  const [isCreatingMarketingTask, setIsCreatingMarketingTask] = useState(false);
+  const [isCreatingMarketingTask, setIsCreatingMarketingTask] = useState(() => {
+    return window.location.pathname === '/kanban/create';
+  });
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [preSelectedClientId, setPreSelectedClientId] = useState<number | null>(null);
-  const [audiensiView, setAudiensiView] = useState<'list' | 'create' | 'manage' | 'add-template'>('list');
+  const [audiensiView, setAudiensiView] = useState<'list' | 'create' | 'manage' | 'add-template'>(() => {
+    const p = window.location.pathname;
+    if (p === '/audiensi/create') return 'create';
+    if (p === '/audiensi/templates/new') return 'add-template';
+    if (p === '/audiensi/templates') return 'manage';
+    return 'list';
+  });
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
   const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
   const { startTutorial, isCompleted, loading: tutorialLoading } = useTutorial();
+
+  // ── Helper: compute full URL path from current navigation state ──
+  const computeCurrentPath = (tab: string, subStates?: {
+    isCreatingSph?: boolean;
+    isCreatingClient?: boolean;
+    isEditingClient?: boolean;
+    selectedClient?: ClientData | null;
+    isCreatingMarketingTask?: boolean;
+    audiensiView?: string;
+  }) => {
+    const s = subStates || {};
+    // Sub-view overrides
+    if (tab === 'sph' && s.isCreatingSph) return SUB_VIEW_PATHS['sph:create'];
+    if (tab === 'clients' && s.isCreatingClient) return SUB_VIEW_PATHS['clients:create'];
+    if (tab === 'clients' && s.isEditingClient) return SUB_VIEW_PATHS['clients:edit'];
+    if (tab === 'clients' && s.selectedClient) return SUB_VIEW_PATHS['clients:detail'];
+    if (tab === 'marketing_kanban' && s.isCreatingMarketingTask) return SUB_VIEW_PATHS['marketing_kanban:create'];
+    if (tab === 'audiensi' && s.audiensiView && s.audiensiView !== 'list') {
+      const key = `audiensi:${s.audiensiView}` as keyof typeof SUB_VIEW_PATHS;
+      if (SUB_VIEW_PATHS[key]) return SUB_VIEW_PATHS[key];
+    }
+    return TAB_TO_PATH[tab] || '/dashboard';
+  };
+
+  // ── Sync: activeTab + sub-states → URL ──
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+    const targetPath = computeCurrentPath(activeTab, {
+      isCreatingSph, isCreatingClient, isEditingClient,
+      selectedClient, isCreatingMarketingTask, audiensiView,
+    });
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState(
+        { tab: activeTab, sub: targetPath },
+        '',
+        targetPath
+      );
+    }
+  }, [activeTab, isCreatingSph, isCreatingClient, isEditingClient, selectedClient, isCreatingMarketingTask, audiensiView]);
+
+  // ── Sync: URL → state (on mount + browser Back/Forward) ──
+  useEffect(() => {
+    const handlePopState = (_event: PopStateEvent) => {
+      const pathState = PATH_TO_STATE[window.location.pathname];
+      const tab = pathState?.tab || 'dashboard';
+      const sub = pathState?.sub;
+
+      setActiveTab(tab);
+      // Reset all sub-states first
+      setSelectedClient(null);
+      setIsCreatingSph(false);
+      setIsCreatingClient(false);
+      setIsEditingClient(false);
+      setIsCreatingMarketingTask(false);
+      setAudiensiView('list');
+
+      // Then set the specific sub-state if present
+      if (tab === 'sph' && sub === 'create') setIsCreatingSph(true);
+      if (tab === 'clients' && sub === 'create') setIsCreatingClient(true);
+      if (tab === 'marketing_kanban' && sub === 'create') setIsCreatingMarketingTask(true);
+      if (tab === 'audiensi' && sub) setAudiensiView(sub as any);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // ── Handle login/logout URL ──
+  useEffect(() => {
+    if (!loading && !user) {
+      // User is logged out → set URL to /login (replaceState so Back can't return to app)
+      window.history.replaceState({}, '', '/login');
+    }
+  }, [user, loading]);
 
   // Auto-start tutorials for new users (once per tutorial per user)
   useEffect(() => {
@@ -398,6 +548,8 @@ const AppContent: React.FC = () => {
       setGlobalProjectSearch('');
       setPendingCalendarEventId(null);
       localStorage.removeItem('just_logged_in');
+      // Set URL to /dashboard on fresh login
+      window.history.replaceState({ tab: 'dashboard' }, '', '/dashboard');
     }
   }, [user]);
 
@@ -408,10 +560,6 @@ const AppContent: React.FC = () => {
       delete (window as any).setPendingCalendarEventId;
     };
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
-  }, [activeTab]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -894,18 +1042,18 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
+    <ThemeProvider>
       <AuthProvider>
-        <TutorialProvider>
-          <NotificationProvider>
-            <AppContent />
-            <TutorialManager />
-          </NotificationProvider>
-        </TutorialProvider>
+        <ErrorBoundary>
+          <TutorialProvider>
+            <NotificationProvider>
+              <AppContent />
+              <TutorialManager />
+            </NotificationProvider>
+          </TutorialProvider>
+        </ErrorBoundary>
       </AuthProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    </ThemeProvider>
   );
 };
 

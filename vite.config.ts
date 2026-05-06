@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
+      // SPA fallback: all paths (e.g. /dashboard, /monitoring) serve index.html
+      // This is required for the History API routing to work on page refresh and direct URL access
+      appType: 'spa',
       server: {
         port: 3000,
         host: '0.0.0.0',

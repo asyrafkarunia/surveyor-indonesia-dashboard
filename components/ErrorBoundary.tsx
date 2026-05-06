@@ -20,33 +20,54 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    // Log technical details to console only (for developers with DevTools open)
+    console.error('[ErrorBoundary] Uncaught error:', error, errorInfo);
   }
 
   public render() {
     if (this.state.hasError) {
       return (
         <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-900">
-          <div className="w-full max-w-md rounded-xl bg-white dark:bg-slate-800 p-8 shadow-lg">
-            <h1 className="mb-4 text-2xl font-bold text-red-600">Something went wrong</h1>
-            <p className="mb-4 text-sm text-slate-600 dark:text-slate-300">
-              {this.state.error?.message || 'An unexpected error occurred'}
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-10 shadow-xl text-center">
+            {/* Friendly Icon */}
+            <div className="mx-auto mb-6 w-20 h-20 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-amber-500 text-4xl">warning</span>
+            </div>
+
+            <h1 className="mb-3 text-xl font-black text-slate-900 dark:text-white">
+              Terjadi Kesalahan
+            </h1>
+            <p className="mb-6 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Halaman ini mengalami kendala yang tidak terduga. 
+              Silakan muat ulang halaman atau kembali ke beranda.
             </p>
-            <button
-              onClick={() => {
-                this.setState({ hasError: false, error: null });
-                window.location.reload();
-              }}
-              className="w-full rounded-lg bg-primary px-4 py-2 font-medium text-white transition-colors hover:bg-primary/90"
-            >
-              Reload Page
-            </button>
-            <details className="mt-4">
-              <summary className="cursor-pointer text-sm text-slate-500 dark:text-slate-400">Error Details</summary>
-              <pre className="mt-2 overflow-auto rounded bg-slate-100 p-2 text-xs">
-                {this.state.error?.stack}
-              </pre>
-            </details>
+            
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  window.location.reload();
+                }}
+                className="w-full rounded-xl bg-primary px-4 py-3 font-black text-xs uppercase tracking-widest text-white transition-colors hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">refresh</span>
+                Muat Ulang Halaman
+              </button>
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  window.location.href = '/dashboard';
+                }}
+                className="w-full rounded-xl bg-slate-100 dark:bg-slate-700 px-4 py-3 font-black text-xs uppercase tracking-widest text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">home</span>
+                Kembali ke Beranda
+              </button>
+            </div>
+
+            <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+              Jika masalah terus berlanjut, hubungi tim teknis.
+            </p>
           </div>
         </div>
       );

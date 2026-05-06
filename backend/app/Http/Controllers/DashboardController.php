@@ -195,20 +195,28 @@ class DashboardController extends Controller
                 : ($v >= 1_000_000 ? 'Rp ' . number_format($v / 1_000_000, 1, ',', '.') . ' JT' : 'Rp ' . number_format($v, 0, ',', '.'));
 
             return Project::with(['client', 'pic'])
-                ->orderBy('progress', 'desc')
+                ->whereIn('status', ['RUNNING', 'PENDING'])
+                ->orderByRaw('CASE WHEN end_date IS NULL THEN 1 ELSE 0 END, end_date ASC')
                 ->limit(5)
                 ->get()
-                ->map(fn($p) => [
-                    'id'            => $p->id,
-                    'name'          => $p->title,
-                    'client'        => $p->client->company_name ?? 'N/A',
-                    'status'        => $p->status,
-                    'progress'      => $p->progress,
-                    'budget'        => $p->budget,
-                    'budgetFormatted' => $fmt($p->budget ?? 0),
-                    'endDate'       => $p->end_date,
-                    'pic'           => $p->pic->name ?? null,
-                ]);
+                ->map(function ($p) use ($fmt) {
+                    $daysLeft = null;
+                    if ($p->end_date) {
+                        $daysLeft = (int) now()->startOfDay()->diffInDays($p->end_date, false);
+                    }
+                    return [
+                        'id'              => $p->id,
+                        'name'            => $p->title,
+                        'client'          => $p->client->company_name ?? 'N/A',
+                        'status'          => $p->status,
+                        'progress'        => $p->progress,
+                        'budget'          => $p->budget,
+                        'budgetFormatted' => $fmt($p->budget ?? 0),
+                        'endDate'         => $p->end_date,
+                        'pic'             => $p->pic->name ?? null,
+                        'daysLeft'        => $daysLeft,
+                    ];
+                });
         });
 
         return response()->json($projects);
