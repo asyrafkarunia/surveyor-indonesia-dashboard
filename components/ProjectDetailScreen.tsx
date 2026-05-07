@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import BackButton from './BackButton';
 import ProjectUpdateModal from './ProjectDetailModal'; // Reusing the over-hauled update modal
 import ProjectScheduleView from './ProjectScheduleView';
+import { showToast } from './Toast';
 
 interface ProjectDetailScreenProps {
   projectId: string;
@@ -55,6 +56,8 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   const [attachmentLabel, setAttachmentLabel] = useState('');
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [submittingAttachment, setSubmittingAttachment] = useState(false);
+  const [attachmentToDelete, setAttachmentToDelete] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchProject();
@@ -141,10 +144,79 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
       await fetchProject(true);
       setAttachmentLabel('');
       setAttachmentUrl('');
+      showToast('Link lampiran berhasil ditambahkan', 'success');
     } catch (e: any) {
-      alert(e?.message || 'Gagal menyimpan attachment');
+      showToast(e?.message || 'Gagal menyimpan attachment', 'error');
     } finally {
       setSubmittingAttachment(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setSubmittingAttachment(true);
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 20 * 1024 * 1024) {
+          showToast(`File ${file.name} melebihi 20MB dan dilewati`, 'error');
+          continue;
+        }
+        await api.uploadProjectAttachment(String(project.id), file);
+      }
+      await fetchProject(true);
+      showToast('File berhasil diunggah', 'success');
+    } catch (error: any) {
+      showToast(error.message || 'Gagal mengunggah file', 'error');
+    } finally {
+      setSubmittingAttachment(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDeleteAttachment = async () => {
+    if (!attachmentToDelete) return;
+    try {
+      setSubmittingAttachment(true);
+      await api.deleteProjectAttachment(String(project.id), attachmentToDelete);
+      await fetchProject(true);
+      showToast('Lampiran berhasil dihapus', 'success');
+      setAttachmentToDelete(null);
+    } catch (error: any) {
+      showToast(error.message || 'Gagal menghapus lampiran', 'error');
+    } finally {
+      setSubmittingAttachment(false);
+    }
+  };
+
+  const handleDownloadAttachment = async (att: any) => {
+    if (att.url && !att.file_path) {
+      // Just a link
+      window.open(att.url, '_blank');
+      return;
+    }
+    
+    try {
+      const blob = await api.downloadProjectAttachment(String(project.id), att.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // If it's a PDF, try to open in new tab instead of direct download to enable browser viewing
+      if (att.file_name?.toLowerCase().endsWith('.pdf')) {
+         window.open(url, '_blank');
+      } else {
+         a.download = att.file_name || 'download';
+         document.body.appendChild(a);
+         a.click();
+         document.body.removeChild(a);
+      }
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch (error: any) {
+      showToast('Gagal mengunduh file', 'error');
     }
   };
 
@@ -449,18 +521,28 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 <div className="space-y-2 mb-6">
                   {project.attachments?.length > 0 ? (
                     project.attachments.map((att: any) => (
-                      <a 
-                        key={att.id} 
-                        href={att.file_path} 
-                        target="_blank" 
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 hover:bg-teal-50 dark:hover:bg-teal-900/10 border border-transparent hover:border-teal-100 transition-all group"
-                      >
-                         <span className="material-symbols-outlined text-teal-600 group-hover:scale-110 transition-transform">attachment</span>
-                         <div className="min-w-0">
-                            <p className="text-xs font-black text-slate-900 dark:text-white truncate">{att.label || att.file_name}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Download / Open Link</p>
-                         </div>
-                      </a>
+                      <div key={att.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-transparent group">
+                         <button 
+                           onClick={() => handleDownloadAttachment(att)}
+                           className="flex items-center gap-3 flex-1 min-w-0 hover:bg-teal-50 dark:hover:bg-teal-900/10 hover:border-teal-100 transition-all rounded-xl px-2 py-1 text-left"
+                         >
+                           <span className="material-symbols-outlined text-teal-600 group-hover:scale-110 transition-transform">attachment</span>
+                           <div className="min-w-0">
+                              <p className="text-xs font-black text-slate-900 dark:text-white truncate">{att.label || att.file_name || 'Lampiran'}</p>
+                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Download / Open Link</p>
+                           </div>
+                         </button>
+                         {canEdit && (
+                           <button
+                             onClick={() => setAttachmentToDelete(att.id)}
+                             disabled={submittingAttachment}
+                             className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                             title="Hapus Lampiran"
+                           >
+                             <span className="material-symbols-outlined text-[18px]">delete</span>
+                           </button>
+                         )}
+                      </div>
                     ))
                   ) : (
                     <p className="text-[11px] font-bold text-slate-400 italic py-2">Tidak ada lampiran.</p>
@@ -468,28 +550,58 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 </div>
 
                 {canEdit && (
-                  <div className="p-4 rounded-[22px] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-3">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Tambah Link Baru</p>
-                     <input 
-                      placeholder="Label Link..."
-                      className="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-[11px] font-bold outline-none ring-teal-500/10 focus:ring-4"
-                      value={attachmentLabel}
-                      onChange={(e) => setAttachmentLabel(e.target.value)}
-                     />
-                     <div className="flex gap-2">
-                        <input 
-                          placeholder="Paste URL..."
-                          className="flex-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-[11px] font-bold outline-none ring-teal-500/10 focus:ring-4"
-                          value={attachmentUrl}
-                          onChange={(e) => setAttachmentUrl(e.target.value)}
-                        />
-                        <button 
-                          onClick={handleAddAttachment}
-                          disabled={submittingAttachment}
-                          className="size-9 bg-teal-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20 active:scale-90 transition-all"
-                        >
-                           <span className="material-symbols-outlined text-[18px]">add</span>
-                        </button>
+                  <div className="p-4 rounded-[22px] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-4">
+                     <div>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 mb-2">Upload File Baru</p>
+                       <div className="flex gap-2">
+                         <div
+                           onClick={() => fileInputRef.current?.click()}
+                           className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 text-teal-600 transition-all cursor-pointer ${submittingAttachment ? 'opacity-50 pointer-events-none' : ''}`}
+                         >
+                           <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
+                           <span className="text-[11px] font-bold">Pilih File (Max 20MB)</span>
+                         </div>
+                         <input
+                           ref={fileInputRef}
+                           type="file"
+                           className="hidden"
+                           multiple
+                           onChange={handleFileUpload}
+                         />
+                       </div>
+                     </div>
+
+                     <div className="relative">
+                       <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                         <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
+                       </div>
+                       <div className="relative flex justify-center">
+                         <span className="bg-slate-50 dark:bg-slate-800/50 px-2 text-[10px] font-bold text-slate-400 uppercase">Atau Tambah Link</span>
+                       </div>
+                     </div>
+
+                     <div className="space-y-3">
+                       <input 
+                        placeholder="Label Link (Opsional)..."
+                        className="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-[11px] font-bold outline-none ring-teal-500/10 focus:ring-4"
+                        value={attachmentLabel}
+                        onChange={(e) => setAttachmentLabel(e.target.value)}
+                       />
+                       <div className="flex gap-2">
+                          <input 
+                            placeholder="Paste URL..."
+                            className="flex-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-[11px] font-bold outline-none ring-teal-500/10 focus:ring-4"
+                            value={attachmentUrl}
+                            onChange={(e) => setAttachmentUrl(e.target.value)}
+                          />
+                          <button 
+                            onClick={handleAddAttachment}
+                            disabled={submittingAttachment || !attachmentUrl.trim()}
+                            className="size-9 bg-teal-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20 hover:bg-teal-700 active:scale-90 transition-all disabled:opacity-50"
+                          >
+                             <span className="material-symbols-outlined text-[18px]">{submittingAttachment ? 'hourglass_empty' : 'add'}</span>
+                          </button>
+                       </div>
                      </div>
                   </div>
                 )}
@@ -512,6 +624,36 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         onClose={() => setIsScheduleOpen(false)}
         project={project}
       />
+
+      {/* Delete Confirmation Modal */}
+      {attachmentToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[32px]">warning</span>
+            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white text-center mb-2">Hapus Lampiran?</h3>
+            <p className="text-sm font-medium text-slate-500 text-center mb-8">
+              Apakah Anda yakin ingin menghapus lampiran ini? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setAttachmentToDelete(null)}
+                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDeleteAttachment}
+                disabled={submittingAttachment}
+                className="flex-1 px-4 py-3 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 active:scale-95 transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
+              >
+                {submittingAttachment ? 'Menghapus...' : 'Ya, Hapus'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

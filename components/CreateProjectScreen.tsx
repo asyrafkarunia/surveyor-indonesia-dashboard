@@ -14,6 +14,7 @@ const DefaultIcon = new Icon({
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
+import { showToast } from './Toast';
 
 interface CreateProjectScreenProps {
   onCancel: () => void;
@@ -60,6 +61,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
   const [customTeamNotes, setCustomTeamNotes] = useState('');
   const [teamSearchTerm, setTeamSearchTerm] = useState('');
   const [isTeamDropdownOpen, setIsTeamDropdownOpen] = useState(false);
+  const [showPaymentTerms, setShowPaymentTerms] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -296,19 +298,30 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     const files = e.target.files;
     if (!files) return;
 
-    Array.from(files).forEach((file: File) => {
-      if (file.size > 20 * 1024 * 1024) {
-        alert(`File ${file.name} terlalu besar. Maksimal 20MB`);
-        return;
-      }
+    const currentTotalSize = attachments.reduce((sum, att) => sum + att.file.size, 0);
+    let incomingSize = 0;
+    const newAttachments: AttachmentFile[] = [];
 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      incomingSize += file.size;
       const sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-      setAttachments(prev => [...prev, {
+      newAttachments.push({
         file,
         name: file.name,
         size: sizeStr,
-      }]);
-    });
+      });
+    }
+
+    if (currentTotalSize + incomingSize > 20 * 1024 * 1024) {
+      showToast('Total ukuran lampiran maksimal 20MB', 'error');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
+    setAttachments(prev => [...prev, ...newAttachments]);
 
     // Reset input
     if (fileInputRef.current) {
@@ -751,7 +764,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     />
                   </div>
                 </div>
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Nilai Kontrak <span className="text-primary">*</span>
                   </label>
@@ -768,16 +781,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Margin Proyek Section */}
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
-                <span className="material-symbols-outlined text-primary">percent</span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Margin Proyek</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
                     Target Margin (%) <span className="text-primary">*</span>
@@ -797,7 +801,6 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     />
                     <span className="absolute right-4 text-sm font-black text-slate-400 group-focus-within:text-primary transition-colors">%</span>
                   </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tentukan persentase margin keuntungan yang diharapkan.</p>
                 </div>
               </div>
             </div>
@@ -1023,22 +1026,43 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
               </div>
             </div>            {/* Pengaturan Termin Pembayaran Section */}
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-              <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
+              <div className={`flex justify-between items-center ${showPaymentTerms ? 'mb-6 pb-2 border-b border-slate-100 dark:border-slate-700' : ''}`}>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">payments</span>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">Pengaturan Termin Pembayaran</h3>
                 </div>
                 <button
                   type="button"
-                  onClick={addPaymentTerm}
-                  className="flex items-center gap-1.5 text-xs font-black text-primary hover:text-red-700 uppercase tracking-widest transition-colors"
+                  onClick={() => {
+                    if (!showPaymentTerms) {
+                      setShowPaymentTerms(true);
+                      if (paymentTerms.length === 0) addPaymentTerm();
+                    } else {
+                      setShowPaymentTerms(false);
+                      setPaymentTerms([]); // Optional: reset when closed
+                    }
+                  }}
+                  className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-colors ${showPaymentTerms ? 'text-red-500 hover:text-red-700' : 'text-primary hover:text-primary-dark'}`}
                 >
-                  <span className="material-symbols-outlined text-[16px]">add</span>
-                  Tambah Termin
+                  <span className="material-symbols-outlined text-[16px]">
+                    {showPaymentTerms ? 'close' : 'add'}
+                  </span>
+                  {showPaymentTerms ? 'Hapus Termin' : 'Tambah Termin'}
                 </button>
               </div>
 
-              <div className="space-y-4">
+              {showPaymentTerms && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div className="flex justify-end mb-2">
+                    <button
+                      type="button"
+                      onClick={addPaymentTerm}
+                      className="flex items-center gap-1.5 text-xs font-black text-primary hover:text-primary-dark uppercase tracking-widest transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span>
+                      Tambah Baris
+                    </button>
+                  </div>
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-2">
                   <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
                     Sisa Persentase: <span className={calculateRemainingPercentage() === 0 ? "text-emerald-500" : "text-amber-500"}>{calculateRemainingPercentage().toFixed(2)}%</span>
@@ -1124,6 +1148,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                   </table>
                 </div>
               </div>
+              )}
             </div>
 
             {/* Lampiran & Dokumen Section */}
@@ -1133,26 +1158,18 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Lampiran & Dokumen</h3>
               </div>
               <div className="space-y-6">
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:dark:bg-slate-900 hover:border-primary transition-all cursor-pointer group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary shadow-sm mb-3 transition-colors">
-                    <span className="material-symbols-outlined text-[28px]">cloud_upload</span>
+                {attachments.length === 0 ? (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:dark:bg-slate-900 hover:border-primary transition-all cursor-pointer group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary shadow-sm mb-3 transition-colors">
+                      <span className="material-symbols-outlined text-[28px]">cloud_upload</span>
+                    </div>
+                    <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Klik untuk upload atau tarik file ke sini</p>
+                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Hanya Dokumen Kontrak. PDF, DOCX (Max. 20MB total)</p>
                   </div>
-                  <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Klik untuk upload atau tarik file ke sini</p>
-                  <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Hanya Dokumen Kontrak. PDF, DOCX (Max. 20MB)</p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    multiple
-                    onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx"
-                  />
-                </div>
-
-                {attachments.length > 0 && (
+                ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {attachments.map((attachment, index) => (
                       <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm group hover:border-primary/30 transition-all">
@@ -1174,8 +1191,26 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                         </button>
                       </div>
                     ))}
+                    
+                    {/* Add More Button */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary transition-all cursor-pointer min-h-[66px]"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">add</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Tambah Lampiran</span>
+                    </div>
                   </div>
                 )}
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  multiple
+                  onChange={handleFileUpload}
+                  accept=".pdf,.doc,.docx"
+                />
               </div>
             </div>
 
