@@ -110,11 +110,12 @@ class DashboardController extends Controller
                 ->whereBetween('created_at', [$startDate, $endDate . ' 23:59:59'])
                 ->get();
 
-            // Pre-compute: total delta ever tracked per project (ALL TIME, not just range)
-            // This is needed to calculate orphan amounts accurately
+            // Pre-compute: total delta tracked per project (limited to 3 years for memory efficiency)
             $totalDeltaByProject = [];
             $allTimeLogs = ActivityLog::where('action', 'Project Actualization Updated')
                 ->where('status', 'Success')
+                ->where('created_at', '>=', now()->subYears(3))
+                ->select(['id', 'metadata', 'created_at'])
                 ->get();
             foreach ($allTimeLogs as $log) {
                 $meta = $log->metadata ?? [];

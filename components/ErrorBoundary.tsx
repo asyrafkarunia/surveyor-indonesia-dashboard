@@ -9,7 +9,8 @@ interface State {
   error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+// Menggunakan 'as any' pada inheritance untuk mengatasi masalah inferensi tipe di lingkungan ini
+class ErrorBoundary extends (Component as any) {
   public state: State = {
     hasError: false,
     error: null,
