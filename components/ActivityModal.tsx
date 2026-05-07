@@ -305,7 +305,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
                         </button>
                         {isUnitDropdownOpen && (
-                          <div className="absolute top-12 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                          <div className="absolute top-12 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-60 border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
                             <button type="button" onMouseDown={() => { setDurationUnit('Hari'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Hari' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>HARI</button>
                             <button type="button" onMouseDown={() => { setDurationUnit('Jam'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Jam' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>JAM</button>
                           </div>
@@ -327,7 +327,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           className="w-full h-full text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm cursor-pointer"
                         />
                         {isStartTimeOpen && (
-                          <div className="absolute top-14 left-0 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                          <div className="absolute top-14 left-0 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-60 border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
                             {TIME_OPTIONS.map((time) => (
                               <button key={`start-${time}`} type="button" onMouseDown={() => { setStartTime(time); setIsStartTimeOpen(false); }} className="w-full text-center px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 transition-colors">
                                 {time}
@@ -351,7 +351,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           className="w-full h-full text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm cursor-pointer"
                         />
                         {isEndTimeOpen && (
-                          <div className="absolute top-14 left-1/2 -translate-x-1/2 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2 text-center">
+                          <div className="absolute top-14 left-1/2 -translate-x-1/2 w-32 max-h-48 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-800 rounded-xl shadow-xl z-60 border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2 text-center">
                             {TIME_OPTIONS.map((time) => (
                               <button key={`end-${time}`} type="button" onMouseDown={() => { setEndTime(time); setIsEndTimeOpen(false); }} className="w-full text-center px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 transition-colors">
                                 {time}
@@ -373,7 +373,7 @@ const ActivityModal: React.FC<ActivityModalProps> = ({ isOpen, onClose, selected
                           <span className="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
                         </button>
                         {isUnitDropdownOpen && (
-                          <div className="absolute top-14 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-[60] border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
+                          <div className="absolute top-14 right-0 w-28 bg-white dark:bg-slate-800 rounded-xl shadow-xl z-60 border border-slate-100 dark:border-slate-700 p-1 animate-in fade-in slide-in-from-top-2">
                             <button type="button" onMouseDown={() => { setDurationUnit('Hari'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Hari' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>HARI</button>
                             <button type="button" onMouseDown={() => { setDurationUnit('Jam'); setIsUnitDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-black tracking-widest uppercase transition-colors ${durationUnit === 'Jam' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-50 text-slate-600 dark:text-slate-300'}`}>JAM</button>
                           </div>

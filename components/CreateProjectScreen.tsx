@@ -77,9 +77,6 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
     location_address: '',
     latitude: '',
     longitude: '',
-    quality_standard: '',
-    target_compliance: '',
-    compliance_requirements: '',
     is_tender: false,
     pic_marketing_id: '',
   });
@@ -1022,46 +1019,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tuliskan nama anggota tim yang belum memiliki akun pada sistem. Tekan Enter untuk menambah nama baru.</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Standar Kualitas</label>
-                    <select
-                      name="quality_standard"
-                      value={formData.quality_standard}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
-                    >
-                      <option value="">Pilih Standar</option>
-                      <option value="ISO 9001:2015">ISO 9001:2015</option>
-                      <option value="ISO 14001:2015">ISO 14001:2015</option>
-                      <option value="ISO 45001:2018">ISO 45001:2018</option>
-                      <option value="ISO/IEC 27001">ISO/IEC 27001</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Target Kepatuhan</label>
-                    <input
-                      name="target_compliance"
-                      value={formData.target_compliance}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none font-bold"
-                      placeholder="Misal: Regulasi KLHK No. 12"
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">Persyaratan Kepatuhan Khusus</label>
-                  <textarea
-                    name="compliance_requirements"
-                    value={formData.compliance_requirements}
-                    onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
-                    placeholder="Sebutkan jika ada persyaratan kepatuhan spesifik dari klien..."
-                    rows={3}
-                  />
-                </div>
+
               </div>
             </div>            {/* Pengaturan Termin Pembayaran Section */}
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
@@ -1177,7 +1135,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
               <div className="space-y-6">
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-50 dark:bg-slate-900 hover:border-primary transition-all cursor-pointer group"
+                  className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:dark:bg-slate-900 hover:border-primary transition-all cursor-pointer group"
                 >
                   <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary shadow-sm mb-3 transition-colors">
                     <span className="material-symbols-outlined text-[28px]">cloud_upload</span>
@@ -1225,7 +1183,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             <div className="flex items-center justify-end gap-4 pt-4 pb-12">
               <button
                 onClick={onCancel}
-                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-8 py-3 text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm active:scale-95"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-8 py-3 text-sm font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm active:scale-95"
                 type="button"
                 disabled={loading}
               >

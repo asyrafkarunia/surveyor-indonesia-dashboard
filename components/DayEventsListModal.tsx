@@ -52,7 +52,7 @@ const DayEventsListModal: React.FC<DayEventsListModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-xl max-h-[85vh] flex flex-col transform overflow-hidden rounded-[2rem] bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700 animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-xl max-h-[85vh] flex flex-col transform overflow-hidden rounded-4xl bg-white dark:bg-slate-800 shadow-2xl transition-all border border-slate-100 dark:border-slate-700 animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

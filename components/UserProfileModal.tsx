@@ -29,7 +29,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, isOpen, onClo
   const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       {/* Backdrop with extreme blur */}
       <div 
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
@@ -55,7 +55,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, isOpen, onClo
           {/* Avatar Section with Pulse Effect */}
           <div className="relative mb-6">
             <div className="absolute -inset-4 bg-primary/10 rounded-full animate-pulse blur-xl" />
-            <div className="size-28 rounded-[2rem] overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl relative z-10 bg-slate-100 dark:bg-slate-700">
+            <div className="size-28 rounded-4xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl relative z-10 bg-slate-100 dark:bg-slate-700">
               {user.avatar ? (
                 <img 
                   src={user.avatar} 

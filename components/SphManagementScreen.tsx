@@ -170,7 +170,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
 
   return (
     <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-slate-50 dark:bg-slate-900">
-      <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
+      <div className="fixed top-4 right-4 z-9999 flex flex-col gap-2 pointer-events-none"></div>
       <div className="mx-auto max-w-7xl flex flex-col gap-6 pb-12">
         {/* Page Heading & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -355,7 +355,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Hal {page} dari {lastPage} • Total {total} SPH</p>
             <div className="flex items-center gap-2">
               <button
-                className="p-1 rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50"
+                className="p-1 rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 disabled:opacity-50"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
@@ -363,7 +363,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
               </button>
               <button className="px-3 py-1 rounded bg-primary text-white text-xs font-bold">{page}</button>
               <button
-                className="p-1 rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50"
+                className="p-1 rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 disabled:opacity-50"
                 disabled={page >= lastPage}
                 onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
               >

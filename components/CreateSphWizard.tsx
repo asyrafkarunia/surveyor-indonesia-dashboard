@@ -282,7 +282,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
         {/* Progress Stepper */}
         <div className="w-full bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center justify-between relative px-2 md:px-12">
-            <div className="absolute left-12 right-12 top-5 h-1 bg-slate-100 -z-0"></div>
+            <div className="absolute left-12 right-12 top-5 h-1 bg-slate-100 z-0"></div>
             <div 
               className="absolute left-12 top-5 h-1 bg-primary z-0 transition-all duration-500" 
               style={{ width: `${progressWidth}%` }}
@@ -843,7 +843,7 @@ const CreateSphWizard: React.FC<CreateSphWizardProps> = ({ onCancel, onFinish })
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
                 currentStep === 1 
                   ? 'text-slate-300 border border-slate-200 dark:border-slate-700 cursor-not-allowed' 
-                  : 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900'
+                  : 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'
               }`}
             >
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>

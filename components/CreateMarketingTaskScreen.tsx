@@ -373,7 +373,7 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
             {/* Bottom Actions */}
             <div className="pt-8 border-t border-slate-100 dark:border-slate-700 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
               <button 
-                className="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex justify-center items-center" 
+                className="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-sm flex justify-center items-center" 
                 type="button"
                 onClick={onCancel}
               >

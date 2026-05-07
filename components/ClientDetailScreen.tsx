@@ -353,7 +353,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
               </button>
               <button 
                 onClick={() => onEdit?.(client)}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:bg-slate-900 transition-colors shadow-sm"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors shadow-sm"
               >
                 <span className="material-symbols-outlined text-[18px]">edit</span>
                 Edit Profile
@@ -636,7 +636,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                         openActivityLogModal();
                         setIsAddingActivity(true);
                       }}
-                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
+                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900"
                     >
                       Tambah Aktivitas Manual
                     </button>
@@ -646,7 +646,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                         setRecentMenuOpen(false);
                         openActivityLogModal();
                       }}
-                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
+                      className="w-full px-4 py-2 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900"
                     >
                       Edit Aktivitas
                     </button>
@@ -946,7 +946,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                           type="button"
                                           disabled={editingSubmitting}
                                           onClick={cancelEditActivity}
-                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900"
+                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900"
                                         >
                                           Batal
                                         </button>
@@ -957,7 +957,7 @@ const ClientDetailScreen: React.FC<ClientDetailScreenProps> = ({ client: initial
                                           type="button"
                                           disabled={editingSubmitting}
                                           onClick={() => startEditActivity(act)}
-                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900"
+                                          className="px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900"
                                         >
                                           Edit
                                         </button>

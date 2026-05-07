@@ -141,7 +141,7 @@ const ProjectScheduleView: React.FC<ProjectScheduleViewProps> = ({ isOpen, onClo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose}>
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]" onClick={onClose}>
       <div 
         className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}

@@ -828,7 +828,7 @@ const LoginScreen: React.FC = () => {
                             type="button"
                             onClick={handleValidateInviteCode}
                             disabled={inviteCodeLoading || inviteCode.length < 1}
-                            className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 flex-shrink-0"
+                            className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-50 shrink-0"
                             style={{
                               background: 'linear-gradient(135deg, #003868, #00B4AE)',
                               boxShadow: '0 2px 8px rgba(0,56,104,0.2)',

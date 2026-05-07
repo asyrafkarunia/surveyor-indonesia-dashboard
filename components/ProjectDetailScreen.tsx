@@ -48,9 +48,6 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     location_address: '',
     latitude: '',
     longitude: '',
-    compliance_requirements: '',
-    quality_standard: '',
-    target_compliance: '',
     description: '',
   });
   const [commentInput, setCommentInput] = useState('');
@@ -76,9 +73,6 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         location_address: data?.location_address || '',
         latitude: data?.latitude != null ? String(data.latitude) : '',
         longitude: data?.longitude != null ? String(data.longitude) : '',
-        compliance_requirements: data?.compliance_requirements || '',
-        quality_standard: data?.quality_standard || '',
-        target_compliance: data?.target_compliance || '',
         description: data?.description || '',
       });
     } catch (e: any) {
@@ -98,9 +92,6 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         location_address: project.location_address || '',
         latitude: project.latitude != null ? String(project.latitude) : '',
         longitude: project.longitude != null ? String(project.longitude) : '',
-        compliance_requirements: project.compliance_requirements || '',
-        quality_standard: project.quality_standard || '',
-        target_compliance: project.target_compliance || '',
         description: project.description || '',
       });
     }
@@ -116,9 +107,6 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         location_address: editData.location_address || null,
         latitude: editData.latitude !== '' ? Number(editData.latitude) : null,
         longitude: editData.longitude !== '' ? Number(editData.longitude) : null,
-        compliance_requirements: editData.compliance_requirements || null,
-        quality_standard: editData.quality_standard || null,
-        target_compliance: editData.target_compliance || null,
         description: editData.description || null,
       };
       await api.updateProject(projectId, payload);
@@ -297,29 +285,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                   Deskripsi & Informasi Dasar
                </h2>
                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     {[
-                       { label: 'Compliance Requirements', val: project.compliance_requirements, key: 'compliance_requirements' },
-                       { label: 'Quality Standards', val: project.quality_standard, key: 'quality_standard' },
-                       { label: 'Target Compliance', val: project.target_compliance, key: 'target_compliance' }
-                     ].map((inf, i) => (
-                       <div key={i} className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{inf.label}</label>
-                          {isEditing ? (
-                            <textarea 
-                              className="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm font-bold focus:ring-4 focus:ring-teal-500/10 outline-none transition-all"
-                              rows={2} 
-                              value={(editData as any)[inf.key]} 
-                              onChange={(e) => setEditData(p => ({ ...p, [inf.key]: e.target.value }))}
-                            />
-                          ) : (
-                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-sm font-bold text-slate-700 dark:text-slate-200 leading-relaxed">
-                               {inf.val || '-'}
-                            </div>
-                          )}
-                       </div>
-                     ))}
-                  </div>
+
 
                   <div className="space-y-2">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Deskripsi Proyek</label>

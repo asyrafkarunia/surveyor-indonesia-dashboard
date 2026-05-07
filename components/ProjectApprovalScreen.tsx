@@ -465,7 +465,7 @@ const ProjectApprovalScreen: React.FC = () => {
                     setShowRejectModal(false);
                     setRejectionReason('');
                   }}
-                  className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:bg-slate-900 transition-colors"
+                  className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                 >
                   Cancel
                 </button>
