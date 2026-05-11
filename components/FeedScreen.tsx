@@ -56,11 +56,13 @@ interface User {
 interface Deadline {
   id: number;
   title: string;
-  type: 'deadline' | 'meeting';
+  type: 'deadline' | 'meeting' | 'audit' | 'visit' | 'inspection' | string;
   date: string;
   month: string;
   day: string;
   time?: string;
+  start_time?: string;
+  end_time?: string;
   team: string;
   project?: string;
 }
@@ -350,7 +352,7 @@ const FeedItem: React.FC<{
                       key={file.id}
                       href={`${storageUrl}${file.path}`}
                       download={file.name}
-                      className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors cursor-pointer shadow-sm"
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-primary transition-colors cursor-pointer shadow-sm"
                     >
                       <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>
                       <span className="truncate max-w-[200px]">{file.name}</span>
@@ -633,7 +635,7 @@ const FeedScreen: React.FC<{
   };
 
   return (
-    <div className="flex h-full gap-6 p-6">
+    <div className="flex h-full gap-4 lg:gap-6 p-4 lg:p-6">
       <div 
         ref={scrollContainerRef}
         className="flex-1 min-w-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2 relative select-none"
@@ -647,37 +649,34 @@ const FeedScreen: React.FC<{
       >
         {/* Pull to Refresh Indicator */}
         <div 
-          className="w-full flex items-center justify-center overflow-hidden transition-all duration-200 ease-out bg-gradient-to-b from-slate-900/10 to-transparent backdrop-blur-[2px]"
+          className="absolute left-0 right-0 top-0 z-20 flex justify-center pointer-events-none transition-all duration-300 overflow-hidden"
           style={{ 
-            height: isRefreshing ? '80px' : `${pullDistance}px`, 
-            opacity: isRefreshing ? 1 : (pullDistance > 0 ? Math.min(pullDistance / 40, 1) : 0) 
+            height: isRefreshing ? '100px' : `${pullDistance}px`,
+            opacity: isRefreshing ? 1 : (pullDistance > 0 ? 1 : 0)
           }}
         >
-          {isRefreshing ? (
-            <div className="flex flex-col items-center gap-2 py-4">
-              <div className="p-2 bg-white dark:bg-slate-800/80 backdrop-blur rounded-full shadow-sm">
-                <svg className="animate-spin h-6 w-6 text-slate-700 dark:text-slate-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <div className={`p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-xl border border-slate-100 dark:border-slate-700 transition-transform duration-200 ${isRefreshing ? 'scale-100' : 'scale-90'}`}>
+              {isRefreshing ? (
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-slate-100 dark:border-slate-700 border-t-emerald-500"></div>
+              ) : (
+                <div className="h-7 w-7 flex items-center justify-center transition-transform" style={{ transform: `rotate(${pullDistance * 2}deg)` }}>
+                  <span className="material-symbols-outlined text-emerald-500 text-[24px]">refresh</span>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-1 py-2 text-slate-500 dark:text-slate-400 font-semibold">
-              <span 
-                className="material-symbols-outlined transition-transform duration-200 text-2xl bg-white dark:bg-slate-800/50 p-1.5 rounded-full"
-                style={{ transform: `rotate(${pullDistance * 2}deg)` }}
-              >
-                arrow_downward
+            {!isRefreshing && pullDistance > 30 && (
+              <span className="text-[10px] font-black text-white px-3 py-1 bg-slate-900/60 backdrop-blur-md rounded-full uppercase tracking-widest shadow-sm">
+                {pullDistance > 60 ? 'Lepas untuk Segarkan' : 'Tarik untuk Segarkan'}
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Pull Hint Text */}
-        <div className="w-full flex items-center justify-center py-2 -mb-2 cursor-grab active:cursor-grabbing">
-          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700/50">
-            <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
+        {/* Pull Hint Text - Hidden during active pulling/refreshing */}
+        <div className={`w-full flex items-center justify-center py-4 -mb-2 transition-opacity ${pullDistance > 0 || isRefreshing ? 'opacity-0' : 'opacity-100'}`}>
+          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2 bg-slate-50 dark:bg-slate-900/30 px-4 py-1.5 rounded-full border border-slate-100 dark:border-slate-800/50">
+            <span className="material-symbols-outlined text-[16px] animate-bounce">arrow_downward</span>
             Tarik ke bawah untuk refresh
           </span>
         </div>
@@ -750,7 +749,10 @@ const FeedScreen: React.FC<{
         {/* Feed List */}
         <div id="feed-list" className={`flex flex-col gap-4 pb-6 transition-opacity duration-300 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
           {isLoading ? (
-            <div className="text-center py-8 text-slate-400 text-sm">Memuat aktivitas...</div>
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-100 dark:border-slate-800 border-t-emerald-500"></div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Memuat aktivitas...</p>
+            </div>
           ) : activities.length === 0 ? (
             <div className="text-center py-8 text-slate-400 text-sm">Belum ada aktivitas</div>
           ) : (
@@ -771,7 +773,7 @@ const FeedScreen: React.FC<{
       </div>
 
       {/* Right Widgets */}
-      <div className="w-80 flex-none flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2">
+      <div className="hidden lg:flex w-80 flex-none flex-col gap-6 overflow-y-auto custom-scrollbar pr-2">
         {/* Aktivitas Mendatang Widget */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
           <div className="mb-6 flex items-center justify-between">

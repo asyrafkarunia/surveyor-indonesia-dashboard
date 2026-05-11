@@ -44,7 +44,25 @@ const TaskCard: React.FC<{
   onDragStart: (e: React.DragEvent) => void;
   onDragEnd: () => void;
   searchQuery?: string;
-}> = ({ card, onClick, onDelete, onDragStart, onDragEnd, searchQuery = '' }) => {
+  columns?: {id: string, title: string}[];
+  currentColumnId?: string;
+  onMoveToColumn?: (cardId: string, targetColId: string) => void;
+}> = ({ card, onClick, onDelete, onDragStart, onDragEnd, searchQuery = '', columns, currentColumnId, onMoveToColumn }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startPress = () => {
+    timerRef.current = setTimeout(() => {
+      setShowMenu(true);
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
   const isMatch = searchQuery.trim() !== '' && (card.title.toLowerCase().includes(searchQuery.toLowerCase()) || card.client.toLowerCase().includes(searchQuery.toLowerCase()));
   const containerClass = isMatch 
     ? "bg-yellow-50/80 dark:bg-yellow-900/20 p-4 rounded-xl border-2 border-yellow-400 dark:border-yellow-500/50 shadow-md transform transition-all cursor-move group relative z-10"
@@ -55,8 +73,16 @@ const TaskCard: React.FC<{
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      onClick={onClick}
-      className={containerClass}
+      onClick={() => {
+        if (!showMenu) onClick();
+      }}
+      onTouchStart={startPress}
+      onTouchEnd={cancelPress}
+      onTouchMove={cancelPress}
+      onMouseDown={startPress}
+      onMouseUp={cancelPress}
+      onMouseLeave={cancelPress}
+      className={`${containerClass} relative overflow-hidden`}
       data-search-match={isMatch ? "true" : undefined}
     >
       <div className="flex justify-between items-start mb-2">
@@ -95,6 +121,33 @@ const TaskCard: React.FC<{
           )}
         </div>
       </div>
+
+      {showMenu && columns && onMoveToColumn && (
+        <div className="absolute inset-0 bg-slate-900/95 z-50 p-4 flex flex-col justify-center items-center text-white backdrop-blur-md transition-all animate-in fade-in zoom-in duration-200">
+          <p className="text-[10px] font-black mb-4 uppercase tracking-[0.2em] text-slate-400">Pindahkan ke Status:</p>
+          <div className="flex flex-col gap-2.5 w-full max-w-[220px] overflow-y-auto custom-scrollbar pr-1">
+            {columns.filter(c => c.id !== currentColumnId).map(col => (
+              <button
+                key={col.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(false);
+                  onMoveToColumn(card.id.toString(), col.id);
+                }}
+                className="w-full py-2.5 px-4 bg-slate-800 hover:bg-primary border border-slate-700 hover:border-primary rounded-xl text-xs font-bold text-center transition-all shadow-sm active:scale-95"
+              >
+                {col.title}
+              </button>
+            ))}
+          </div>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}
+            className="mt-4 py-2 px-6 text-[10px] font-black text-rose-400 hover:text-white hover:bg-rose-500 rounded-xl transition-all uppercase tracking-[0.2em] border border-rose-500/30"
+          >
+            Batal
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -348,10 +401,11 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             <button 
               id="kanban-add-btn"
               onClick={onAddTask}
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 uppercase tracking-widest"
+              className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-3 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 uppercase tracking-widest shrink-0"
+              title="Tambah Kegiatan Baru"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
-              Tambah Kegiatan Baru
+              <span className="hidden sm:inline">Tambah Kegiatan Baru</span>
             </button>
           </div>
         </div>
@@ -449,6 +503,9 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
                         }}
                         onDragStart={(e) => handleDragStart(e, card, column.id)}
                         onDragEnd={handleDragEnd}
+                        columns={columns.map(c => ({id: c.id, title: c.title}))}
+                        currentColumnId={column.id}
+                        onMoveToColumn={(cardId, targetColId) => handleMoveToColumn(cardId, column.id, targetColId)}
                       />
                     ))}
                     

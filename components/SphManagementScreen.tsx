@@ -270,7 +270,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                   <tr><td className="px-6 py-5 text-center text-slate-400" colSpan={6}>Tidak ada SPH</td></tr>
                 ) : (
                   sphList.map((sph) => (
-                    <tr key={sph.id} className="group hover:bg-slate-50 dark:bg-slate-900 transition-colors">
+                    <tr key={sph.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer" onClick={() => handleViewSph(sph)}>
                       <td className="px-6 py-5 font-bold text-slate-900 dark:text-white font-mono tracking-tight">{sph.sph_no}</td>
                       <td className="px-6 py-5 text-slate-500 dark:text-slate-400 font-medium">
                         {sph.date_created ? format(new Date(sph.date_created), 'dd MMM yyyy', { locale: id }) : '-'}

@@ -292,7 +292,10 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
           <div className="overflow-x-auto">
             {loading && clients.length === 0 ? (
               <div className="flex items-center justify-center py-12">
-                <div className="text-slate-400">Loading...</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat...</p>
+                </div>
               </div>
             ) : clients.length === 0 ? (
               <div className="flex items-center justify-center py-12">
@@ -409,7 +412,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                 <button 
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
+                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
                 >
                   Sebelumnya
                 </button>
@@ -435,7 +438,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
                 <button 
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                  className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
                 >
                   Selanjutnya
                 </button>

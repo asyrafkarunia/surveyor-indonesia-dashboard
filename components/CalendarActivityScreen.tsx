@@ -266,32 +266,37 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
           return (
             <div
               key={idx}
-              className={`group relative min-h-[140px] border-b border-r border-slate-100 dark:border-slate-700 p-2 transition-colors hover:bg-slate-50 dark:bg-slate-900/50 ${
-                !day ? 'bg-slate-50 dark:bg-slate-900/30 text-slate-300' : 'text-slate-900 dark:text-white'
+              className={`group relative min-h-[100px] md:min-h-[140px] border-b border-r border-slate-100 dark:border-slate-700 p-2 transition-colors hover:bg-slate-50 dark:bg-slate-900/50 ${
+                !day ? 'bg-slate-50 dark:bg-slate-900/30 text-slate-300' : 'text-slate-900 dark:text-white cursor-pointer'
               }`}
+              onClick={() => {
+                if (!day) return;
+                if (dayEvents.length > 0) {
+                  setDayViewDate(cellDate);
+                  setDayViewEvents(dayEvents);
+                  setIsDayListModalOpen(true);
+                } else {
+                  setSelectedDate(cellDate);
+                  setIsModalOpen(true);
+                }
+              }}
             >
               {day && (
                 <>
-                  <button 
-                    onClick={() => {
-                      if (dayEvents.length > 0) {
-                        setDayViewDate(cellDate);
-                        setDayViewEvents(dayEvents);
-                        setIsDayListModalOpen(true);
-                      }
-                    }}
-                    className={`block w-full text-right text-xs font-black mb-1 hover:text-primary transition-colors ${isToday ? 'text-primary' : ''}`}
+                  <div 
+                    className={`block w-full text-right text-xs font-black mb-1 ${isToday ? 'text-primary' : ''}`}
                   >
                     {day}
-                  </button>
+                  </div>
 
-                  {/* Add button */}
+                  {/* Add button - Hidden on mobile, hover on desktop */}
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setSelectedDate(cellDate);
                       setIsModalOpen(true);
                     }}
-                    className="absolute left-2 top-2 hidden size-6 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-dark group-hover:flex transition-all active:scale-90"
+                    className="absolute left-2 top-2 hidden md:group-hover:flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-dark transition-all active:scale-90 z-20"
                     title="Tambah aktivitas"
                   >
                     <span className="material-symbols-outlined text-[16px]">add</span>
@@ -477,7 +482,7 @@ return (
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Kalender Aktivitas</h2>
             <p className="mt-2 text-base text-slate-500 dark:text-slate-400 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-end w-full sm:w-auto gap-3">
             <button 
               onClick={handleExport}
               className="group flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors hover:border-primary hover:text-primary shadow-sm"
@@ -518,7 +523,10 @@ return (
           <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900/20 custom-scrollbar">
             {loading ? (
               <div className="flex items-center justify-center h-96">
-                <div className="text-slate-400">Loading...</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat...</p>
+                </div>
               </div>
             ) : (
               renderMonthView()

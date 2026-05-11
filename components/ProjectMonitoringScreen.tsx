@@ -64,6 +64,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [progressFilter, setProgressFilter] = useState<string>('');
   const [contractFilter, setContractFilter] = useState<string>('');
   const [projectTypeFilter, setProjectTypeFilter] = useState<string>('');
+  const [tenderFilter, setTenderFilter] = useState<string>('');
+  const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
   const [picOptions, setPicOptions] = useState<string[]>([]);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [selectedExportIds, setSelectedExportIds] = useState<string[]>([]);
@@ -71,7 +73,15 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [clientIdFilter, setClientIdFilter] = useState<string>('');
   const projectListRef = useRef<HTMLDivElement | null>(null);
 
-  const VISIBLE_YEARS_COUNT = 4;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const VISIBLE_YEARS_COUNT = isMobile ? 3 : 4;
   const visibleYears = allYears.slice(visibleStartIndex, visibleStartIndex + VISIBLE_YEARS_COUNT);
 
   useEffect(() => {
@@ -85,7 +95,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         setVisibleStartIndex(newStartIndex);
       }
     }
-  }, [selectedYear]);
+  }, [selectedYear, VISIBLE_YEARS_COUNT]);
 
   const scrollYears = (direction: 'left' | 'right') => {
     if (direction === 'left') {
@@ -252,7 +262,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   };
 
   const handleResetSearch = () => {
-    setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setSearchInput(''); setClientIdFilter('');
+    setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setSearchInput(''); setClientIdFilter(''); setTenderFilter('');
   };
 
   const formatDate = (dateString: string) => {
@@ -364,11 +374,16 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const donutData = calculateDonutData();
   const statusOptions = ['RUNNING', 'PENDING', 'DONE', 'REJECTED'];
   const projectTypeOptions = [
-    { value: 'assurance', label: 'Assurance' },
-    { value: 'inspection', label: 'Inspection' },
-    { value: 'testing', label: 'Testing' },
-    { value: 'certification', label: 'Certification' },
-    { value: 'consultancy', label: 'Consultancy' },
+    { value: 'Minyak, Gas, & Energi Terbarukan', label: 'Minyak, Gas, & Energi Terbarukan' },
+    { value: 'Infrastruktur & Transportasi', label: 'Infrastruktur & Transportasi' },
+    { value: 'Mineral & Batubara', label: 'Mineral & Batubara' },
+    { value: 'Institusi & Pemerintahan', label: 'Institusi & Pemerintahan' },
+    { value: 'Layanan Industri', label: 'Layanan Industri' },
+    { value: 'Lingkungan & Keberlanjutan', label: 'Lingkungan & Keberlanjutan' },
+  ];
+  const tenderOptions = [
+    { value: 'true', label: 'Tender' },
+    { value: 'false', label: 'Non-Tender' },
   ];
   const progressOptions = [
     { value: '0', label: '0%' },
@@ -396,7 +411,14 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     if (picFilter && (project.pic?.name || '') !== picFilter) return false;
     if (picMarketingFilter && (project.marketing_pic?.name || '') !== picMarketingFilter) return false;
     if (statusFilter && (project.status || '') !== statusFilter) return false;
-    if (projectTypeFilter && (project.project_type || '').toLowerCase() !== projectTypeFilter.toLowerCase()) return false;
+    if (projectTypeFilter) {
+      const type = project.project_type || 'Minyak, Gas, & Energi Terbarukan';
+      if (type.toLowerCase() !== projectTypeFilter.toLowerCase()) return false;
+    }
+    if (tenderFilter) {
+      if (tenderFilter === 'true' && !project.is_tender) return false;
+      if (tenderFilter === 'false' && project.is_tender) return false;
+    }
     if (progressFilter) {
       const progress = Number(project.progress) || 0;
       if (progressFilter === '0' && progress !== 0) return false;
@@ -451,35 +473,45 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
 
   return (
     <main id="project-list-container" className="flex-1 flex flex-col min-w-0 overflow-auto bg-background-light">
-      <header className="p-8 pb-4">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[#0f172a] dark:text-white text-3xl font-black tracking-tight">Dashboard Monitoring Status Proyek</h2>
-            <p className="text-[#64748b] dark:text-slate-300 text-sm font-normal uppercase tracking-wider">Pantau seluruh tahapan proyek assurance di Indonesia</p>
+    <header className="px-6 md:px-8 pt-8 pb-4">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-[#0f172a] dark:text-white text-2xl md:text-3xl font-black tracking-tight leading-tight mb-2">Dashboard Monitoring Status Proyek</h2>
+            <p className="text-[#64748b] dark:text-slate-300 text-xs md:text-sm font-medium opacity-70">Pantau seluruh tahapan proyek assurance di Indonesia</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button id="add-project-btn" onClick={onAddProject} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-bold shadow-md hover:bg-primary-dark transition-all active:scale-95">
-              <span className="material-symbols-outlined text-lg">add_circle</span>
-              Tambah Proyek Baru
-            </button>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-xl border border-[#e2e8f0] dark:border-slate-700 shadow-sm w-fit">
-          <button onClick={() => scrollYears('left')} disabled={!canScrollLeft} className={`p-2 hover:bg-gray-100 rounded transition-colors ${canScrollLeft ? 'text-[#64748b] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'}`}>
-            <span className="material-symbols-outlined">chevron_left</span>
+          
+          <button 
+            id="add-project-btn" 
+            onClick={onAddProject} 
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95 w-full md:w-auto"
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            Tambah Proyek Baru
           </button>
-          <div className="flex items-center gap-2">
+        </div>
+
+        <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm w-fit self-start">
+          <button onClick={() => scrollYears('left')} disabled={!canScrollLeft} className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-all ${canScrollLeft ? 'text-slate-500 dark:text-slate-400 cursor-pointer' : 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'}`}>
+            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+          </button>
+          <div className="flex items-center gap-1.5">
             {visibleYears.map(year => (
-              <button key={year} onClick={() => handleYearChange(year)} className={`px-5 py-2 text-sm font-bold rounded-lg transition-all min-w-[70px] ${year === selectedYear ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105 ring-2 ring-primary/20' : 'text-[#6b7280] dark:text-slate-400 hover:bg-gray-100 hover:scale-105 border border-transparent hover:border-gray-200'}`}>
+              <button 
+                key={year} 
+                onClick={() => handleYearChange(year)} 
+                className={`px-5 py-2 text-xs font-black rounded-xl transition-all min-w-[75px] uppercase tracking-wider ${year === selectedYear ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105 ring-2 ring-primary/20' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-600 dark:hover:text-slate-300'}`}
+              >
                 {year}
               </button>
             ))}
           </div>
-          <button onClick={() => scrollYears('right')} disabled={!canScrollRight} className={`p-2 hover:bg-gray-100 rounded transition-colors ${canScrollRight ? 'text-[#64748b] dark:text-slate-300 cursor-pointer' : 'text-gray-300 cursor-not-allowed opacity-50'}`}>
-            <span className="material-symbols-outlined">chevron_right</span>
+          <button onClick={() => scrollYears('right')} disabled={!canScrollRight} className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-all ${canScrollRight ? 'text-slate-500 dark:text-slate-400 cursor-pointer' : 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'}`}>
+            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
           </button>
         </div>
-      </header>
+      </div>
+    </header>
 
       <section className="px-8 py-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -499,7 +531,10 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             </h3>
             {loading ? (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#64748b] dark:text-slate-300">Loading...</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat data...</p>
+                </div>
               </div>
             ) : stats ? (
               <div className="flex flex-col md:flex-row items-center gap-8">
@@ -547,26 +582,59 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             </h3>
             {loading ? (
               <div className="flex items-center justify-center h-48">
-                <div className="text-sm text-[#64748b] dark:text-slate-300">Loading...</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat data...</p>
+                </div>
               </div>
             ) : stats?.portfolioData && stats.portfolioData.length > 0 ? (() => {
-              const portfolioColors = ['#1e40af', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777', '#475569', '#65a30d', '#4338ca'];
-              const totalPortfolio = stats.portfolioData.reduce((sum: number, item: any) => sum + item.count, 0);
+              const portfolioColors: Record<string, string> = {
+                'minyak, gas, & energi terbarukan': '#1e40af',
+                'infrastruktur & transportasi': '#059669',
+                'mineral & batubara': '#d97706',
+                'institusi & pemerintahan': '#dc2626',
+                'layanan industri': '#7c3aed',
+                'lingkungan & keberlanjutan': '#0284c7',
+              };
+
+              // Aggregate from projects array to ensure consistency with table badges
+              const aggregatedData: Record<string, number> = {};
+              projects.forEach((project: any) => {
+                const pType = (project.project_type || '').toLowerCase();
+                const isValidDBS = ['minyak, gas, & energi terbarukan', 'infrastruktur & transportasi', 'mineral & batubara', 'institusi & pemerintahan', 'layanan industri', 'lingkungan & keberlanjutan'].includes(pType);
+                const displayLabel = isValidDBS ? project.project_type : 'Minyak, Gas, & Energi Terbarukan';
+                aggregatedData[displayLabel] = (aggregatedData[displayLabel] || 0) + 1;
+              });
+
+              const processedPortfolio = Object.entries(aggregatedData)
+                .map(([category, count]) => ({ category, count }))
+                .sort((a, b) => b.count - a.count);
+
+              const totalPortfolio = processedPortfolio.reduce((sum, item) => sum + item.count, 0);
+
+              if (totalPortfolio === 0) {
+                return (
+                  <div className="flex items-center justify-center h-48">
+                    <div className="text-sm text-[#64748b] dark:text-slate-300">Tidak ada data portofolio</div>
+                  </div>
+                );
+              }
+
               return (
                 <div className="space-y-5">
                   {/* Stacked Bar */}
                   <div className="w-full h-10 rounded-xl overflow-hidden flex shadow-inner" style={{ backgroundColor: '#f1f5f9' }}>
-                    {stats.portfolioData.map((item: any, index: number) => {
-                      const pct = totalPortfolio > 0 ? (item.count / totalPortfolio) * 100 : 0;
-                      if (pct <= 0) return null;
+                    {processedPortfolio.map((item, index) => {
+                      const pct = (item.count / totalPortfolio) * 100;
+                      const color = portfolioColors[item.category.toLowerCase()] || '#475569';
                       return (
                         <div
                           key={index}
                           className="h-full transition-all duration-1000 relative group/bar"
-                          style={{ width: `${pct}%`, backgroundColor: portfolioColors[index % portfolioColors.length], minWidth: pct > 0 ? '12px' : '0' }}
-                          title={`${item.category}: ${item.count} Proyek (${item.percentage}%)`}
+                          style={{ width: `${pct}%`, backgroundColor: color, minWidth: pct > 0 ? '12px' : '0' }}
+                          title={`${item.category}: ${item.count} Proyek (${Math.round(pct)}%)`}
                         >
-                          {pct > 10 && (
+                          {pct > 15 && (
                             <span className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white/90 tracking-wide">
                               {Math.round(pct)}%
                             </span>
@@ -576,16 +644,19 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                     })}
                   </div>
                   {/* Legend Grid */}
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-                    {stats.portfolioData.map((item: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: portfolioColors[index % portfolioColors.length] }}></span>
-                          <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight truncate">{item.category}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5">
+                    {processedPortfolio.map((item, index) => {
+                      const color = portfolioColors[item.category.toLowerCase()] || '#475569';
+                      return (
+                        <div key={index} className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: color }}></span>
+                            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight truncate">{item.category}</span>
+                          </div>
+                          <span className="text-[10px] font-black text-slate-900 dark:text-white whitespace-nowrap">{item.count} Proyek</span>
                         </div>
-                        <span className="text-[10px] font-black text-slate-900 dark:text-white whitespace-nowrap">{item.count} Proyek</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -604,19 +675,80 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors duration-300">search</span>
             <input className="w-full bg-slate-100/50 dark:bg-slate-900/50 border-transparent rounded-xl pl-12 pr-4 py-3 text-[13px] font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 border-none placeholder:text-slate-400 dark:text-white transition-all duration-300 outline-none" placeholder="Cari nama proyek, kode, atau kata kunci lainnya... (Tekan Enter)" type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleSearchKeyPress} />
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2 pr-3 border-r border-slate-100 dark:border-slate-700 h-10 shrink-0"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Filter:</span></div>
-              <FilterSelect label="Klien" icon="corporate_fare" value={clientIdFilter} onChange={setClientIdFilter} options={clients.map(c => ({ value: c.id.toString(), label: c.company_name }))} />
-              <FilterSelect label="Portofolio" icon="category" value={projectTypeFilter} onChange={setProjectTypeFilter} options={projectTypeOptions} />
-              <FilterSelect label="PIC Proyek" icon="badge" value={picFilter} onChange={setPicFilter} options={picOptions} />
-              <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
-              <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} />
-              <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} />
-              <button type="button" onClick={handleResetSearch} className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-xl text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-300 tracking-[0.15em] uppercase border border-slate-100 dark:border-slate-800 hover:border-rose-200 active:scale-95 shrink-0">
-                <span className="material-symbols-outlined text-[18px]">restart_alt</span>
-                Atur Ulang
-              </button>
+          <div className="flex flex-wrap items-start justify-between gap-6">
+            <div className="flex flex-col gap-4 flex-1 min-w-0">
+              {(() => {
+                const activeFilters = [
+                  { id: 'client', label: 'Klien', value: clientIdFilter, setter: setClientIdFilter, display: clients.find(c => c.id.toString() === clientIdFilter)?.company_name },
+                  { id: 'dbs', label: 'DBS', value: projectTypeFilter, setter: setProjectTypeFilter, display: projectTypeFilter },
+                  { id: 'tender', label: 'Klasifikasi', value: tenderFilter, setter: setTenderFilter, display: tenderFilter === 'true' ? 'Tender' : 'Non-Tender' },
+                  { id: 'pic', label: 'PIC', value: picFilter, setter: setPicFilter, display: picFilter },
+                  { id: 'status', label: 'Status', value: statusFilter, setter: setStatusFilter, display: statusFilter },
+                  { id: 'progress', label: 'Progres', value: progressFilter, setter: setProgressFilter, display: progressOptions.find(o => o.value === progressFilter)?.label },
+                  { id: 'contract', label: 'Kontrak', value: contractFilter, setter: setContractFilter, display: contractOptions.find(o => o.value === contractFilter)?.label },
+                ].filter(f => f.value);
+                
+                return (
+                  <>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="relative">
+                        <button type="button" onClick={() => setIsFilterPopupOpen(!isFilterPopupOpen)} className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl text-sm font-bold transition-all ${isFilterPopupOpen || activeFilters.length > 0 ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-primary hover:text-primary'}`}>
+                          <span className="material-symbols-outlined text-[18px]">tune</span>
+                          Filter Data
+                          {activeFilters.length > 0 && <span className="ml-1 bg-white text-primary text-[10px] px-1.5 py-0.5 rounded-full leading-none font-black">{activeFilters.length}</span>}
+                        </button>
+                        
+                        {isFilterPopupOpen && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setIsFilterPopupOpen(false)}></div>
+                            <div className="absolute top-full left-0 mt-3 p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl z-50 w-[800px] max-w-[85vw] animate-in fade-in slide-in-from-top-2">
+                              <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-700 pb-3">
+                                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                  <span className="material-symbols-outlined text-primary text-[18px]">filter_alt</span>
+                                  Pilih Filter
+                                </h3>
+                                <button onClick={() => setIsFilterPopupOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-700 p-1 rounded-lg">
+                                  <span className="material-symbols-outlined">close</span>
+                                </button>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <FilterSelect label="Klien" icon="corporate_fare" value={clientIdFilter} onChange={setClientIdFilter} options={clients.map(c => ({ value: c.id.toString(), label: c.company_name }))} className="max-w-full!" />
+                                <FilterSelect label="DBS" icon="category" value={projectTypeFilter} onChange={setProjectTypeFilter} options={projectTypeOptions} className="max-w-full!" />
+                                <FilterSelect label="Klasifikasi" icon="gavel" value={tenderFilter} onChange={setTenderFilter} options={tenderOptions} className="max-w-full!" />
+                                <FilterSelect label="PIC Proyek" icon="badge" value={picFilter} onChange={setPicFilter} options={picOptions} className="max-w-full!" />
+                                <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} className="max-w-full!" />
+                                <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} className="max-w-full!" />
+                                <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} className="max-w-full!" />
+                              </div>
+                              <div className="mt-6 flex justify-end">
+                                <button onClick={() => setIsFilterPopupOpen(false)} className="px-6 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-md hover:bg-slate-800 dark:hover:bg-white transition-all active:scale-95">
+                                  Terapkan Filter
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {activeFilters.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 mt-1 animate-in fade-in">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-1">Aktif:</span>
+                        {activeFilters.map(filter => (
+                          <div key={filter.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 dark:bg-primary/20 border border-primary/20 text-primary rounded-lg text-xs font-bold transition-all group">
+                            <span className="opacity-70 font-medium">{filter.label}:</span>
+                            <span className="truncate max-w-[150px]">{filter.display}</span>
+                            <button onClick={() => filter.setter('')} className="hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/50 p-0.5 rounded-md ml-1 flex items-center justify-center transition-colors">
+                              <span className="material-symbols-outlined text-[14px]">close</span>
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={handleResetSearch} className="text-[11px] font-bold text-slate-400 hover:text-rose-500 underline ml-2 transition-colors">Bersihkan Semua</button>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
             <button type="button" onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-xl text-[10px] font-black text-primary transition-all duration-300 tracking-[0.15em] uppercase border border-primary/20 hover:border-primary/40 active:scale-95 shrink-0">
               <span className="material-symbols-outlined text-[18px]">download</span>
@@ -634,11 +766,9 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 <tr id="project-table-header" className="bg-gray-50 dark:bg-slate-900/50 border-b border-[#e2e8f0] dark:border-slate-700">
                   <th className="px-4 py-5 w-10 text-center"><input type="checkbox" className="h-4 w-4 text-primary border-[#e2e8f0] dark:border-slate-600 rounded focus:ring-primary dark:bg-slate-800" checked={allVisibleSelected} onChange={handleToggleSelectAllVisible} onClick={(e) => e.stopPropagation()} /></th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Klien & Proyek</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Portofolio</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">DBS</th>
                   <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">PIC Proyek</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Status Terkini</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Progres Timeline</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Kontrak Proyek</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-[#64748b] dark:text-slate-300 uppercase tracking-[0.15em]">Status & Timeline</th>
                   <th className="px-6 py-5 text-right"></th>
                 </tr>
               </thead>
@@ -670,8 +800,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                                 <span className="material-symbols-outlined text-slate-300 dark:text-slate-600">domain</span>
                               )}
                             </div>
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors truncate">{highlightText(project.title || '', searchQuery)}</span>
+                            <div className="flex flex-col min-w-0 max-w-[280px] md:max-w-[400px]">
+                              <span className="text-sm font-black text-[#0f172a] dark:text-white group-hover:text-primary transition-colors line-clamp-2 leading-tight mb-1">{highlightText(project.title || '', searchQuery)}</span>
                               <div className="flex items-center gap-2 mt-0.5">
                                 <span className="text-[10px] font-black text-primary uppercase tracking-widest">{highlightText(project.code || '', searchQuery)}</span>
                                 <span className="text-slate-300 dark:text-slate-600 text-[10px]">•</span>
@@ -683,20 +813,31 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                         <td className="px-6 py-5 whitespace-nowrap">
                           {(() => {
                             const portfolioColors: Record<string, string> = {
-                              certification: '#1e40af',
-                              inspection: '#059669',
-                              testing: '#d97706',
-                              assurance: '#dc2626',
-                              consultancy: '#7c3aed',
+                              'minyak, gas, & energi terbarukan': '#1e40af',
+                              'infrastruktur & transportasi': '#059669',
+                              'mineral & batubara': '#d97706',
+                              'institusi & pemerintahan': '#dc2626',
+                              'layanan industri': '#7c3aed',
+                              'lingkungan & keberlanjutan': '#0284c7',
+                              // Fallbacks for older data
+                              'certification': '#1e40af',
+                              'inspection': '#059669',
+                              'testing': '#d97706',
+                              'assurance': '#dc2626',
+                              'consultancy': '#7c3aed',
                             };
                             const pType = (project.project_type || '').toLowerCase();
-                            const color = portfolioColors[pType] || '#475569';
-                            const label = project.project_type ? project.project_type.charAt(0).toUpperCase() + project.project_type.slice(1).toLowerCase() : 'N/A';
+                            const isValidDBS = ['minyak, gas, & energi terbarukan', 'infrastruktur & transportasi', 'mineral & batubara', 'institusi & pemerintahan', 'layanan industri', 'lingkungan & keberlanjutan'].includes(pType);
+                            const displayLabel = isValidDBS ? project.project_type : 'Minyak, Gas, & Energi Terbarukan';
+                            const color = portfolioColors[displayLabel.toLowerCase()] || '#1e40af';
+                            
                             return (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tight border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }}></span>
-                                {label}
-                              </span>
+                              <div className="inline-flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 max-w-[140px]">
+                                <div className="w-2 h-2 rounded-full shrink-0 mt-[3px]" style={{ backgroundColor: color }}></div>
+                                <span className="text-[10px] font-black uppercase tracking-tight text-slate-700 dark:text-slate-200 whitespace-normal wrap-break-word leading-tight">
+                                  {displayLabel}
+                                </span>
+                              </div>
                             );
                           })()}
                         </td>
@@ -709,25 +850,22 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(project.status)}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(project.status)} mr-2`}></span>
-                            {project.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5">
-                          <div className="flex flex-col gap-1.5 w-full max-w-[160px]">
-                            <div className="flex justify-between items-center text-[10px] font-black text-slate-500 dark:text-slate-400">
-                              <span>{project.progress || 0}% • {getTimelineText(project)}</span>
+                          <div className="flex flex-col gap-2 w-full min-w-[180px] max-w-[220px]">
+                            <div className="flex justify-between items-center">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${getStatusStyle(project.status)}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(project.status)} mr-1.5`}></span>
+                                {project.status}
+                              </span>
+                              <span className="text-[10px] font-black text-slate-500 dark:text-slate-400">{project.progress || 0}%</span>
                             </div>
-                            <div className="w-full bg-[#f1f5f9] dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                              <div className={`${getProgressColor(project.status)} h-full rounded-full`} style={{ width: `${project.progress || 0}%` }}></div>
+                            <div className="w-full bg-[#f1f5f9] dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                              <div className={`${getProgressColor(project.status)} h-full rounded-full transition-all duration-500`} style={{ width: `${project.progress || 0}%` }}></div>
+                            </div>
+                            <div className="flex flex-col gap-1 text-[9px] font-bold text-slate-400 mt-1.5">
+                              <span>{getTimelineText(project)}</span>
+                              <span className="text-slate-500 dark:text-slate-300">{formatDate(project.start_date)} - {formatDate(project.end_date)}</span>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-5">
-                          <span className="text-xs text-[#64748b] dark:text-slate-300 font-bold tracking-tight uppercase">
-                            {formatDate(project.start_date)} - {formatDate(project.end_date)}
-                          </span>
                         </td>
                         <td className="px-6 py-5 text-right whitespace-nowrap relative" onClick={(e) => e.stopPropagation()}>
                           <button onClick={(e) => { e.stopPropagation(); setActionMenuProjectId(actionMenuProjectId === projectId ? null : projectId); }} className="text-[#64748b] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full">

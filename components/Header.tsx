@@ -120,7 +120,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationClick, activ
         >
           <span className="material-symbols-outlined" aria-hidden="true">menu</span>
         </button>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{activeId === 'notifications' ? 'Notifikasi' : 'Overview'}</h2>
       </div>
 
       <div className="flex items-center gap-4">

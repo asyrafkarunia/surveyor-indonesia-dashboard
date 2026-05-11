@@ -439,7 +439,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
           <div className="flex gap-3 shrink-0">
             <button 
               onClick={handleDeleteAll}
-              className="group flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 px-4 text-slate-700 dark:text-slate-200 text-sm font-bold hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm"
+              className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all uppercase tracking-widest shadow-sm"
             >
               <span className="material-symbols-outlined text-lg text-slate-400 group-hover:text-primary">delete_sweep</span>
               <span>Hapus Semua</span>
@@ -569,7 +569,10 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
           {/* Items List */}
           {loading && notifications.length === 0 ? (
             <div className="flex items-center justify-center py-12">
-              <div className="text-slate-400">Loading...</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat...</p>
+                </div>
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex items-center justify-center py-12">

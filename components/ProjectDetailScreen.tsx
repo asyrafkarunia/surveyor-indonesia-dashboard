@@ -59,8 +59,18 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   const [attachmentToDelete, setAttachmentToDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [useCustomPic, setUseCustomPic] = useState(false);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<number[]>([]);
+  const [customTeamNotes, setCustomTeamNotes] = useState('');
+  const [teamSearch, setTeamSearch] = useState('');
+
   useEffect(() => {
     fetchProject();
+    api.getUsers().then(data => {
+      const raw = (data as any)?.data || data;
+      setUsers(Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []));
+    }).catch(console.error);
   }, [projectId]);
 
   const fetchProject = async (silent = false) => {
@@ -77,7 +87,12 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         latitude: data?.latitude != null ? String(data.latitude) : '',
         longitude: data?.longitude != null ? String(data.longitude) : '',
         description: data?.description || '',
+        pic_id: data?.pic_id || '',
+        custom_pic_name: data?.custom_pic_name || '',
       });
+      setUseCustomPic(!!data?.custom_pic_name);
+      setSelectedTeamMembers(data?.team_member_users?.map((u: any) => u.id) || []);
+      setCustomTeamNotes(data?.custom_team_notes || '');
     } catch (e: any) {
       setError(e?.message || 'Gagal memuat detail proyek');
     } finally {
@@ -96,7 +111,12 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         latitude: project.latitude != null ? String(project.latitude) : '',
         longitude: project.longitude != null ? String(project.longitude) : '',
         description: project.description || '',
+        pic_id: project.pic_id || '',
+        custom_pic_name: project.custom_pic_name || '',
       });
+      setUseCustomPic(!!project.custom_pic_name);
+      setSelectedTeamMembers(project.team_member_users?.map((u: any) => u.id) || []);
+      setCustomTeamNotes(project.custom_team_notes || '');
     }
   };
 
@@ -111,6 +131,10 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         latitude: editData.latitude !== '' ? Number(editData.latitude) : null,
         longitude: editData.longitude !== '' ? Number(editData.longitude) : null,
         description: editData.description || null,
+        pic_id: useCustomPic ? null : (editData.pic_id ? Number(editData.pic_id) : null),
+        custom_pic_name: useCustomPic ? editData.custom_pic_name || null : null,
+        team_members: selectedTeamMembers,
+        custom_team_notes: customTeamNotes || null,
       };
       await api.updateProject(projectId, payload);
       await fetchProject();
@@ -193,31 +217,33 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     }
   };
 
+  const getFileUrl = (path: string) => {
+    if (path.startsWith('http')) return path;
+    const base = (((import.meta as any).env.VITE_API_URL) || 'http://localhost:8000/api').replace(/\/api$/, '');
+    // Bersihkan prefix public/ jika tersimpan di DB
+    const cleanPath = path.replace(/^public\//, '');
+    return `${base}/storage/${cleanPath}`;
+  };
+
   const handleDownloadAttachment = async (att: any) => {
-    if (att.url && !att.file_path) {
-      // Just a link
-      window.open(att.url, '_blank');
+    // 1. Cek apakah ini eksternal link (berdasarkan flag tipe, ketiadaan nama file, atau isi string)
+    const isLink = att.type === 'link' || (!att.file_name && (att.url || att.file_path));
+    const linkUrl = att.url || att.file_path;
+    
+    if (isLink && linkUrl) {
+      const formattedUrl = linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`;
+      window.open(formattedUrl, '_blank');
       return;
     }
     
-    try {
-      const blob = await api.downloadProjectAttachment(String(project.id), att.id);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      // If it's a PDF, try to open in new tab instead of direct download to enable browser viewing
-      if (att.file_name?.toLowerCase().endsWith('.pdf')) {
-         window.open(url, '_blank');
-      } else {
-         a.download = att.file_name || 'download';
-         document.body.appendChild(a);
-         a.click();
-         document.body.removeChild(a);
-      }
-      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-    } catch (error: any) {
-      showToast('Gagal mengunduh file', 'error');
+    // 2. Jika file biasa, langsung buka URL storage-nya seperti pada SPH
+    if (att.file_path) {
+      window.open(getFileUrl(att.file_path), '_blank');
+      return;
     }
+
+    // 3. Fallback jika file path tidak ada sama sekali
+    showToast('Tautan dokumen tidak tersedia', 'error');
   };
 
   if (loading) return (
@@ -238,90 +264,101 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   );
 
   return (
-    <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0f172a] custom-scrollbar">
+    <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0f172a] custom-scrollbar pb-12">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-teal-500 hover:text-white transition-all shadow-sm">
-             <span className="material-symbols-outlined">arrow_back</span>
-          </button>
-          <div className="hidden md:block">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Project Code</p>
-            <p className="text-xs font-bold text-slate-900 dark:text-white">{project.code}</p>
+      <nav className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-3 md:py-4">
+        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <button onClick={onBack} className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-teal-500 hover:text-white transition-all shadow-sm shrink-0">
+               <span className="material-symbols-outlined text-[20px] md:text-[24px]">arrow_back</span>
+            </button>
+            <div className="min-w-0">
+              <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5 md:mb-1">Project Code</p>
+              <p className="text-[11px] md:text-xs font-bold text-slate-900 dark:text-white truncate">{project.code}</p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsScheduleOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:bg-orange-600 active:scale-95 transition-all"
-          >
-            <span className="material-symbols-outlined text-[18px]">timeline</span>
-            Lihat Schedule
-          </button>
+          <div className="flex items-center justify-center sm:justify-end gap-2 md:gap-3 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 custom-scrollbar-hide w-full sm:w-auto">
+            <button 
+              onClick={() => setIsScheduleOpen(true)}
+              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-orange-500 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:bg-orange-600 active:scale-95 transition-all whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined text-[16px] md:text-[18px]">timeline</span>
+              <span className="hidden xs:inline">Lihat</span> Schedule
+            </button>
 
-          {canEdit && (
-            <button 
-              id="update-capaian-btn"
-              onClick={() => setIsUpdateModalOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-700 active:scale-95 transition-all"
-            >
-              <span className="material-symbols-outlined text-[18px]">sync_alt</span>
-              Update Capaian
-            </button>
-          )}
-          {canEdit && (
-            <button 
-              onClick={isEditing ? handleSaveEdit : () => setIsEditing(true)}
-              disabled={saving}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
-                ${isEditing 
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
-                  : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50'}`}
-            >
-              <span className="material-symbols-outlined text-[18px]">{isEditing ? 'done_all' : 'edit_square'}</span>
-              {isEditing ? 'Selesai Edit' : 'Edit Detail'}
-            </button>
-          )}
+            {canEdit && (
+              <button 
+                id="update-capaian-btn"
+                onClick={() => setIsUpdateModalOpen(true)}
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-teal-600 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-700 active:scale-95 transition-all whitespace-nowrap"
+              >
+                <span className="material-symbols-outlined text-[16px] md:text-[18px]">sync_alt</span>
+                Update <span className="hidden xs:inline">Capaian</span>
+              </button>
+            )}
+            {canEdit && (
+              <button 
+                onClick={isEditing ? handleSaveEdit : () => setIsEditing(true)}
+                disabled={saving}
+                className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap
+                  ${isEditing 
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
+                    : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-50 shadow-sm'}`}
+              >
+                <span className="material-symbols-outlined text-[16px] md:text-[18px]">{isEditing ? 'done_all' : 'edit_square'}</span>
+                {isEditing ? 'Selesai' : 'Edit'} <span className="hidden xs:inline">Detail</span>
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 
-      <div className="mx-auto max-w-7xl p-6 md:p-8 space-y-8">
+      <div className="mx-auto max-w-7xl p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Hero Section */}
-        <div id="project-header" className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+        <div id="project-header" className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
           <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-start justify-between">
-            <div className="flex-1 space-y-4">
-              <div className="flex items-center gap-3">
-                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border
+            <div className="flex-1 space-y-5">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                <span className={`px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest border
                   ${project.status === 'RUNNING' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-50 text-slate-500 border-slate-100'}`}>
                   {project.status}
                 </span>
-                <span className="text-xs font-bold text-slate-400">Terdaftar {formatDate(project.created_at)}</span>
+                <span className={`px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest border
+                  ${project.is_tender ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-purple-50 text-purple-600 border-purple-100'}`}>
+                  {project.is_tender ? 'Tender' : 'Non-Tender'}
+                </span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-400">Terdaftar {formatDate(project.created_at)}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-[1.1]">{project.title}</h1>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
-                  <span className="material-symbols-outlined text-teal-600">apartment</span>
-                  {project.client?.company_name || 'No Client'}
+              <h1 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight md:leading-[1.1] max-w-4xl">{project.title}</h1>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                <div className="flex items-center gap-2 text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300">
+                  <span className="material-symbols-outlined text-teal-600 text-lg md:text-xl">apartment</span>
+                  <span className="truncate">{project.client?.company_name || 'No Client'}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
-                   <span className="material-symbols-outlined text-teal-600">category</span>
-                   {toPascalCase(project.project_type || 'Uncategorized')}
+                <div className="flex items-start gap-2 text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-[280px]">
+                   <span className="material-symbols-outlined text-teal-600 text-lg md:text-xl mt-0.5 shrink-0">category</span>
+                   {(() => {
+                      const pType = (project.project_type || '').toLowerCase();
+                      const isValidDBS = ['minyak, gas, & energi terbarukan', 'infrastruktur & transportasi', 'mineral & batubara', 'institusi & pemerintahan', 'layanan industri', 'lingkungan & keberlanjutan'].includes(pType);
+                      const displayLabel = isValidDBS ? project.project_type : 'Minyak, Gas, & Energi Terbarukan';
+                      return <span className="whitespace-normal break-words leading-snug">{displayLabel}</span>;
+                   })()}
                 </div>
               </div>
             </div>
 
-            <div className="w-full lg:w-72 space-y-4">
-               <div className="flex justify-between items-end mb-2">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">Progress Lapangan</span>
-                  <span className="text-2xl font-black text-teal-600">{project.progress ?? 0}%</span>
+            <div className="w-full lg:w-72 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
+               <div className="flex justify-between items-end mb-2.5">
+                  <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress Lapangan</span>
+                  <span className="text-xl md:text-2xl font-black text-teal-600">{project.progress ?? 0}%</span>
                </div>
-               <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-teal-500 rounded-full transition-all duration-1000 ease-out shadow-sm" style={{ width: `${project.progress ?? 0}%` }}></div>
+               <div className="w-full h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-teal-500 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(20,184,166,0.3)]" style={{ width: `${project.progress ?? 0}%` }}></div>
                </div>
-               <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 text-center">
-                  Target Penyelesaian: <span className="text-slate-900 dark:text-white">{formatDate(project.end_date)}</span>
+               <p className="mt-3 text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 text-center">
+                  Target: <span className="text-slate-900 dark:text-white font-black">{formatDate(project.end_date)}</span>
                </p>
             </div>
           </div>
@@ -433,7 +470,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                               <span className="text-xs font-black text-slate-900 dark:text-white">{c.user?.name}</span>
                               <span className="text-[10px] font-bold text-slate-400">{formatDate(c.created_at)}</span>
                            </div>
-                           <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{c.comment}</p>
+                           <p className="text-[10px] text-slate-400 font-medium wrap-break-word leading-relaxed">{c.comment}</p>
                         </div>
                      </div>
                    ))}
@@ -469,15 +506,51 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 <div className="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
                 <h2 className="text-sm font-black text-slate-900 dark:text-white mb-6 uppercase tracking-widest">Stakeholders</h2>
                 <div className="space-y-6">
-                   <div className="flex items-center gap-4">
-                      <div className="size-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center font-black text-lg">
-                        {project.pic?.name?.[0]?.toUpperCase() || 'P'}
-                      </div>
-                      <div className="min-w-0">
-                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">PIC Internal</p>
-                         <p className="text-sm font-black text-slate-900 dark:text-white truncate">{project.pic?.name || project.custom_pic_name || 'N/A'}</p>
-                      </div>
-                   </div>
+                   {isEditing ? (
+                     <div className="space-y-4">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Project Manager</label>
+                       <div className="flex gap-4 items-center">
+                         <label className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 cursor-pointer">
+                           <input type="radio" name="detail_pic_mode" checked={!useCustomPic} onChange={() => setUseCustomPic(false)} className="text-teal-500 focus:ring-teal-500 w-4 h-4 cursor-pointer" />
+                           Pilih dari daftar
+                         </label>
+                         <label className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 cursor-pointer">
+                           <input type="radio" name="detail_pic_mode" checked={useCustomPic} onChange={() => setUseCustomPic(true)} className="text-teal-500 focus:ring-teal-500 w-4 h-4 cursor-pointer" />
+                           Ketik manual
+                         </label>
+                       </div>
+                       {!useCustomPic ? (
+                         <select
+                           value={editData.pic_id}
+                           onChange={(e) => setEditData({ ...editData, pic_id: e.target.value })}
+                           className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none"
+                         >
+                           <option value="">Pilih Project Manager</option>
+                           {Array.isArray(users) && users.map((u: any) => (
+                             <option key={u.id} value={u.id}>{u.name}</option>
+                           ))}
+                         </select>
+                       ) : (
+                         <input
+                           type="text"
+                           value={editData.custom_pic_name}
+                           onChange={(e) => setEditData({ ...editData, custom_pic_name: e.target.value })}
+                           className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white font-bold focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-all outline-none"
+                           placeholder="Masukkan nama Project Manager..."
+                         />
+                       )}
+                     </div>
+                   ) : (
+                     <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center font-black text-lg">
+                          {project.pic?.name?.[0]?.toUpperCase() || project.custom_pic_name?.[0]?.toUpperCase() || 'P'}
+                        </div>
+                        <div className="min-w-0">
+                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Project Manager</p>
+                           <p className="text-sm font-black text-slate-900 dark:text-white truncate">{project.pic?.name || project.custom_pic_name || 'N/A'}</p>
+                        </div>
+                     </div>
+                   )}
                    <div className="flex items-center gap-4">
                       <div className="size-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black text-lg border border-blue-100">
                         <span className="material-symbols-outlined">corporate_fare</span>
@@ -494,25 +567,104 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
                 <h2 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest flex items-center justify-between">
                   Anggota Tim
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500">{project.team_member_users?.length || 0}</span>
+                  {!isEditing && <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500">{(project.team_member_users?.length || 0) + (project.custom_team_notes ? project.custom_team_notes.split(/[,\n]/).filter((x: string) => x.trim()).length : 0)}</span>}
                 </h2>
-                <div className="space-y-3">
-                   {project.team_member_users?.length > 0 ? (
-                     project.team_member_users.map((u: any) => (
-                       <div key={u.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800">
-                          <div className="size-9 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100">
-                             {u.name?.[0]}
-                          </div>
-                          <div className="min-w-0">
-                             <p className="text-xs font-black text-slate-900 dark:text-white truncate">{u.name}</p>
-                             <p className="text-[10px] font-bold text-slate-500 truncate">{u.email}</p>
-                          </div>
-                       </div>
-                     ))
-                   ) : (
-                     <p className="text-[11px] font-bold text-slate-400 italic py-2">Belum ada anggota spesifik.</p>
-                   )}
-                </div>
+                
+                {isEditing ? (
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Berdasarkan Akun Sistem</label>
+                      <div className="relative">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                        <input
+                          type="text"
+                          placeholder="Cari anggota tim..."
+                          value={teamSearch}
+                          onChange={(e) => setTeamSearch(e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 outline-none"
+                        />
+                      </div>
+                      {teamSearch && (
+                        <div className="max-h-40 overflow-y-auto mt-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm custom-scrollbar p-2">
+                          {users.filter(u => u.name.toLowerCase().includes(teamSearch.toLowerCase())).slice(0, 10).map((user: any) => (
+                            <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg cursor-pointer transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={selectedTeamMembers.includes(user.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) setSelectedTeamMembers(prev => [...prev, user.id]);
+                                  else setSelectedTeamMembers(prev => prev.filter(id => id !== user.id));
+                                }}
+                                className="text-teal-500 focus:ring-teal-500 rounded"
+                              />
+                              <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-500">{user.name[0]}</div>
+                              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{user.name}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {selectedTeamMembers.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {selectedTeamMembers.map(id => {
+                            const user = users.find(u => u.id === id);
+                            if (!user) return null;
+                            return (
+                              <div key={id} className="flex items-center gap-2 bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 rounded-lg px-2 py-1">
+                                <span className="text-xs font-bold text-teal-700 dark:text-teal-400">{user.name}</span>
+                                <button onClick={() => setSelectedTeamMembers(prev => prev.filter(x => x !== id))} className="text-teal-400 hover:text-teal-600">
+                                  <span className="material-symbols-outlined text-[14px]">close</span>
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tambahan Manual</label>
+                      <textarea
+                        value={customTeamNotes}
+                        onChange={(e) => setCustomTeamNotes(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none"
+                        rows={3}
+                        placeholder="Ketik nama anggota tim manual (pisahkan dengan koma atau baris baru)..."
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                     {project.team_member_users?.length > 0 || project.custom_team_notes ? (
+                       <>
+                         {project.team_member_users?.map((u: any) => (
+                           <div key={u.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800">
+                              <div className="size-9 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100">
+                                 {u.name?.[0]}
+                              </div>
+                              <div className="min-w-0">
+                                 <p className="text-xs font-black text-slate-900 dark:text-white truncate">{u.name}</p>
+                                 <p className="text-[10px] font-bold text-slate-500 truncate">{u.email || 'Akun Sistem'}</p>
+                              </div>
+                           </div>
+                         ))}
+                         {project.custom_team_notes && project.custom_team_notes.split(/[,\n]/).filter((x: string) => x.trim()).map((name: string, i: number) => (
+                           <div key={`custom-${i}`} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800">
+                              <div className="size-9 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100">
+                                 {name.trim()[0]?.toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                 <p className="text-xs font-black text-slate-900 dark:text-white truncate">{name.trim()}</p>
+                                 <p className="text-[10px] font-bold text-slate-500 truncate">Tambahan Manual</p>
+                              </div>
+                           </div>
+                         ))}
+                       </>
+                     ) : (
+                       <p className="text-[11px] font-bold text-slate-400 italic py-2">Belum ada anggota spesifik.</p>
+                     )}
+                  </div>
+                )}
              </div>
 
              {/* Attachments */}
@@ -627,7 +779,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
 
       {/* Delete Confirmation Modal */}
       {attachmentToDelete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
             <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-[32px]">warning</span>

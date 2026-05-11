@@ -154,7 +154,10 @@ const CreateMarketingTaskScreen: React.FC<CreateMarketingTaskScreenProps> = ({ o
               Isi formulir di bawah ini untuk menambahkan kartu kegiatan baru ke papan Kanban. Pastikan semua informasi penting terisi untuk memudahkan pelacakan tim.
             </p>
           </div>
-          <BackButton onClick={onCancel} className="mb-0" />
+          <div className="w-full md:w-auto flex justify-end">
+            <BackButton onClick={onCancel} className="mb-0" />
+          </div>
+
         </div>
 
         {/* Form Card */}

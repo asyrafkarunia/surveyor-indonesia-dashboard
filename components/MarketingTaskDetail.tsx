@@ -170,7 +170,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
+        className="bg-white dark:bg-slate-800 w-full max-w-5xl max-h-[90vh] md:max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
@@ -199,13 +199,13 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 min-h-0 overflow-hidden flex flex-col md:flex-row">
+        <div className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row">
           {/* Main Content (Left) */}
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white dark:bg-slate-800">
+          <div className="flex-1 md:overflow-y-auto p-6 md:p-8 custom-scrollbar bg-white dark:bg-slate-800">
             <div className="mb-10">
               <h3 className="text-[10px] font-black text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-[0.2em]">
                 <span className="material-symbols-outlined text-[18px]">description</span>
-                Description
+                Deskripsi Kegiatan
               </h3>
               <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-4 font-medium whitespace-pre-line">
                 {task.description ? (
@@ -220,7 +220,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
               <div className="mb-10">
                 <h3 className="text-[10px] font-black text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-[0.2em]">
                   <span className="material-symbols-outlined text-[18px]">business_center</span>
-                  Linked Project/Client
+                  Proyek / Klien Terkait
                 </h3>
                 <button
                   type="button"
@@ -322,7 +322,7 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-[10px] font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
                   <span className="material-symbols-outlined text-[18px]">history</span>
-                  Riwayat Perubahan
+                  Riwayat Aktivitas
                 </h3>
               </div>
               <div className="relative ml-2 border-l-2 border-slate-50 space-y-8 pl-8">
@@ -391,10 +391,10 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
           </div>
 
           {/* Sidebar (Right) */}
-          <div className="w-full md:w-[340px] bg-slate-50 dark:bg-slate-900 flex flex-col flex-none border-l border-slate-100 dark:border-slate-700">
-            <div className="p-6 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
+          <div className="w-full md:w-[340px] bg-slate-50 dark:bg-slate-900 flex flex-col flex-none border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-700">
+            <div className="p-6 space-y-8 flex-none md:flex-1 md:overflow-y-auto custom-scrollbar">
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Assignees</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Penanggung Jawab</p>
                 <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
                   <div className="relative size-10">
                     {task.assignee.avatar ? (
@@ -427,14 +427,14 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Due Date</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tenggat Waktu</p>
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
                     <span className="material-symbols-outlined text-[18px] text-slate-300">event</span>
                     <span className="text-xs font-black text-slate-700 dark:text-slate-200">{task.date}</span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Priority</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Prioritas</p>
                   <div
                     className={"flex items-center gap-2 p-2.5 rounded-xl shadow-sm " +
                       (task.priority === 'High'
@@ -453,9 +453,9 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[10px] font-black text-slate-400 flex items-center gap-2 uppercase tracking-[0.2em]">
                     <span className="material-symbols-outlined text-[18px]">chat</span>
-                    Discussion
+                    Diskusi
                   </h3>
-                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{comments.length} comments</span>
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{comments.length} komentar</span>
                 </div>
                 <div className="space-y-4">
                   {comments.length === 0 && (
@@ -511,8 +511,8 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
             <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
               <div className="relative group">
                 <input
-                  className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
-                  placeholder="Write a comment..."
+                  className="w-full pl-4 pr-12 py-3 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none"
+                  placeholder="Tulis komentar..."
                   type="text"
                   value={commentInput}
                   onChange={(e) => setCommentInput(e.target.value)}
@@ -536,18 +536,18 @@ const MarketingTaskDetail: React.FC<MarketingTaskDetailProps> = ({ task, onClose
         </div>
 
         {/* Footer Action Bar */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center z-10">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary hover:bg-red-50 text-[10px] font-black uppercase tracking-[0.2em] transition-all group">
+        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 z-10">
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-primary hover:bg-red-50 text-[10px] font-black uppercase tracking-[0.2em] transition-all group border border-transparent hover:border-red-100">
             <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">delete</span>
-            Delete Task
+            Hapus Kegiatan
           </button>
-          <div className="flex gap-3">
-            <button className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 dark:bg-slate-900 transition-all shadow-sm">
-              Mark as Complete
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm active:scale-95">
+              Tandai Selesai
             </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-primary/20 active:scale-95 group">
+            <button className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-primary/20 active:scale-95 group">
               <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">edit</span>
-              Edit Activity
+              Edit Kegiatan
             </button>
           </div>
         </div>

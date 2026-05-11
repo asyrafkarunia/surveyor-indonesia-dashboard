@@ -181,10 +181,10 @@ const DashboardHome: React.FC<{
     <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Welcome Section */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between items-end">
+          <div className="w-full sm:w-auto">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Selamat Datang, {user?.name || 'User'}</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Here is the latest update for your projects.</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Berikut adalah pembaruan terkini untuk proyek Anda.</p>
           </div>
           <DateRangeSelector
             selectedStartMonth={startMonth}
@@ -867,13 +867,13 @@ const AppContent: React.FC = () => {
         items.push({ label: 'Kalendar Aktivitas', id: 'calendar' });
         break;
       case 'marketing_kanban':
-        items.push({ label: 'Kanban Board', id: 'marketing_kanban' });
+        items.push({ label: 'Papan Marketing', id: 'marketing_kanban' });
         if (isCreatingMarketingTask) {
           items.push({ label: 'Tambah Kegiatan', id: 'create_marketing_task' });
         }
         break;
       case 'activity': 
-        items.push({ label: 'Activity Feed', id: 'activity' });
+        items.push({ label: 'Feed Aktivitas', id: 'activity' });
         break;
       case 'notifications': 
         items.push({ label: 'Notifikasi', id: 'notifications' });

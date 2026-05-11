@@ -227,7 +227,7 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
                           key={pageNum}
                           onClick={() => handlePageClick(pageNum)}
                           aria-current={currentPage === pageNum ? 'page' : undefined}
-                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 ${
                             currentPage === pageNum
                               ? 'z-10 bg-primary text-white focus-visible:outline-primary'
                               : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0'

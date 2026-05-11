@@ -549,7 +549,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
-                    Jenis Proyek <span className="text-primary">*</span>
+                    Divisi Bisnis Strategis (DBS) <span className="text-primary">*</span>
                   </label>
                   <select
                     name="project_type"
@@ -558,12 +558,13 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                     className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none cursor-pointer"
                     required
                   >
-                    <option value="">Pilih jenis proyek</option>
-                    <option value="assurance">Assurance</option>
-                    <option value="inspection">Inspection</option>
-                    <option value="testing">Testing</option>
-                    <option value="certification">Certification</option>
-                    <option value="consultancy">Consultancy</option>
+                    <option value="">Pilih DBS</option>
+                    <option value="Minyak, Gas, & Energi Terbarukan">Minyak, Gas, & Energi Terbarukan</option>
+                    <option value="Infrastruktur & Transportasi">Infrastruktur & Transportasi</option>
+                    <option value="Mineral & Batubara">Mineral & Batubara</option>
+                    <option value="Institusi & Pemerintahan">Institusi & Pemerintahan</option>
+                    <option value="Layanan Industri">Layanan Industri</option>
+                    <option value="Lingkungan & Keberlanjutan">Lingkungan & Keberlanjutan</option>
                   </select>
                 </div>
               </div>
@@ -809,25 +810,25 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-6 pb-2 border-b border-slate-100 dark:border-slate-700">
                 <span className="material-symbols-outlined text-primary">verified_user</span>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Detail Assurance</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Detail Personil</h3>
               </div>
               <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px]">
+                <div className="space-y-4">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest text-[10px] mb-2">
                     Pelaksana (Project Lead) <span className="text-primary">*</span>
                   </label>
-              <div className="flex gap-3 items-center">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+              <div className="flex gap-4 items-center">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 cursor-pointer">
                   <input
                     type="radio"
                     name="pic_mode"
                     checked={!useCustomPic}
                     onChange={() => setUseCustomPic(false)}
-                    className="text-primary focus:ring-primary"
+                    className="text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                   />
                   Pilih dari daftar
                 </label>
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 cursor-pointer">
                   <input
                     type="radio"
                     name="pic_mode"
@@ -836,7 +837,7 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
                       setUseCustomPic(true);
                       setFormData(prev => ({ ...prev, pic_id: '' }));
                     }}
-                    className="text-primary focus:ring-primary"
+                    className="text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                   />
                   Ketik manual
                 </label>

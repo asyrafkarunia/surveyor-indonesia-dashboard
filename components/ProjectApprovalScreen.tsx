@@ -164,7 +164,7 @@ const ProjectApprovalScreen: React.FC = () => {
   if (!isApprover()) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-slate-500 dark:text-slate-400">You don't have permission to access this page.</p>
+        <p className="text-slate-500 dark:text-slate-400">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
       </div>
     );
   }
@@ -175,7 +175,7 @@ const ProjectApprovalScreen: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Persetujuan Dokumen</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Review and approve SPH and Audiensi letters</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Tinjau dan setujui surat SPH dan Audiensi</p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -185,7 +185,7 @@ const ProjectApprovalScreen: React.FC = () => {
               title="Refresh Data"
             >
               <span className={`material-symbols-outlined text-lg ${loading ? 'animate-spin' : ''}`}>refresh</span>
-              {loading ? 'Refreshing...' : 'Refresh'}
+              {loading ? 'Menyegarkan...' : 'Segarkan'}
             </button>
           </div>
         </div>
@@ -218,7 +218,7 @@ const ProjectApprovalScreen: React.FC = () => {
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center gap-2">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Loading approvals...</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Memuat persetujuan...</p>
             </div>
           </div>
         ) : (
@@ -227,7 +227,7 @@ const ProjectApprovalScreen: React.FC = () => {
             <div id="approval-list" className="lg:col-span-1 space-y-4 overflow-y-auto max-h-[calc(100vh-16rem)] custom-scrollbar">
               {items.length === 0 ? (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center">
-                  <p className="text-slate-500 dark:text-slate-400">No pending approvals</p>
+                  <p className="text-slate-500 dark:text-slate-400">Tidak ada persetujuan tertunda</p>
                 </div>
               ) : (
                 items.map((item) => (
@@ -278,7 +278,7 @@ const ProjectApprovalScreen: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{selectedItem.title}</h3>
                     <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300 mb-4">
-                      <span>Number: {selectedItem.number}</span>
+                      <span>Nomor: {selectedItem.number}</span>
                       <span>Status: <span className="font-bold">{selectedItem.status}</span></span>
                     </div>
                   </div>
@@ -302,10 +302,10 @@ const ProjectApprovalScreen: React.FC = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Document Information</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">Informasi Dokumen</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">Date:</span>
+                        <span className="text-slate-500 dark:text-slate-400">Tanggal:</span>
                         <p className="font-medium">{new Date(selectedItem.date).toLocaleDateString('id-ID')}</p>
                       </div>
                       <div>
@@ -314,7 +314,7 @@ const ProjectApprovalScreen: React.FC = () => {
                       </div>
                       {selectedItem.value && (
                         <div>
-                          <span className="text-slate-500 dark:text-slate-400">Value:</span>
+                          <span className="text-slate-500 dark:text-slate-400">Nilai:</span>
                           <p className="font-medium">Rp {selectedItem.value.toLocaleString('id-ID')}</p>
                         </div>
                       )}
@@ -323,7 +323,7 @@ const ProjectApprovalScreen: React.FC = () => {
 
                   {selectedItem.description && (
                     <div>
-                      <h4 className="font-bold text-slate-900 dark:text-white mb-2">Description/Content</h4>
+                      <h4 className="font-bold text-slate-900 dark:text-white mb-2">Deskripsi/Konten</h4>
                       <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">{selectedItem.description}</p>
                     </div>
                   )}
@@ -354,6 +354,7 @@ const ProjectApprovalScreen: React.FC = () => {
                       <div className="flex items-start gap-4">
                         <div className="flex-1 space-y-3">
                           <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">
+                            <span className="text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em] text-[8px]">Client</span>
                             {useExistingSignature ? 'Menggunakan tanda tangan yang tersimpan di profil Anda' : 'Silakan pilih file gambar tanda tangan (PNG/JPG)'}
                           </p>
                           <input 
@@ -405,14 +406,14 @@ const ProjectApprovalScreen: React.FC = () => {
                           className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-white font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                           title="Client Accepted"
                         >
-                          <span className="text-xl">✓</span> Client Accepted
+                          <span className="text-xl">✓</span> Klien Menerima
                         </button>
                         <button
                           onClick={() => handleClientDecision('rejected')}
                           className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
                           title="Client Rejected"
                         >
-                          <span className="text-xl">✕</span> Client Rejected
+                          <span className="text-xl">✕</span> Klien Menolak
                         </button>
                       </>
                     ) : (
@@ -425,15 +426,15 @@ const ProjectApprovalScreen: React.FC = () => {
                           {isApproving ? (
                             <>
                               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
-                              Processing...
+                              Memproses...
                             </>
-                          ) : 'Approve & Sign'}
+                          ) : 'Setujui & Tanda Tangani'}
                         </button>
                         <button
                           onClick={() => setShowRejectModal(true)}
                           className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors"
                         >
-                          Reject
+                          Tolak
                         </button>
                       </>
                     )}
@@ -441,7 +442,7 @@ const ProjectApprovalScreen: React.FC = () => {
                 </div>
               ) : (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-12 text-center">
-                  <p className="text-slate-500 dark:text-slate-400">Select an item to review</p>
+                  <p className="text-slate-500 dark:text-slate-400">Pilih item untuk ditinjau</p>
                 </div>
               )}
             </div>
@@ -452,11 +453,11 @@ const ProjectApprovalScreen: React.FC = () => {
         {showRejectModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Reject Document</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Tolak Dokumen</h3>
               <textarea
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Please provide a reason for rejection..."
+                placeholder="Masukkan alasan penolakan..."
                 className="w-full rounded-lg border border-slate-200 dark:border-slate-700 p-3 mb-4 min-h-[100px]"
               />
               <div className="flex gap-4">
@@ -467,13 +468,13 @@ const ProjectApprovalScreen: React.FC = () => {
                   }}
                   className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button
                   onClick={handleReject}
                   className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white font-medium hover:bg-primary-dark transition-colors"
                 >
-                  Confirm Reject
+                  Konfirmasi Tolak
                 </button>
               </div>
             </div>
