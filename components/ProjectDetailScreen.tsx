@@ -278,7 +278,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
             </div>
           </div>
 
-          <div className="flex items-center justify-center sm:justify-end gap-2 md:gap-3 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 custom-scrollbar-hide w-full sm:w-auto">
+          <div className="flex items-center justify-end gap-2 md:gap-3 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 custom-scrollbar-hide w-full sm:w-auto">
             <button 
               onClick={() => setIsScheduleOpen(true)}
               className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-orange-500 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:bg-orange-600 active:scale-95 transition-all whitespace-nowrap"

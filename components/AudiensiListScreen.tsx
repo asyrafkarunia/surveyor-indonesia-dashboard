@@ -129,13 +129,13 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Daftar Surat Audiensi</h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-end gap-3 w-full sm:w-auto">
               <button 
                 onClick={onManageTemplates}
                 className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-all text-xs font-bold text-slate-600 dark:text-slate-300"
               >
                 <span className="material-symbols-outlined text-lg">tune</span>
-                Kelola Template
+                <span className="hidden sm:inline">Kelola Template</span>
               </button>
               <button 
                 id="create-audiensi-btn"
@@ -143,7 +143,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
                 className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95"
               >
                 <span className="material-symbols-outlined text-lg">add</span>
-                Buat Surat Baru
+                <span className="hidden sm:inline">Buat Surat Baru</span>
               </button>
             </div>
           </div>

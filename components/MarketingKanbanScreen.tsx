@@ -386,14 +386,14 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Perencanaan Marketing</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Kelola kampanye dan kegiatan pemasaran strategis PT SI.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative group">
+          <div className="flex items-center justify-end gap-3 w-full md:w-auto">
+            <div className="relative group flex-1 sm:flex-none">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors duration-300">search</span>
               <input 
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleSearchKeyPress}
-                className="pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold w-48 focus:w-64 md:w-64 md:focus:w-80 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-slate-300 dark:focus:border-slate-600 outline-none transition-all duration-300 ease-out text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                className="pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold w-full focus:w-full sm:w-48 sm:focus:w-64 md:w-64 md:focus:w-80 focus:bg-white dark:bg-slate-800 dark:focus:bg-slate-800 focus:border-slate-300 dark:focus:border-slate-600 outline-none transition-all duration-300 ease-out text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm"
                 placeholder="Cari kegiatan... (Tekan Enter)" 
                 type="text"
               />
@@ -401,11 +401,11 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
             <button 
               id="kanban-add-btn"
               onClick={onAddTask}
-              className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-3 sm:px-5 py-2 rounded-lg text-xs font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 uppercase tracking-widest shrink-0"
+              className="flex items-center justify-center bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95 shrink-0"
               title="Tambah Kegiatan Baru"
             >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              <span className="hidden sm:inline">Tambah Kegiatan Baru</span>
+              <span className="material-symbols-outlined text-[20px]">add</span>
+              <span className="hidden sm:inline ml-2">Tambah Kegiatan Baru</span>
             </button>
           </div>
         </div>

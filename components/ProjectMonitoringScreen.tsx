@@ -4,7 +4,9 @@ import { api } from '../services/api';
 import ActivityModal from './ActivityModal';
 import StatsCard from './StatsCard';
 import FilterSelect from './FilterSelect';
+import DateRangeSelector from './DateRangeSelector';
 import * as XLSX from 'xlsx';
+import { downloadCSV } from '../utils/downloadFile';
 
 interface ProjectMonitoringScreenProps {
   onAddProject: () => void;
@@ -45,7 +47,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const endYear = 2026;
   const allYears = Array.from({ length: endYear - startYear + 1 }, (_, i) => endYear - i);
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [visibleStartIndex, setVisibleStartIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
@@ -80,37 +81,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const VISIBLE_YEARS_COUNT = isMobile ? 3 : 4;
-  const visibleYears = allYears.slice(visibleStartIndex, visibleStartIndex + VISIBLE_YEARS_COUNT);
-
-  useEffect(() => {
-    const selectedIndex = allYears.indexOf(selectedYear);
-    if (selectedIndex !== -1) {
-      const currentEndIndex = visibleStartIndex + VISIBLE_YEARS_COUNT - 1;
-      if (selectedIndex < visibleStartIndex) {
-        setVisibleStartIndex(selectedIndex);
-      } else if (selectedIndex > currentEndIndex) {
-        const newStartIndex = Math.max(0, selectedIndex - VISIBLE_YEARS_COUNT + 1);
-        setVisibleStartIndex(newStartIndex);
-      }
-    }
-  }, [selectedYear, VISIBLE_YEARS_COUNT]);
-
-  const scrollYears = (direction: 'left' | 'right') => {
-    if (direction === 'left') {
-      setVisibleStartIndex(Math.max(0, visibleStartIndex - 1));
-    } else {
-      const maxStartIndex = Math.max(0, allYears.length - VISIBLE_YEARS_COUNT);
-      if (visibleStartIndex < maxStartIndex) {
-        setVisibleStartIndex(visibleStartIndex + 1);
-      }
-    }
-  };
-
-  const canScrollLeft = visibleStartIndex > 0;
-  const maxStartIndex = Math.max(0, allYears.length - VISIBLE_YEARS_COUNT);
-  const canScrollRight = visibleStartIndex < maxStartIndex;
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -461,53 +431,33 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     const headers = ['ID', 'Code', 'Title', 'Client', 'PIC', 'Status', 'Progress', 'Start Date', 'End Date', 'Budget', 'Actual (Realisasi)', 'Project Type (Portofolio)', 'Approval Status'];
     const projectsToExport = getProjectsForExport();
     const rows = buildExportRows(projectsToExport);
-    const csv = [headers, ...rows].map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Monitoring_Proyek_${selectedYear}_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    const blob_csv = [headers, ...rows].map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(',')).join('\n');
+    downloadCSV(blob_csv, `Monitoring_Proyek_${selectedYear}_${new Date().toISOString().slice(0, 10)}.csv`);
   };
 
   return (
     <main id="project-list-container" className="flex-1 flex flex-col min-w-0 overflow-auto bg-background-light">
-    <header className="px-6 md:px-8 pt-8 pb-4">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-[#0f172a] dark:text-white text-2xl md:text-3xl font-black tracking-tight leading-tight mb-2">Dashboard Monitoring Status Proyek</h2>
-            <p className="text-[#64748b] dark:text-slate-300 text-xs md:text-sm font-medium opacity-70">Pantau seluruh tahapan proyek assurance di Indonesia</p>
-          </div>
-          
+    <header className="px-8 pt-10 pb-8 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative z-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="flex-1 max-w-3xl">
+          <h2 className="text-[#0f172a] dark:text-white text-3xl md:text-4xl font-black tracking-tight leading-tight mb-3">Dashboard Monitoring Status Proyek</h2>
+          <p className="text-[#64748b] dark:text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+            Sistem pemantauan real-time untuk melacak progres fisik, status persetujuan, dan pencapaian target proyek di seluruh unit bisnis strategis PT Surveyor Indonesia.
+          </p>
+        </div>
+        
+        <div className="flex flex-col-reverse sm:flex-row items-center gap-4 shrink-0">
+          <DateRangeSelector
+            selectedStartYear={selectedYear}
+            onChange={(sm, sy) => handleYearChange(sy)}
+          />
           <button 
             id="add-project-btn" 
             onClick={onAddProject} 
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm shadow-primary/20 transition-all font-semibold text-sm active:scale-95 w-full md:w-auto"
+            className="group flex items-center justify-center gap-3 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-xl shadow-primary/20 transition-all font-black text-xs uppercase tracking-widest active:scale-95 w-full sm:w-auto"
           >
-            <span className="material-symbols-outlined text-lg">add</span>
-            Tambah Proyek Baru
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm w-fit self-start">
-          <button onClick={() => scrollYears('left')} disabled={!canScrollLeft} className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-all ${canScrollLeft ? 'text-slate-500 dark:text-slate-400 cursor-pointer' : 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'}`}>
-            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-          </button>
-          <div className="flex items-center gap-1.5">
-            {visibleYears.map(year => (
-              <button 
-                key={year} 
-                onClick={() => handleYearChange(year)} 
-                className={`px-5 py-2 text-xs font-black rounded-xl transition-all min-w-[75px] uppercase tracking-wider ${year === selectedYear ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105 ring-2 ring-primary/20' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-600 dark:hover:text-slate-300'}`}
-              >
-                {year}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => scrollYears('right')} disabled={!canScrollRight} className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-all ${canScrollRight ? 'text-slate-500 dark:text-slate-400 cursor-pointer' : 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'}`}>
-            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+            <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform duration-300">add</span>
+            <span>Tambah Proyek Baru</span>
           </button>
         </div>
       </div>

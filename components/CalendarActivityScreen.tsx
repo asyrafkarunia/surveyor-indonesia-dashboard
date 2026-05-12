@@ -6,6 +6,7 @@ import ActivityModal from './ActivityModal';
 import EventDetailModal from './EventDetailModal';
 import DayEventsListModal from './DayEventsListModal';
 import * as XLSX from 'xlsx';
+import { downloadXLSX } from '../utils/downloadFile';
 
 
 
@@ -191,7 +192,8 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
       const filename = `Kalender_Aktivitas_${monthNames[currentMonth - 1]}_${currentYear}.xlsx`;
 
       // Export to file
-      XLSX.writeFile(wb, filename);
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      downloadXLSX(wbout, filename);
     } catch (error) {
       console.error('Failed to export:', error);
       alert('Gagal mengekspor data. Silakan coba lagi.');
@@ -499,7 +501,7 @@ return (
               className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark active:scale-95"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
-              Tambah Aktivitas
+              <span className="hidden sm:inline">Tambah Aktivitas</span>
             </button>
           </div>
         </div>

@@ -178,14 +178,16 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Surat Penawaran Harga</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Kelola, lacak, dan buat dokumen penawaran harga untuk klien Anda secara efisien.</p>
           </div>
-          <button 
-            id="create-sph-btn"
-            onClick={onCreateClick}
-            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all active:scale-95"
-          >
-            <span className="material-symbols-outlined text-[20px]">add</span>
-            Buat SPH Baru
-          </button>
+          <div className="flex justify-end w-full md:w-auto">
+            <button 
+              id="create-sph-btn"
+              onClick={onCreateClick}
+              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[20px]">add</span>
+              <span className="hidden sm:inline">Buat SPH Baru</span>
+            </button>
+          </div>
         </div>
 
         {/* Filters and Table Section */}

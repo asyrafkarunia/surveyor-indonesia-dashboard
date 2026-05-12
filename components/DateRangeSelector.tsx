@@ -20,10 +20,17 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectedYearRef = useRef<HTMLButtonElement>(null);
 
   // Generate years from endYear descending to startYear
   const maxYear = Math.max(endYear, currentYearVal + 5);
   const years = Array.from({ length: maxYear - startYear + 1 }, (_, i) => maxYear - i);
+
+  useEffect(() => {
+    if (isOpen && selectedYearRef.current) {
+      selectedYearRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,21 +50,23 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative w-full sm:w-auto" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2.5 rounded-xl border px-5 py-2.5 text-sm font-bold shadow-sm transition-all duration-300 ${
+        className={`flex items-center justify-between sm:justify-start gap-2.5 rounded-xl border px-5 py-2.5 text-sm font-bold shadow-sm transition-all duration-300 w-full sm:w-auto ${
           isOpen 
             ? 'bg-primary/10 border-primary/50 text-primary ring-4 ring-primary/10 dark:bg-primary/20 dark:border-primary/50 dark:text-primary-light' 
             : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-primary/30 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700'
         }`}
       >
-        <div className={`flex h-6 w-6 items-center justify-center rounded-md ${isOpen ? 'bg-primary/20 text-primary' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
-          <span className="material-symbols-outlined text-[14px]">calendar_today</span>
-        </div>
-        <div className="flex flex-col items-start leading-tight">
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Filter Tahun</span>
-          <span>{selectedStartYear}</span>
+        <div className="flex items-center gap-2.5">
+          <div className={`flex h-6 w-6 items-center justify-center rounded-md ${isOpen ? 'bg-primary/20 text-primary' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+            <span className="material-symbols-outlined text-[14px]">calendar_today</span>
+          </div>
+          <div className="flex flex-col items-start leading-tight">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Filter Tahun</span>
+            <span>{selectedStartYear}</span>
+          </div>
         </div>
         <span className={`material-symbols-outlined text-[18px] ml-2 transition-transform duration-300 ${isOpen ? 'rotate-180 text-primary' : 'text-slate-400'}`}>
           expand_more
@@ -70,6 +79,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             {years.map((year) => (
               <button
                 key={year}
+                ref={year === selectedStartYear ? selectedYearRef : null}
                 onClick={() => handleYearChange(year)}
                 className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   year === selectedStartYear

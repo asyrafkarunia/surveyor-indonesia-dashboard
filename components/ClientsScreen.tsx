@@ -205,14 +205,16 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
             <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-1">Daftar Klien</h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
           </div>
-          <button 
-            id="add-client-btn"
-            onClick={onAddClient}
-            className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl shadow-sm shadow-primary/30 transition-all font-bold text-xs uppercase tracking-widest"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>Tambah Klien Baru</span>
-          </button>
+          <div className="flex justify-end w-full md:w-auto">
+            <button 
+              id="add-client-btn"
+              onClick={onAddClient}
+              className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl shadow-sm shadow-primary/30 transition-all font-bold text-xs uppercase tracking-widest"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span className="hidden sm:inline">Tambah Klien Baru</span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Grid */}

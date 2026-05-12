@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
 import { ActivityLogEntry } from '../types';
 import { ADMIN_ACTIVITY_LOGS } from '../constants';
+import { downloadCSV } from '../utils/downloadFile';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -197,13 +198,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ onClose, currentFilters }) =>
       ].join('\n');
 
       const label = exportFrom && exportTo ? `${exportFrom}_sd_${exportTo}` : new Date().toISOString().split('T')[0];
-      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `log_aktivitas_${label}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      downloadCSV(csvContent, `log_aktivitas_${label}.csv`);
       onClose();
     } catch (err) {
       console.error('Export failed:', err);
