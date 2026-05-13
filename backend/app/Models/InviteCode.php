@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class InviteCode extends Model
 {
@@ -55,7 +56,7 @@ class InviteCode extends Model
     public static function generateUniqueCode(): string
     {
         do {
-            $code = strtoupper(substr(str_replace(['0', 'O', 'I', 'l'], '', bin2hex(\random_bytes(5))), 0, 8));
+            $code = strtoupper(substr(str_replace(['0', 'O', 'I', 'l'], '', Str::random(12)), 0, 8));
         } while (self::where('code', $code)->exists());
 
         return $code;

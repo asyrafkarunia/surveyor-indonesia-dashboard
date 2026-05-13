@@ -5,34 +5,26 @@ import { api } from '../services/api';
 /* ─── Inline SVG: MARS Logo (globe + bar chart + orbiting arrow) ─── */
 const MarsLogo: React.FC<{ className?: string; style?: React.CSSProperties; color?: string }> = ({ className, style, color = 'currentColor' }) => (
   <svg viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-    {/* Globe with grid lines */}
-    <g transform="translate(20, 20)">
-      {/* Globe outer */}
-      <ellipse cx="75" cy="80" rx="58" ry="55" stroke={color} strokeWidth="4" fill="none" opacity="0.9" />
-      {/* Horizontal grid lines */}
-      <ellipse cx="75" cy="55" rx="55" ry="12" stroke={color} strokeWidth="2.5" fill="none" opacity="0.5" />
-      <ellipse cx="75" cy="105" rx="55" ry="12" stroke={color} strokeWidth="2.5" fill="none" opacity="0.5" />
-      {/* Vertical meridian */}
-      <ellipse cx="75" cy="80" rx="25" ry="55" stroke={color} strokeWidth="2.5" fill="none" opacity="0.5" />
-      {/* Bar chart inside globe */}
-      <rect x="52" y="60" width="10" height="35" rx="2" fill={color} opacity="0.7" />
-      <rect x="66" y="45" width="10" height="50" rx="2" fill={color} opacity="0.8" />
-      <rect x="80" y="55" width="10" height="40" rx="2" fill={color} opacity="0.7" />
-      {/* Orbiting ellipse/swoosh */}
-      <ellipse cx="75" cy="80" rx="72" ry="28" stroke={color} strokeWidth="3" fill="none" opacity="0.6" transform="rotate(-25 75 80)" />
-      {/* Arrow at end of orbit */}
-      <polygon points="138,52 128,45 132,58" fill={color} opacity="0.9" />
-      {/* Upward arrow from chart */}
-      <line x1="90" y1="45" x2="100" y2="28" stroke={color} strokeWidth="3" opacity="0.8" />
-      <polygon points="100,22 94,32 106,32" fill={color} opacity="0.9" />
+    {/* Minimalist Planet Core (Data Bars) */}
+    <g transform="translate(40, 40)">
+      <rect x="35" y="45" width="14" height="40" rx="7" fill={color} opacity="0.7" />
+      <rect x="55" y="25" width="14" height="80" rx="7" fill={color} />
+      <rect x="75" y="40" width="14" height="50" rx="7" fill={color} opacity="0.8" />
+      
+      {/* The AI Guardian Helmet — Geometric Orbit */}
+      {/* The Cosmic Comet Path — Geometric Orbit */}
+      <circle cx="65" cy="65" r="58" stroke={color} strokeWidth="8" strokeDasharray="300 100" strokeLinecap="round" opacity="0.6" transform="rotate(-30 65 65)" fill="none" />
+      
+      {/* The Moon/Planetoid — Professional minimalist head */}
+      <circle cx="118" cy="42" r="10" fill={color} opacity="0.9" />
     </g>
     {/* MARS text */}
-    <text x="185" y="100" fontFamily="Inter, Arial, sans-serif" fontWeight="800" fontSize="82" fill={color} letterSpacing="-1">
+    <text x="185" y="105" fontFamily="Inter, sans-serif" fontWeight="900" fontSize="88" fill={color} letterSpacing="-0.02em">
       MARS
     </text>
     {/* Subtitle */}
-    <text x="188" y="132" fontFamily="Inter, Arial, sans-serif" fontWeight="400" fontSize="16" fill={color} opacity="0.7" letterSpacing="1.5">
-      Marketing Analysis Report System
+    <text x="188" y="136" fontFamily="Inter, sans-serif" fontWeight="600" fontSize="16" fill={color} opacity="0.6" letterSpacing="0.4em">
+      MARKETING ANALYST REPORT SYSTEM
     </text>
   </svg>
 );
@@ -40,24 +32,26 @@ const MarsLogo: React.FC<{ className?: string; style?: React.CSSProperties; colo
 /* ─── MARS Icon Only (for sidebar/small contexts) ─── */
 export const MarsIconLogo: React.FC<{ className?: string; color?: string }> = ({ className, color = 'currentColor' }) => (
   <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    {/* Globe outer */}
-    <ellipse cx="80" cy="80" rx="60" ry="57" stroke={color} strokeWidth="5" fill="none" opacity="0.9" />
-    {/* Horizontal grid lines */}
-    <ellipse cx="80" cy="55" rx="57" ry="12" stroke={color} strokeWidth="2.5" fill="none" opacity="0.45" />
-    <ellipse cx="80" cy="105" rx="57" ry="12" stroke={color} strokeWidth="2.5" fill="none" opacity="0.45" />
-    {/* Vertical meridian */}
-    <ellipse cx="80" cy="80" rx="26" ry="57" stroke={color} strokeWidth="2.5" fill="none" opacity="0.45" />
-    {/* Bar chart */}
-    <rect x="56" y="62" width="11" height="36" rx="2" fill={color} opacity="0.7" />
-    <rect x="72" y="45" width="11" height="53" rx="2" fill={color} opacity="0.85" />
-    <rect x="88" y="55" width="11" height="43" rx="2" fill={color} opacity="0.7" />
-    {/* Orbiting swoosh */}
-    <ellipse cx="80" cy="80" rx="75" ry="28" stroke={color} strokeWidth="3.5" fill="none" opacity="0.55" transform="rotate(-25 80 80)" />
-    {/* Arrow at orbit end */}
-    <polygon points="146,50 135,42 139,58" fill={color} opacity="0.9" />
-    {/* Upward arrow */}
-    <line x1="98" y1="45" x2="108" y2="26" stroke={color} strokeWidth="3.5" opacity="0.8" />
-    <polygon points="108,20 101,31 115,31" fill={color} opacity="0.9" />
+    {/* Glow background integrated in SVG if needed */}
+    <circle cx="80" cy="80" r="55" fill="url(#iconGlow)" opacity="0.15" />
+    
+    {/* Planet Core (Stats) */}
+    <rect x="52" y="70" width="14" height="40" rx="7" fill={color} opacity="0.7" />
+    <rect x="73" y="45" width="14" height="85" rx="7" fill={color} />
+    <rect x="94" y="65" width="14" height="50" rx="7" fill={color} opacity="0.8" />
+    
+    {/* Cosmic Orbit Path — Geometric Orbit */}
+    <circle cx="80" cy="80" r="62" stroke={color} strokeWidth="9" strokeDasharray="320 100" strokeLinecap="round" opacity="0.6" transform="rotate(-35 80 80)" fill="none" />
+    
+    {/* The Moon/Planetoid — Sophisticated celestial head */}
+    <circle cx="138" cy="52" r="12" fill={color} opacity="0.9" />
+    
+    <defs>
+      <radialGradient id="iconGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(80 80) rotate(90) scale(60)">
+        <stop stopColor={color} />
+        <stop offset="1" stopColor={color} stopOpacity="0" />
+      </radialGradient>
+    </defs>
   </svg>
 );
 
@@ -68,28 +62,22 @@ const DanantaraLogo: React.FC<{ className?: string; style?: React.CSSProperties 
 
 /* ─── IDSurvey Logo (image) ─── */
 const IDSurveyLogo: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-  <img src="/logos/idsurvey.png" alt="IDSurvey - Testing · Inspection · Certification" className={className} style={{ objectFit: 'contain', ...style }} />
+  <img src="/logos/logo-id-survey-white.png" alt="IDSurvey - Testing · Inspection · Certification" className={className} style={{ objectFit: 'contain', ...style }} />
 );
 
 /* ─── Surveyor Indonesia Logo (image) ─── */
 const SurveyorIndonesiaLogo: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-  <img src="/logos/surveyor-indonesia.png" alt="Surveyor Indonesia" className={className} style={{ objectFit: 'contain', ...style }} />
+  <img src="/logos/surveyor indonesia logo putih.webp" alt="Surveyor Indonesia" className={className} style={{ objectFit: 'contain', ...style }} />
 );
 
 /* ─── Large watermark logo for left panel background ─── */
 const MarsWatermark: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
-    <ellipse cx="80" cy="80" rx="60" ry="57" stroke="white" strokeWidth="5" fill="none" />
-    <ellipse cx="80" cy="55" rx="57" ry="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7" />
-    <ellipse cx="80" cy="105" rx="57" ry="12" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7" />
-    <ellipse cx="80" cy="80" rx="26" ry="57" stroke="white" strokeWidth="2.5" fill="none" opacity="0.7" />
-    <rect x="56" y="62" width="11" height="36" rx="2" fill="white" opacity="0.8" />
-    <rect x="72" y="45" width="11" height="53" rx="2" fill="white" opacity="0.9" />
-    <rect x="88" y="55" width="11" height="43" rx="2" fill="white" opacity="0.8" />
-    <ellipse cx="80" cy="80" rx="75" ry="28" stroke="white" strokeWidth="3.5" fill="none" opacity="0.6" transform="rotate(-25 80 80)" />
-    <polygon points="146,50 135,42 139,58" fill="white" opacity="0.9" />
-    <line x1="98" y1="45" x2="108" y2="26" stroke="white" strokeWidth="3.5" opacity="0.8" />
-    <polygon points="108,20 101,31 115,31" fill="white" opacity="0.9" />
+    <rect x="52" y="70" width="14" height="40" rx="7" fill="white" opacity="0.4" />
+    <rect x="73" y="45" width="14" height="85" rx="7" fill="white" opacity="0.6" />
+    <rect x="94" y="65" width="14" height="50" rx="7" fill="white" opacity="0.4" />
+    <circle cx="80" cy="80" r="62" stroke="white" strokeWidth="9" strokeDasharray="320 100" strokeLinecap="round" opacity="0.3" transform="rotate(-35 80 80)" fill="none" />
+    <circle cx="138" cy="52" r="12" fill="white" opacity="0.5" />
   </svg>
 );
 
@@ -159,6 +147,120 @@ const InputField: React.FC<{
     </div>
   </div>
 );
+
+const CanvasStarfield: React.FC = () => {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    
+    // Star properties
+    interface Star {
+      x: number;
+      y: number;
+      radius: number;
+      vx: number;
+      vy: number;
+      opacity: number;
+      twinkleSpeed: number;
+      color: string;
+      hasGlow: boolean;
+    }
+    
+    let stars: Star[] = [];
+    
+    const init = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = [];
+      
+      // Dynamic density based on screen size
+      const numStars = Math.floor((canvas.width * canvas.height) / 3500); 
+      
+      for (let i = 0; i < numStars; i++) {
+        // 10% chance for accent teal star, else white/blue-white
+        const isAccent = Math.random() > 0.9;
+        const color = isAccent ? 'rgba(0, 180, 174, ' : 'rgba(200, 230, 255, ';
+        const radius = isAccent ? Math.random() * 1.5 + 1 : Math.random() * 1.2 + 0.5;
+        
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: radius,
+          vx: (Math.random() - 0.5) * 0.05,
+          vy: (Math.random() - 0.5) * 0.05 - 0.02, // slight upward drift
+          opacity: Math.random(),
+          twinkleSpeed: Math.random() * 0.005 + 0.002,
+          color: color,
+          hasGlow: radius > 1.2
+        });
+      }
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      stars.forEach(star => {
+        // Move
+        star.x += star.vx;
+        star.y += star.vy;
+        
+        // Wrap around screen
+        if (star.x < 0) star.x = canvas.width;
+        if (star.x > canvas.width) star.x = 0;
+        if (star.y < 0) star.y = canvas.height;
+        if (star.y > canvas.height) star.y = 0;
+        
+        // Twinkle (oscillate opacity)
+        star.opacity += star.twinkleSpeed;
+        if (star.opacity > 1 || star.opacity < 0.1) {
+          star.twinkleSpeed = -star.twinkleSpeed;
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        
+        // Render with dynamic opacity
+        const currentOpacity = Math.max(0.1, Math.min(1, star.opacity));
+        ctx.fillStyle = star.color + currentOpacity + ')';
+        
+        // Optional glow
+        if (star.hasGlow) {
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = star.color + '0.8)';
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        
+        ctx.fill();
+      });
+      
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    init();
+    draw();
+
+    window.addEventListener('resize', init);
+    return () => {
+      window.removeEventListener('resize', init);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas 
+      ref={canvasRef} 
+      className="fixed inset-0 pointer-events-none z-1" 
+      style={{ opacity: 0.8 }}
+    />
+  );
+};
 
 const LoginScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot-password' | 'reset-password' | 'verification-sent'>('login');
@@ -462,7 +564,7 @@ const LoginScreen: React.FC = () => {
         overflow-x: hidden !important;
       }
     `}</style>
-    <div className="flex flex-col min-h-screen w-full relative bg-[#003868]" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="flex flex-col min-h-screen w-full relative bg-[#003868] overflow-x-hidden overflow-y-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
 
       {/* ═══════════ UNIFIED DYNAMIC BACKGROUND ═══════════ */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -487,76 +589,88 @@ const LoginScreen: React.FC = () => {
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#00B4AE] blur-[150px] opacity-10"></div>
       </div>
 
+      {/* ═══════════ STARFIELD BACKGROUND (Canvas-based Vanilla JS) ═══════════ */}
+      <CanvasStarfield />
+
       {/* Large watermark MARS logo */}
       <div className="login-glow fixed inset-0 items-center justify-center pointer-events-none overflow-hidden z-0 mask-image-gradient hidden lg:flex">
         <MarsWatermark style={{ width: '90%', maxWidth: 750, opacity: 0.03, transform: 'rotate(-5deg) translateX(-15%)' }} />
       </div>
 
-      {/* ═══════════ TOP CORPORATE LOGO BAR (FLOATING BLEND) ═══════════ */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 pt-8 sm:pt-10 pb-6 flex justify-center w-full pointer-events-none">
-        <div className="w-full max-w-7xl relative mx-auto flex items-center justify-between px-2 sm:px-6">
-          
-          <div className="relative flex items-center justify-center pointer-events-auto">
-            <div className="absolute inset-0 bg-white/15 blur-2xl rounded-full scale-[2]"></div>
-            <DanantaraLogo className="w-auto hidden sm:block relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]" style={{ objectFit: 'contain', height: 46, maxWidth: 200, filter: 'brightness(1.15) contrast(1.1)' }} />
-          </div>
+      {/* ═══════════ CENTERED PAGE GROUP (header + content stay together on zoom) ═══════════ */}
+      <div className="flex flex-col flex-1 w-full relative z-10 items-center min-h-screen px-0 py-8 sm:p-12">
+        <div className="w-full max-w-7xl my-auto flex flex-col items-center gap-y-8 lg:gap-y-12">
 
-          <div className="relative hidden sm:flex items-center justify-center pointer-events-auto flex-1 px-8 sm:px-16">
-             {/* IDSurvey is centered relative to its space */}
-            <div className="absolute inset-0 bg-white/15 blur-[30px] rounded-full scale-[2]"></div>
-            <IDSurveyLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 40, maxWidth: 190, filter: 'brightness(1.25) contrast(1.1)' }} />
+          {/* ── TOP CORPORATE LOGO BAR ── */}
+          <header className="hidden lg:flex w-full items-center justify-between flex-shrink-0">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-[2]"></div>
+            <DanantaraLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 40, maxWidth: 200, filter: 'brightness(1.1) contrast(1.05)' }} />
           </div>
-
-          <div className="relative flex items-center justify-center pointer-events-auto ml-auto">
+          <div className="relative flex items-center justify-center flex-1 px-8 sm:px-16">
+            <div className="absolute inset-0 bg-white/10 blur-[30px] rounded-full scale-[2]"></div>
+            <IDSurveyLogo className="w-auto relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]" style={{ objectFit: 'contain', height: 44, maxWidth: 200 }} />
+          </div>
+          <div className="relative flex items-center justify-center ml-auto">
             <div className="absolute inset-0 bg-white/10 blur-[25px] rounded-full scale-[2]"></div>
-            <SurveyorIndonesiaLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 46, maxWidth: 70, filter: 'brightness(1.15) contrast(1.1)' }} />
+            <SurveyorIndonesiaLogo className="w-auto relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]" style={{ objectFit: 'contain', height: 50, maxWidth: 180 }} />
           </div>
+        </header>
 
-        </div>
-      </header>
-
-      {/* ═══════════ MAIN SEAMLESS CONTENT ═══════════ */}
-      <div className="flex w-full relative z-10 max-w-7xl mx-auto min-h-screen pt-28 pb-8 sm:pt-32 lg:pt-24 lg:pb-12">
+          {/* ── MAIN CONTENT ── */}
+          <div className="flex w-full items-center justify-center px-0 sm:px-4 flex-shrink-0">
         
         {/* ─── LEFT BRAND PANEL (UNIFIED) ─── */}
-        <div className="hidden lg:flex w-1/2 flex-col items-start justify-center px-10 xl:px-16 login-fade-in relative z-10">
-          {/* MARS Logo Icon - Seamless Blend */}
-          <div className="loading-logo-pulse loading-breathe mb-12 relative flex items-center justify-center ml-4 mt-8">
-            <div className="absolute inset-0 bg-[#00B4AE] blur-2xl opacity-40 rounded-full scale-[1.2]"></div>
-            <MarsIconLogo className="w-36 h-36 relative z-10 drop-shadow-[0_0_20px_rgba(0,180,174,0.6)]" color="white" />
-          </div>
+        <div className="hidden lg:flex w-1/2 flex-col items-center justify-center px-10 xl:px-16 login-fade-in relative z-10 flex-shrink-0">
+          {/* MARS Branding Group — locked together */}
+          <div className="flex flex-col items-center text-center">
+            {/* MARS Logo Icon — Refined as a twinkling star */}
+            <div className="loading-logo-pulse loading-breathe animate-star-twinkle mb-6 relative flex items-center justify-center rounded-full">
+              <div className="absolute inset-0 bg-[#00B4AE] blur-3xl opacity-30 rounded-full scale-[1.3]"></div>
+              <MarsIconLogo className="w-28 h-28 xl:w-36 xl:h-36 relative z-10 drop-shadow-[0_0_25px_rgba(0,180,174,0.7)]" color="white" />
+            </div>
 
-          <h1
-            className="text-4xl xl:text-6xl font-black text-white leading-tight mb-6 tracking-tight relative z-10 drop-shadow-xl"
-            style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
-          >
-            Selamat Datang di
-            <br />
-            <span className="text-cyan-400 drop-shadow-md">Aplikasi MARS</span>
-          </h1>
+            {/* MARS Name */}
+            <h1
+              className="text-5xl xl:text-7xl font-black text-white tracking-[0.15em] mb-2 relative z-10 drop-shadow-xl"
+              style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
+            >
+              MARS
+            </h1>
 
-          <p className="text-sky-100/95 text-[15px] leading-relaxed mb-10 max-w-lg font-medium relative z-10 drop-shadow-sm pb-4">
-            Platform terpadu untuk pengelolaan, analisis, dan pelaporan marketing
-            PT Surveyor Indonesia (Persero) Cabang Pekanbaru.
-          </p>
-
-          <div className="flex items-center gap-4 relative z-10">
-            <span className="inline-block w-16 h-[2px] bg-linear-to-r from-cyan-400 to-transparent" />
-            <p className="text-sky-200/60 text-[10px] font-black tracking-[0.4em] uppercase">
-              PT Surveyor Indonesia (Persero)
+            {/* Subtitle */}
+            <p className="text-cyan-400 text-xs xl:text-sm font-bold tracking-[0.35em] uppercase mb-8 relative z-10 drop-shadow-sm">
+              Marketing Analysis Report System
             </p>
+
+            {/* Divider */}
+            <div className="w-16 h-[2px] mb-6 relative z-10" style={{ background: 'linear-gradient(90deg, transparent, #00B4AE, transparent)' }} />
+
+            {/* Description */}
+            <p className="text-sky-100/90 text-sm xl:text-[15px] leading-relaxed mb-8 max-w-sm font-medium relative z-10 drop-shadow-sm">
+              Platform terpadu untuk pengelolaan, analisis, dan pelaporan marketing
+              PT Surveyor Indonesia (Persero) Cabang Pekanbaru.
+            </p>
+
+            <div className="flex items-center gap-3 relative z-10">
+              <span className="inline-block w-10 h-[1.5px]" style={{ background: 'linear-gradient(90deg, #00B4AE, transparent)' }} />
+              <p className="text-sky-200/50 text-[9px] xl:text-[10px] font-black tracking-[0.4em] uppercase">
+                PT Surveyor Indonesia (Persero)
+              </p>
+              <span className="inline-block w-10 h-[1.5px]" style={{ background: 'linear-gradient(270deg, #00B4AE, transparent)' }} />
+            </div>
           </div>
         </div>
 
         {/* ─── RIGHT FORM PANEL (GLASS CARD) ─── */}
-        <div className="w-full lg:w-1/2 flex items-start justify-center relative px-4 sm:px-6 py-4">
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative px-2 sm:px-6 py-4 flex-shrink-0">
           
           <div className="w-full max-w-[460px] relative z-20 bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/60 p-6 sm:p-10 login-fade-in">
             {/* Mobile header (Inside Glass Card) */}
             <div className="lg:hidden flex flex-col items-center mb-8 pb-8 border-b border-slate-100">
-              <div className="loading-logo-pulse mb-5 relative flex items-center justify-center">
-                <div className="absolute inset-0 bg-[#00B4AE] blur-[20px] opacity-20 rounded-full scale-150"></div>
-                <MarsIconLogo className="w-20 h-20 relative z-10 drop-shadow-md" color="#003868" />
+              <div className="loading-logo-pulse animate-star-twinkle mb-5 relative flex items-center justify-center rounded-full">
+                <div className="absolute inset-0 bg-[#00B4AE] blur-[25px] opacity-25 rounded-full scale-150"></div>
+                <MarsIconLogo className="w-20 h-20 relative z-10 drop-shadow-lg" color="#003868" />
               </div>
               <h1 className="text-3xl font-black tracking-widest text-[#003868]">MARS</h1>
               <p className="text-[10px] tracking-[0.3em] font-bold text-slate-400 mt-2 uppercase text-center">
@@ -1213,6 +1327,18 @@ const LoginScreen: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
+
+        </div>{/* end grouped wrapper */}
+      </div>{/* end flex-1 centering container */}
+
+      {/* ═══════════ DEVELOPER CREDIT ═══════════ */}
+      <div className="relative z-10 py-4 text-center flex-shrink-0 mt-auto">
+        <p className="dev-credit-sweep text-[10px] tracking-[0.3em] uppercase font-semibold">
+          <span className="dev-credit-star">✦</span>
+          {' '}Developed by Asyraf Karunia Asroel{' '}
+          <span className="dev-credit-star">✦</span>
+        </p>
       </div>
     </div>
     </>

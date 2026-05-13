@@ -1,0 +1,11 @@
+<svg viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(40, 40)">
+    <rect x="35" y="45" width="14" height="40" rx="7" fill="#00B4AE" opacity="0.7" />
+    <rect x="55" y="25" width="14" height="80" rx="7" fill="#00B4AE" />
+    <rect x="75" y="40" width="14" height="50" rx="7" fill="#00B4AE" opacity="0.8" />
+    <circle cx="65" cy="65" r="58" stroke="#00B4AE" stroke-width="8" stroke-dasharray="300 100" stroke-linecap="round" opacity="0.6" transform="rotate(-30 65 65)" fill="none" />
+    <circle cx="118" cy="42" r="10" fill="#00B4AE" opacity="0.9" />
+  </g>
+  <text x="185" y="105" font-family="Inter, sans-serif" font-weight="900" font-size="88" fill="#003868" letter-spacing="-0.02em">MARS</text>
+  <text x="188" y="136" font-family="Inter, sans-serif" font-weight="600" font-size="16" fill="#003868" opacity="0.6" letter-spacing="0.4em">MARKETING ANALYST REPORT SYSTEM</text>
+</svg>
