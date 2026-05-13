@@ -326,41 +326,41 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
           {/* Summary Cards */}
           <div id="audiensi-stats" className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-              <div className="size-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                <span className="material-symbols-outlined">send</span>
+              <div className="size-10 md:size-8 lg:size-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                <span className="material-symbols-outlined md:text-[18px] lg:text-[24px]">send</span>
               </div>
               <div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Total Dikirim</p>
-                <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.total_sent ?? 0}</p>
+                <p className="text-xl md:text-lg lg:text-xl font-bold text-slate-900 dark:text-white">{stats.total_sent ?? 0}</p>
               </div>
             </div>
             <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-              <div className="size-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                <span className="material-symbols-outlined">schedule</span>
+              <div className="size-10 md:size-8 lg:size-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                <span className="material-symbols-outlined md:text-[18px] lg:text-[24px]">schedule</span>
               </div>
               <div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Audiensi Mendatang</p>
-                <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.upcoming ?? 0}</p>
+                <p className="text-xl md:text-lg lg:text-xl font-bold text-slate-900 dark:text-white">{stats.upcoming ?? 0}</p>
               </div>
             </div>
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-              <div className="flex-1 flex items-center gap-4">
-                <div className="size-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
-                  <span className="material-symbols-outlined">done_all</span>
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4 md:gap-2 lg:gap-4">
+              <div className="flex-1 flex items-center gap-4 md:gap-2 lg:gap-4">
+                <div className="size-10 md:size-8 lg:size-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+                  <span className="material-symbols-outlined md:text-[18px] lg:text-[24px]">done_all</span>
                 </div>
-                <div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Diterima</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.completed ?? 0}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider truncate">Diterima</p>
+                  <p className="text-xl md:text-lg lg:text-xl font-bold text-slate-900 dark:text-white">{stats.completed ?? 0}</p>
                 </div>
               </div>
-              <div className="w-px h-10 bg-slate-200"></div>
-              <div className="flex-1 flex items-center gap-4 pl-4">
-                <div className="size-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
-                  <span className="material-symbols-outlined">cancel</span>
+              <div className="w-px h-10 bg-slate-200 hidden md:block"></div>
+              <div className="flex-1 flex items-center gap-4 md:gap-2 lg:gap-4 md:pl-2 lg:pl-4">
+                <div className="size-10 md:size-8 lg:size-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 shrink-0">
+                  <span className="material-symbols-outlined md:text-[18px] lg:text-[24px]">cancel</span>
                 </div>
-                <div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Ditolak</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.rejected ?? 0}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider truncate">Ditolak</p>
+                  <p className="text-xl md:text-lg lg:text-xl font-bold text-slate-900 dark:text-white">{stats.rejected ?? 0}</p>
                 </div>
               </div>
             </div>
