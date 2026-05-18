@@ -98,6 +98,16 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
     }
   };
 
+  const handleViewSph = (sph: any) => {
+    const filePath = sph.generated_file_path || sph.file_path;
+    if (filePath) {
+      const url = filePath.startsWith('http') 
+        ? filePath 
+        : `${(((import.meta as any).env.VITE_API_URL) || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${filePath}`;
+      window.open(url, '_blank');
+    }
+  };
+
   const getStatusLabel = (status: string, isNewApplication?: boolean) => {
     if (isNewApplication && (status === 'Sent' || status === 'Draft')) {
       return 'Tanda Tangan Basah';
@@ -197,6 +207,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
             <div className="relative flex-1 w-full group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
               <input 
+                aria-label="Cari SPH"
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-primary rounded-lg text-sm transition-all outline-none" 
                 placeholder="Cari Doc No, Klien, atau Proyek... (Tekan Enter)" 
                 type="text"
@@ -305,7 +316,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
                           {getStatusLabel(sph.status, sph.is_new_application)}
                         </span>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {!!sph.is_new_application && sph.status !== 'Approved' && sph.status !== 'Rejected' && (
                             <>

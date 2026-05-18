@@ -638,7 +638,7 @@ const LoginScreen: React.FC = () => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+                    <label htmlFor="login-email" className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
                     <InputField
                       id="login-email"
                       icon="mail"
@@ -652,7 +652,7 @@ const LoginScreen: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                    <label htmlFor="login-password" className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
                     <InputField
                       id="login-password"
                       icon="lock"
@@ -877,7 +877,7 @@ const LoginScreen: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
+                            <label htmlFor="reg-name" className="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
                             <InputField
                               id="reg-name"
                               icon="person"
@@ -891,7 +891,7 @@ const LoginScreen: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+                            <label htmlFor="reg-email" className="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Email</label>
                             <InputField
                               id="reg-email"
                               icon="mail"
@@ -905,7 +905,7 @@ const LoginScreen: React.FC = () => {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                            <label htmlFor="reg-password" className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
                             <InputField
                               id="reg-password"
                               icon="lock"

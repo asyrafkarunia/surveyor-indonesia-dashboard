@@ -258,6 +258,7 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
               <input 
                 id="client-search"
+                aria-label="Cari klien"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary text-sm transition-all" 
                 placeholder="Cari nama klien, kontak, atau perusahaan... (Tekan Enter)" 
                 type="text"

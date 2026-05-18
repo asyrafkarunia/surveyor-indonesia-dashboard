@@ -623,7 +623,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-5 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 flex flex-col gap-5 shadow-sm relative z-40 transition-all duration-300 hover:shadow-md">
           <div className="relative group w-full">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors duration-300">search</span>
-            <input className="w-full bg-slate-100/50 dark:bg-slate-900/50 border-transparent rounded-xl pl-12 pr-4 py-3 text-[13px] font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 border-none placeholder:text-slate-400 dark:text-white transition-all duration-300 outline-none" placeholder="Cari nama proyek, kode, atau kata kunci lainnya... (Tekan Enter)" type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleSearchKeyPress} />
+            <input aria-label="Cari proyek" className="w-full bg-slate-100/50 dark:bg-slate-900/50 border-transparent rounded-xl pl-12 pr-4 py-3 text-[13px] font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 border-none placeholder:text-slate-400 dark:text-white transition-all duration-300 outline-none" placeholder="Cari nama proyek, kode, atau kata kunci lainnya... (Tekan Enter)" type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleSearchKeyPress} />
           </div>
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="flex flex-col gap-4 flex-1 min-w-0">

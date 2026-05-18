@@ -44,21 +44,18 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(true);
   const [lastUserId, setLastUserId] = useState<number | (string | undefined)>(undefined);
 
-  // Sync loading state immediately when user changes to prevent race conditions
+  // Initialize with local storage right away to avoid UI blocking
   if (user?.id !== lastUserId) {
     setLastUserId(user?.id);
-    setLoading(true);
-    if (!user) {
-      setCompletedTutorials([]);
-      setLoading(false);
-    }
+    setCompletedTutorials(getLocalCompleted());
+    setLoading(false);
   }
 
-  // Fetch completed tutorials when user changes
+  // Fetch completed tutorials when user changes (Deferred to prevent network clogging)
   useEffect(() => {
     if (!user) return;
 
-    const fetchTutorials = async () => {
+    const timer = setTimeout(async () => {
       try {
         const data = await api.getUserTutorials();
         // Merge with local storage to avoid data loss on API failure
@@ -68,13 +65,10 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       } catch (error) {
         // API unavailable (e.g. table not yet migrated) — fall back to localStorage
         console.warn('Tutorial API unavailable, using local fallback:', error);
-        setCompletedTutorials(getLocalCompleted());
-      } finally {
-        setLoading(false);
       }
-    };
+    }, 3500); // 3.5s delay to prioritize critical dashboard requests
 
-    fetchTutorials();
+    return () => clearTimeout(timer);
   }, [user?.id]); // Only re-fetch when the actual user ID changes
 
   const startTutorial = (tutorialId: string, tutorialSteps: any[]) => {
