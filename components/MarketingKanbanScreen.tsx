@@ -382,9 +382,9 @@ const MarketingKanbanScreen: React.FC<MarketingKanbanScreenProps> = ({ onAddTask
       {/* Kanban Header */}
       <div className="px-6 py-6 md:px-10 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Perencanaan Marketing</h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Kelola kampanye dan kegiatan pemasaran strategis PT SI.</p>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Perencanaan Marketing</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Kelola kampanye dan kegiatan pemasaran strategis PT SI.</p>
           </div>
           <div className="flex items-center justify-end gap-3 w-full md:w-auto">
             <div className="relative group flex-1 sm:flex-none">

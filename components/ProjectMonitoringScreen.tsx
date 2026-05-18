@@ -439,9 +439,9 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     <main id="project-list-container" className="flex-1 flex flex-col min-w-0 overflow-auto bg-background-light">
     <header className="px-8 pt-10 pb-8 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative z-20">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="flex-1 max-w-3xl">
-          <h2 className="text-[#0f172a] dark:text-white text-3xl md:text-4xl font-black tracking-tight leading-tight mb-3">Dashboard Monitoring Status Proyek</h2>
-          <p className="text-[#64748b] dark:text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+        <div className="flex-1 max-w-3xl flex flex-col gap-1.5">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Dashboard Monitoring Status Proyek</h1>
+          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
             Sistem pemantauan real-time untuk melacak progres fisik, status persetujuan, dan pencapaian target proyek di seluruh unit bisnis strategis PT Surveyor Indonesia.
           </p>
         </div>

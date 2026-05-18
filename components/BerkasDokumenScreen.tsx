@@ -157,9 +157,9 @@ const BerkasDokumenScreen: React.FC = () => {
     <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="w-full px-6 md:px-10 lg:px-16 py-8 space-y-8">
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Berkas Dokumen</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Berkas Dokumen</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Kumpulan dokumen PDF essensial yang siap diunduh oleh Administrator.
             </p>
           </div>

@@ -432,9 +432,9 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-slate-900 dark:text-white text-3xl font-black tracking-tight">Daftar Notifikasi</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-2xl">Pantau pembaruan terbaru seputar proyek, tugas, dan aktivitas sistem Anda dalam satu tempat.</p>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Daftar Notifikasi</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl">Pantau pembaruan terbaru seputar proyek, tugas, dan aktivitas sistem Anda dalam satu tempat.</p>
           </div>
           <div className="flex gap-3 shrink-0">
             <button 

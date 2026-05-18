@@ -93,9 +93,9 @@ const AudiensiTemplateManagementScreen: React.FC<AudiensiTemplateManagementScree
                 <span className="material-symbols-outlined text-lg">arrow_back</span>
                 Kembali
               </button>
-              <div className="flex flex-col gap-2">
-                <h1 className="text-gray-900 text-3xl font-bold tracking-tight">Kelola Template Surat Audiensi</h1>
-                <p className="text-gray-500 text-base">Atur dan kelola template surat untuk berbagai sektor bisnis.</p>
+              <div className="flex flex-col gap-1.5">
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Kelola Template Surat Audiensi</h1>
+                <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Atur dan kelola template surat untuk berbagai sektor bisnis.</p>
               </div>
             </div>
             <button 

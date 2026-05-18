@@ -201,9 +201,9 @@ const ClientsScreen: React.FC<ClientsScreenProps> = ({ onSelectClient, onAddClie
       <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
         {/* Heading Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-1">Daftar Klien</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Daftar Klien</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Kelola data seluruh klien yang terdaftar dalam sistem PT SI.</p>
           </div>
           <div className="flex justify-end w-full md:w-auto">
             <button 

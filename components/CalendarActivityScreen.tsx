@@ -480,9 +480,9 @@ return (
     <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-slate-900 custom-scrollbar">
       <div className="flex flex-1 flex-col gap-6 p-6 lg:p-10">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">Kalender Aktivitas</h2>
-            <p className="mt-2 text-base text-slate-500 dark:text-slate-400 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Kalender Aktivitas</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
           </div>
           <div className="flex items-center justify-end w-full sm:w-auto gap-3">
             <button 

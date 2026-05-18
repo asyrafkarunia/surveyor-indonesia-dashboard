@@ -496,9 +496,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
       <div className="w-full max-w-5xl mx-auto px-4 md:px-8 lg:px-12 py-6 md:py-8 lg:py-12 flex flex-col gap-8 pb-20">
         
         {/* Header */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Pengaturan Akun</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-base font-medium max-w-2xl">Kelola profil pribadi Anda, preferensi keamanan, dan notifikasi untuk akun PT Surveyor Indonesia Anda.</p>
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Pengaturan Akun</h1>
+          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl">Kelola profil pribadi Anda, preferensi keamanan, dan notifikasi untuk akun PT Surveyor Indonesia Anda.</p>
         </div>
 
         {/* Section 1: Profile Header & Basic Info */}

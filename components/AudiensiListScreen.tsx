@@ -125,9 +125,9 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
           {/* Page Heading */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Daftar Surat Audiensi</h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xl">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Daftar Surat Audiensi</h1>
+              <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-xl">Manajemen dan pemantauan seluruh permohonan surat audiensi yang telah dibuat.</p>
             </div>
             <div className="flex items-center justify-end gap-3 w-full sm:w-auto">
               <button 

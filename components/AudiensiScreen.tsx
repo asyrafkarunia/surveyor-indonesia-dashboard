@@ -198,9 +198,9 @@ const AudiensiScreen: React.FC<AudiensiScreenProps> = ({ onBack }) => {
 
             
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Pengajuan Surat Audiensi</h1>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
+              <div className="flex flex-col gap-1.5">
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Pengajuan Surat Audiensi</h1>
+                <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Buat surat permohonan audiensi baru untuk klien atau instansi.</p>
               </div>
               <div className="flex items-center gap-3">
                 <BackButton onClick={onBack} className="mb-0" />

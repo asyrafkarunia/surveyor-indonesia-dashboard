@@ -204,9 +204,9 @@ General Manager`;
 
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Tambah Template Surat Audiensi</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-base max-w-2xl font-medium">Buat template surat standar dengan variabel dinamis. Pratinjau otomatis tersedia di panel kanan.</p>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Tambah Template Surat Audiensi</h1>
+            <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl">Buat template surat standar dengan variabel dinamis. Pratinjau otomatis tersedia di panel kanan.</p>
           </div>
         </div>
 

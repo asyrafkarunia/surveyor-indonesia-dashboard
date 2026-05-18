@@ -623,9 +623,9 @@ const ActivityLogScreen: React.FC = () => {
 
           {/* Page Heading & Export */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight leading-none">Log Aktivitas Sistem</h1>
-              <p className="text-slate-500 dark:text-slate-400 text-base font-medium max-w-2xl">Monitor semua aktivitas, perubahan sistem, dan kejadian keamanan di seluruh platform.</p>
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Log Aktivitas Sistem</h1>
+              <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl">Monitor semua aktivitas, perubahan sistem, dan kejadian keamanan di seluruh platform.</p>
             </div>
             <div className="flex items-center gap-3">
               <button
