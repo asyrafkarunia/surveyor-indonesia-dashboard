@@ -480,7 +480,7 @@ const LoginScreen: React.FC = () => {
         <div className="w-full max-w-7xl my-auto flex flex-col items-center gap-y-8 lg:gap-y-12">
 
           {/* ── TOP CORPORATE LOGO BAR ── */}
-          <header className="hidden lg:flex w-full items-center justify-between flex-shrink-0">
+          <header className="hidden lg:flex w-full items-center justify-between shrink-0">
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-[2]"></div>
             <DanantaraLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 95, maxWidth: 300, filter: 'brightness(1.1) contrast(1.05)', margin: '-22px 0' }} />
@@ -496,10 +496,10 @@ const LoginScreen: React.FC = () => {
         </header>
 
           {/* ── MAIN CONTENT ── */}
-          <div className="flex w-full items-center justify-center px-0 sm:px-4 flex-shrink-0">
+          <div className="flex w-full items-center justify-center px-0 sm:px-4 shrink-0">
         
         {/* ─── LEFT BRAND PANEL (UNIFIED) ─── */}
-        <div className="hidden lg:flex w-1/2 flex-col items-center justify-center px-10 xl:px-16 login-fade-in relative z-10 flex-shrink-0">
+        <div className="hidden lg:flex w-1/2 flex-col items-center justify-center px-10 xl:px-16 login-fade-in relative z-10 shrink-0">
           {/* MARS Branding Group — locked together */}
           <div className="flex flex-col items-center text-center">
             {/* MARS Logo Icon — Refined as a twinkling star */}
@@ -541,7 +541,7 @@ const LoginScreen: React.FC = () => {
         </div>
 
         {/* ─── RIGHT FORM PANEL (GLASS CARD) ─── */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center relative px-2 sm:px-6 py-4 flex-shrink-0">
+        <div className="w-full lg:w-1/2 flex items-center justify-center relative px-2 sm:px-6 py-4 shrink-0">
           
           <div className="w-full max-w-[460px] relative z-20 bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.35)] border border-white/60 p-6 sm:p-10 login-fade-in">
             {/* Mobile header (Inside Glass Card) */}
@@ -1211,7 +1211,7 @@ const LoginScreen: React.FC = () => {
       </div>{/* end flex-1 centering container */}
 
       {/* ═══════════ DEVELOPER CREDIT ═══════════ */}
-      <div className="relative z-10 py-4 text-center flex-shrink-0 mt-auto">
+      <div className="relative z-10 py-4 text-center shrink-0 mt-auto">
         <p className="dev-credit-sweep text-[10px] tracking-[0.3em] uppercase font-semibold">
           <span className="dev-credit-star">✦</span>
           {' '}Developed by Asyraf Karunia Asroel{' '}

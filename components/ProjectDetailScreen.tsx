@@ -343,7 +343,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                       const pType = (project.project_type || '').toLowerCase();
                       const isValidDBS = ['minyak, gas, & energi terbarukan', 'infrastruktur & transportasi', 'mineral & batubara', 'institusi & pemerintahan', 'layanan industri', 'lingkungan & keberlanjutan'].includes(pType);
                       const displayLabel = isValidDBS ? project.project_type : 'Minyak, Gas, & Energi Terbarukan';
-                      return <span className="whitespace-normal break-words leading-snug">{displayLabel}</span>;
+                      return <span className="whitespace-normal wrap-break-word leading-snug">{displayLabel}</span>;
                    })()}
                 </div>
               </div>

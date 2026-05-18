@@ -505,7 +505,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                   setSelectedProject(e.target.value ? Number(e.target.value) : '');
                   setCurrentPage(1);
                 }}
-                className="w-full sm:w-auto text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
+                className="w-full sm:w-auto text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
               >
                 <option value="">Semua Proyek</option>
                 {projects.map(project => (
@@ -521,7 +521,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                     setSelectedType(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="flex-1 sm:flex-none text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
+                  className="flex-1 sm:flex-none text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
                 >
                   <option>Semua Tipe</option>
                   <option>Komentar</option>
@@ -533,7 +533,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
                 <div className="relative">
                   <button 
                     onClick={() => setShowDatePicker(!showDatePicker)}
-                    className={`flex items-center justify-center p-2.5 sm:p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-primary transition-colors shadow-sm ${
+                    className={`flex items-center justify-center p-2.5 sm:p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-400 hover:text-primary transition-colors shadow-sm ${
                       selectedDate ? 'text-primary border-primary' : ''
                     }`}
                   >

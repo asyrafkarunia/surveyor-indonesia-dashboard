@@ -197,7 +197,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
             <div className="relative flex-1 w-full group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] group-focus-within:text-primary transition-colors">search</span>
               <input 
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:bg-white dark:bg-slate-800 focus:border-primary rounded-lg text-sm transition-all outline-none" 
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-primary rounded-lg text-sm transition-all outline-none" 
                 placeholder="Cari Doc No, Klien, atau Proyek... (Tekan Enter)" 
                 type="text"
                 value={search}

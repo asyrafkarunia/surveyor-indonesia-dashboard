@@ -197,7 +197,7 @@ const ProjectApprovalScreen: React.FC = () => {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'sph'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
             }`}
           >
             SPH
@@ -207,7 +207,7 @@ const ProjectApprovalScreen: React.FC = () => {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'audiensi'
                 ? 'border-primary text-primary'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
             }`}
           >
             Surat Audiensi

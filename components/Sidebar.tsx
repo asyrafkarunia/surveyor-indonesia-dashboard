@@ -50,9 +50,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, activeId, onNavigat
     >
       <div className="flex flex-col gap-6 p-6 flex-1 overflow-hidden">
         <div className="flex items-center gap-3">
-          <div className="relative size-10 shrink-0 overflow-hidden rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)' }}>
+          <button 
+            onClick={() => window.location.reload()}
+            className="relative size-10 shrink-0 overflow-hidden rounded-xl flex items-center justify-center active:scale-95 hover:brightness-110 hover:shadow-lg hover:shadow-primary/20 transition-all cursor-pointer outline-none focus:ring-1 focus:ring-primary/50" 
+            style={{ background: 'linear-gradient(135deg, #003868, #00B4AE)' }}
+            title="Refresh Halaman"
+            aria-label="Refresh Halaman"
+          >
             <MarsIconLogo className="w-7 h-7" color="white" />
-          </div>
+          </button>
           <div className="flex flex-col">
             <h1 className="text-sm font-bold leading-tight text-white">MARS</h1>
             <p className="text-[10px] leading-tight" style={{ color: 'rgba(255,255,255,0.45)' }}>Marketing Analysis Report System</p>
