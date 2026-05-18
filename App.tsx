@@ -452,6 +452,8 @@ const AppContent: React.FC = () => {
 
   // ── Sync: activeTab + sub-states → URL ──
   useEffect(() => {
+    if (!user) return;
+
     localStorage.setItem('activeTab', activeTab);
     const targetPath = computeCurrentPath(activeTab, {
       isCreatingSph, isCreatingClient, isEditingClient,
@@ -464,7 +466,7 @@ const AppContent: React.FC = () => {
         targetPath
       );
     }
-  }, [activeTab, isCreatingSph, isCreatingClient, isEditingClient, selectedClient, isCreatingMarketingTask, audiensiView]);
+  }, [activeTab, isCreatingSph, isCreatingClient, isEditingClient, selectedClient, isCreatingMarketingTask, audiensiView, user]);
 
   // ── Sync: URL → state (on mount + browser Back/Forward) ──
   useEffect(() => {
