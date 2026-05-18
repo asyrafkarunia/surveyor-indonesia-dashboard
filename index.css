@@ -72,12 +72,12 @@
 
 @keyframes pulseGlow {
   0%, 100% {
-    opacity: 0.06;
+    opacity: 0.03;
     transform: scale(1) rotate(0deg);
   }
   50% {
-    opacity: 0.12;
-    transform: scale(1.02) rotate(1deg);
+    opacity: 0.08;
+    transform: scale(1.05) rotate(1deg);
   }
 }
 
@@ -120,7 +120,7 @@
 }
 
 .login-glow {
-  animation: pulseGlow 6s ease-in-out infinite;
+  animation: pulseGlow 10s ease-in-out infinite;
 }
 
 .login-float {
@@ -134,6 +134,8 @@
 .login-shake {
   animation: shake 0.5s ease-in-out;
 }
+
+
 
 /* ═══════════ Loading System Screen Animations ═══════════ */
 @keyframes gentlePulse {
@@ -270,24 +272,7 @@
 }
 
 
-/* ═══════════ Water Ripple Animation ═══════════ */
-@keyframes ripple-expand {
-  0% {
-    transform: translate(-50%, -50%) scale(0.6);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
-}
 
-.animate-ripple-expand {
-  animation: ripple-expand 8s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
 
 /* ═══════════ Tooltip Fade In ═══════════ */
 @keyframes tooltipFadeIn {
@@ -329,7 +314,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: headlight-sweep 20s ease-in-out infinite;
+  animation: headlight-sweep 60s ease-in-out infinite;
 }
 
 .dev-credit-star {
@@ -353,4 +338,6 @@ input::-webkit-credentials-auto-fill-button {
   display: none !important;
   pointer-events: none;
 }
+
+
 

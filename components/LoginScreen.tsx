@@ -57,7 +57,7 @@ export const MarsIconLogo: React.FC<{ className?: string; color?: string }> = ({
 
 /* ─── Danantara Indonesia Logo (image) ─── */
 const DanantaraLogo: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-  <img src="/logos/danantara.png" alt="Danantara Indonesia" className={className} style={{ objectFit: 'contain', ...style }} />
+  <img src="/logos/Danantara_Indonesia_Logo_vector-White-1.png" alt="Danantara Indonesia" className={className} style={{ objectFit: 'contain', ...style }} />
 );
 
 /* ─── IDSurvey Logo (image) ─── */
@@ -148,119 +148,7 @@ const InputField: React.FC<{
   </div>
 );
 
-const CanvasStarfield: React.FC = () => {
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    
-    // Star properties
-    interface Star {
-      x: number;
-      y: number;
-      radius: number;
-      vx: number;
-      vy: number;
-      opacity: number;
-      twinkleSpeed: number;
-      color: string;
-      hasGlow: boolean;
-    }
-    
-    let stars: Star[] = [];
-    
-    const init = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      stars = [];
-      
-      // Dynamic density based on screen size
-      const numStars = Math.floor((canvas.width * canvas.height) / 3500); 
-      
-      for (let i = 0; i < numStars; i++) {
-        // 10% chance for accent teal star, else white/blue-white
-        const isAccent = Math.random() > 0.9;
-        const color = isAccent ? 'rgba(0, 180, 174, ' : 'rgba(200, 230, 255, ';
-        const radius = isAccent ? Math.random() * 1.5 + 1 : Math.random() * 1.2 + 0.5;
-        
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: radius,
-          vx: (Math.random() - 0.5) * 0.05,
-          vy: (Math.random() - 0.5) * 0.05 - 0.02, // slight upward drift
-          opacity: Math.random(),
-          twinkleSpeed: Math.random() * 0.005 + 0.002,
-          color: color,
-          hasGlow: radius > 1.2
-        });
-      }
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      stars.forEach(star => {
-        // Move
-        star.x += star.vx;
-        star.y += star.vy;
-        
-        // Wrap around screen
-        if (star.x < 0) star.x = canvas.width;
-        if (star.x > canvas.width) star.x = 0;
-        if (star.y < 0) star.y = canvas.height;
-        if (star.y > canvas.height) star.y = 0;
-        
-        // Twinkle (oscillate opacity)
-        star.opacity += star.twinkleSpeed;
-        if (star.opacity > 1 || star.opacity < 0.1) {
-          star.twinkleSpeed = -star.twinkleSpeed;
-        }
-
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        
-        // Render with dynamic opacity
-        const currentOpacity = Math.max(0.1, Math.min(1, star.opacity));
-        ctx.fillStyle = star.color + currentOpacity + ')';
-        
-        // Optional glow
-        if (star.hasGlow) {
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = star.color + '0.8)';
-        } else {
-          ctx.shadowBlur = 0;
-        }
-        
-        ctx.fill();
-      });
-      
-      animationFrameId = requestAnimationFrame(draw);
-    };
-
-    init();
-    draw();
-
-    window.addEventListener('resize', init);
-    return () => {
-      window.removeEventListener('resize', init);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return (
-    <canvas 
-      ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none z-1" 
-      style={{ opacity: 0.8 }}
-    />
-  );
-};
 
 const LoginScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot-password' | 'reset-password' | 'verification-sent'>('login');
@@ -566,36 +454,26 @@ const LoginScreen: React.FC = () => {
     `}</style>
     <div className="flex flex-col min-h-screen w-full relative bg-[#003868] overflow-x-hidden overflow-y-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
 
-      {/* ═══════════ UNIFIED DYNAMIC BACKGROUND ═══════════ */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute inset-0 opacity-60" style={{
-          background: 'radial-gradient(circle at 40% 50%, #005596 0%, #001d3d 100%)',
-        }} />
-        
-        {/* Ripples emanating from center-left */}
-        <div className="absolute top-[45%] left-[25%] w-0 h-0 hidden lg:block">
-           <div className="animate-ripple-expand absolute w-[600px] h-[600px] rounded-full border border-white/15" />
-           <div className="animate-ripple-expand absolute w-[600px] h-[600px] rounded-full border border-cyan-400/15" style={{ animationDelay: '2.5s' }} />
-           <div className="animate-ripple-expand absolute w-[600px] h-[600px] rounded-full border border-white/5" style={{ animationDelay: '5s' }} />
-        </div>
-
-        {/* Ripples for mobile center */}
-        <div className="absolute top-[20%] left-1/2 w-0 h-0 lg:hidden">
-           <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/15" />
-           <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/15" style={{ animationDelay: '3s' }} />
-        </div>
-
-        <div className="absolute top-[-10%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[#00B4AE] blur-[150px] animate-pulse opacity-10"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#00B4AE] blur-[150px] opacity-10"></div>
+      {/* ═══════════ LIGHTWEIGHT STATIC BACKGROUND ═══════════ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" style={{
+        background: 'radial-gradient(circle at 30% 40%, #004b87 0%, #001d3d 60%, #000c1a 100%)'
+      }}>
+        {/* Simple static cosmic dust overlay */}
+        <div className="absolute inset-0 opacity-15" style={{
+          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          backgroundPosition: '0 0'
+        }}></div>
       </div>
 
-      {/* ═══════════ STARFIELD BACKGROUND (Canvas-based Vanilla JS) ═══════════ */}
-      <CanvasStarfield />
+
 
       {/* Large watermark MARS logo */}
       <div className="login-glow fixed inset-0 items-center justify-center pointer-events-none overflow-hidden z-0 mask-image-gradient hidden lg:flex">
         <MarsWatermark style={{ width: '90%', maxWidth: 750, opacity: 0.03, transform: 'rotate(-5deg) translateX(-15%)' }} />
       </div>
+
+
 
       {/* ═══════════ CENTERED PAGE GROUP (header + content stay together on zoom) ═══════════ */}
       <div className="flex flex-col flex-1 w-full relative z-10 items-center min-h-screen px-0 py-8 sm:p-12">
@@ -605,7 +483,7 @@ const LoginScreen: React.FC = () => {
           <header className="hidden lg:flex w-full items-center justify-between flex-shrink-0">
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-[2]"></div>
-            <DanantaraLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 40, maxWidth: 200, filter: 'brightness(1.1) contrast(1.05)' }} />
+            <DanantaraLogo className="w-auto relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ objectFit: 'contain', height: 95, maxWidth: 300, filter: 'brightness(1.1) contrast(1.05)', margin: '-22px 0' }} />
           </div>
           <div className="relative flex items-center justify-center flex-1 px-8 sm:px-16">
             <div className="absolute inset-0 bg-white/10 blur-[30px] rounded-full scale-[2]"></div>
@@ -613,7 +491,7 @@ const LoginScreen: React.FC = () => {
           </div>
           <div className="relative flex items-center justify-center ml-auto">
             <div className="absolute inset-0 bg-white/10 blur-[25px] rounded-full scale-[2]"></div>
-            <SurveyorIndonesiaLogo className="w-auto relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]" style={{ objectFit: 'contain', height: 50, maxWidth: 180 }} />
+            <SurveyorIndonesiaLogo className="w-auto relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]" style={{ objectFit: 'contain', height: 68, maxWidth: 220, margin: '-8px 0' }} />
           </div>
         </header>
 
@@ -632,8 +510,8 @@ const LoginScreen: React.FC = () => {
 
             {/* MARS Name */}
             <h1
-              className="text-5xl xl:text-7xl font-black text-white tracking-[0.15em] mb-2 relative z-10 drop-shadow-xl"
-              style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
+              className="text-5xl xl:text-7xl font-black text-white tracking-[0.15em] mb-2 relative z-10"
+              style={{ textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}
             >
               MARS
             </h1>
