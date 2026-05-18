@@ -33,6 +33,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(function ($user, string $token) {
+            return env('FRONTEND_URL', 'http://localhost:4173') . '/login?mode=reset-password&token=' . $token . '&email=' . urlencode($user->email);
+        });
+
         $this->configureRateLimiting();
 
         $this->routes(function () {

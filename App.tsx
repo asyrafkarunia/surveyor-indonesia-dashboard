@@ -497,7 +497,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (!loading && !user) {
       // User is logged out → set URL to /login (replaceState so Back can't return to app)
-      window.history.replaceState({}, '', '/login');
+      window.history.replaceState({}, '', `/login${window.location.search}`);
     }
   }, [user, loading]);
 

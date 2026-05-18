@@ -49,6 +49,14 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new VerifyEmailNotification);
     }
 
+    /**
+     * Send the password reset notification using custom Indonesian template.
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
+
     public function getAvatarAttribute($value)
     {
         if (!$value) return null;
