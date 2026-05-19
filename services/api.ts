@@ -192,6 +192,13 @@ class ApiService {
     });
   }
 
+  async validateResetToken(data: { token: string; email: string }) {
+    return this.request<{ valid: boolean; message: string }>('/validate-reset-token', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async resendVerification(email: string) {
     // Public endpoint — no auth token needed
     const url = `${API_BASE_URL}/email/resend`;

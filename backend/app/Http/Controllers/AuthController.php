@@ -278,6 +278,54 @@ class AuthController extends Controller
     }
 
     /**
+     * Validate password reset token
+     */
+    public function validateResetToken(Request $request)
+    {
+        try {
+            $request->validate([
+                'token' => 'required|string',
+                'email' => 'required|email',
+            ]);
+
+            $user = User::where('email', strtolower(trim($request->email)))->first();
+
+            if (!$user) {
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'Email tidak terdaftar.'
+                ], 404);
+            }
+
+            // check if token exists and is valid (not expired)
+            $isValid = Password::getRepository()->exists($user, $request->token);
+
+            if ($isValid) {
+                return response()->json([
+                    'valid' => true,
+                    'message' => 'Token valid.'
+                ]);
+            }
+
+            return response()->json([
+                'valid' => false,
+                'message' => 'Link reset password sudah tidak valid atau kedaluwarsa.'
+            ], 400);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Validasi data gagal.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Terjadi kesalahan pada server.'
+            ], 500);
+        }
+    }
+
+    /**
      * Verify Email - Handle verification link click
      */
     public function verifyEmail(Request $request, $id, $hash)

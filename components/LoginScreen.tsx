@@ -177,7 +177,24 @@ const LoginScreen: React.FC = () => {
       setActiveTab('reset-password');
       setResetToken(token);
       setEmail(resetEmail);
-      // Don't clean up token yet, we need it for the form
+
+      const validateToken = async () => {
+        setTokenChecking(true);
+        setTokenExpired(false);
+        try {
+          const response = await api.validateResetToken({ token, email: resetEmail });
+          if (!response.valid) {
+            setTokenExpired(true);
+          }
+        } catch (err: any) {
+          console.error('Validation error:', err);
+          setTokenExpired(true);
+        } finally {
+          setTokenChecking(false);
+        }
+      };
+
+      validateToken();
     }
   }, []);
   
@@ -216,6 +233,8 @@ const LoginScreen: React.FC = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const [notVerifiedEmail, setNotVerifiedEmail] = useState('');
+  const [tokenChecking, setTokenChecking] = useState(false);
+  const [tokenExpired, setTokenExpired] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1075,80 +1094,113 @@ const LoginScreen: React.FC = () => {
             {/* ═══════════ RESET PASSWORD FORM ═══════════ */}
             {activeTab === 'reset-password' && (
               <div className="login-fade-in-delayed">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-slate-800">
-                    Reset Password
-                  </h2>
-                  <p className="text-slate-400 text-sm mt-1">
-                    Buat password baru untuk akun {email}.
-                  </p>
-                </div>
-
-                {resetSuccess ? (
-                  <div className="text-center py-6">
-                    <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-emerald-50 text-emerald-500">
-                      <span className="material-symbols-outlined text-3xl">check_circle</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Password Diubah!</h3>
-                    <p className="text-slate-500 text-sm">
-                      Password Anda telah berhasil diperbarui. Mengalihkan ke login...
-                    </p>
+                {tokenChecking ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
+                    <p className="text-slate-500 text-sm font-medium">Memverifikasi keamanan tautan...</p>
                   </div>
-                ) : (
-                  <form onSubmit={handleResetPassword} className="space-y-4">
-                    {error && (
-                      <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm bg-red-50 text-red-600 border border-red-100">
-                        <span className="material-symbols-outlined text-lg">error</span>
-                        <span>{error}</span>
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru</label>
-                      <InputField
-                        id="reset-password"
-                        icon="lock"
-                        type="password"
-                        value={regPassword}
-                        onChange={setRegPassword}
-                        placeholder="Minimal 5 karakter"
-                        showToggle
-                        onToggle={() => setShowRegPassword(!showRegPassword)}
-                        isVisible={showRegPassword}
-                        focusedField={focusedField}
-                        setFocusedField={setFocusedField}
-                      />
+                ) : tokenExpired ? (
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-rose-50 text-rose-500 border border-rose-100 animate-pulse">
+                      <span className="material-symbols-outlined text-3xl">error</span>
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
-                      <InputField
-                        id="reset-password-confirm"
-                        icon="lock"
-                        type="password"
-                        value={regPasswordConfirm}
-                        onChange={setRegPasswordConfirm}
-                        placeholder="Ulangi password"
-                        showToggle
-                        onToggle={() => setShowRegPassword(!showRegPassword)}
-                        isVisible={showRegPassword}
-                        focusedField={focusedField}
-                        setFocusedField={setFocusedField}
-                      />
-                    </div>
-
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Tautan Kedaluwarsa</h3>
+                    <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                      Waduh, tautan reset password Anda telah kedaluwarsa atau tidak valid (berlaku 60 menit sejak dikirim). Silakan minta tautan baru di bawah ini.
+                    </p>
                     <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full rounded-xl px-4 py-3.5 font-semibold text-white text-sm transition-all duration-300"
+                      type="button"
+                      onClick={() => {
+                        setActiveTab('forgot-password');
+                        setTokenExpired(false);
+                      }}
+                      className="w-full rounded-xl px-4 py-3.5 font-semibold text-white text-sm transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
                       style={{
-                        background: 'linear-gradient(135deg, #003868, #00B4AE)',
-                        boxShadow: '0 4px 15px rgba(0,56,104,0.2)',
+                        background: 'linear-gradient(135deg, #003868 0%, #00B4AE 100%)',
+                        boxShadow: '0 4px 15px rgba(0,56,104,0.3)',
                       }}
                     >
-                      {loading ? 'Memproses...' : 'Simpan Password Baru'}
+                      Minta Link Baru
                     </button>
-                  </form>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold text-slate-800">
+                        Reset Password
+                      </h2>
+                      <p className="text-slate-400 text-sm mt-1">
+                        Buat password baru untuk akun {email}.
+                      </p>
+                    </div>
+
+                    {resetSuccess ? (
+                      <div className="text-center py-6">
+                        <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-emerald-50 text-emerald-500">
+                          <span className="material-symbols-outlined text-3xl">check_circle</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Password Diubah!</h3>
+                        <p className="text-slate-500 text-sm">
+                          Password Anda telah berhasil diperbarui. Mengalihkan ke login...
+                        </p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleResetPassword} className="space-y-4">
+                        {error && (
+                          <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm bg-red-50 text-red-600 border border-red-100">
+                            <span className="material-symbols-outlined text-lg">error</span>
+                            <span>{error}</span>
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru</label>
+                          <InputField
+                            id="reset-password"
+                            icon="lock"
+                            type="password"
+                            value={regPassword}
+                            onChange={setRegPassword}
+                            placeholder="Minimal 5 karakter"
+                            showToggle
+                            onToggle={() => setShowRegPassword(!showRegPassword)}
+                            isVisible={showRegPassword}
+                            focusedField={focusedField}
+                            setFocusedField={setFocusedField}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
+                          <InputField
+                            id="reset-password-confirm"
+                            icon="lock"
+                            type="password"
+                            value={regPasswordConfirm}
+                            onChange={setRegPasswordConfirm}
+                            placeholder="Ulangi password"
+                            showToggle
+                            onToggle={() => setShowRegPassword(!showRegPassword)}
+                            isVisible={showRegPassword}
+                            focusedField={focusedField}
+                            setFocusedField={setFocusedField}
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full rounded-xl px-4 py-3.5 font-semibold text-white text-sm transition-all duration-300"
+                          style={{
+                            background: 'linear-gradient(135deg, #003868, #00B4AE)',
+                            boxShadow: '0 4px 15px rgba(0,56,104,0.2)',
+                          }}
+                        >
+                          {loading ? 'Memproses...' : 'Simpan Password Baru'}
+                        </button>
+                      </form>
+                    )}
+                  </>
                 )}
               </div>
             )}

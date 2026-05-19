@@ -30,6 +30,7 @@ Route::post('/register-invite', [AuthController::class, 'registerWithInvite'])->
 // Password Reset
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/validate-reset-token', [AuthController::class, 'validateResetToken'])->middleware('throttle:10,1');
 Route::get('/password-reset/{token}', function (Illuminate\Http\Request $request, $token) {
     return redirect(env('FRONTEND_URL') . '?mode=reset-password&token=' . $token . '&email=' . $request->email);
 })->name('password.reset');
