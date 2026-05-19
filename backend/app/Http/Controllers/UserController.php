@@ -59,7 +59,8 @@ class UserController extends Controller
             
             // Delete old avatar if exists and not default
             if ($user->avatar && str_contains($user->avatar, '/storage/avatars/')) {
-                $oldPath = str_replace('/storage/', '', $user->avatar);
+                $filename = basename($user->avatar);
+                $oldPath = 'avatars/' . $filename;
                 if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
                 }

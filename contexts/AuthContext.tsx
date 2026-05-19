@@ -26,6 +26,7 @@ interface AuthContextType {
   isSuperAdmin: () => boolean;
   isFinance: () => boolean;
   canUpdateProject: () => boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -106,7 +107,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const canUpdateProject = () => isMarketing() || isFinance() || isSuperAdmin();
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isMarketing, isApprover, isCommon, isHeadSection, isSeniorManager, isGeneralManager, isSuperAdmin, isFinance, canUpdateProject }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, isMarketing, isApprover, isCommon, isHeadSection, isSeniorManager, isGeneralManager, isSuperAdmin, isFinance, canUpdateProject, setUser }}>
       {children}
     </AuthContext.Provider>
   );

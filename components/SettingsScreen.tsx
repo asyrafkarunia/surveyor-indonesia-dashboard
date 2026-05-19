@@ -4,13 +4,74 @@ import { useTheme } from '../contexts/ThemeContext';
 import { api } from '../services/api';
 import { SystemUser, UserRoleType, UserRoleName } from '../types';
 import { SYSTEM_USERS } from '../constants';
+import { showToast } from './Toast';
+
+/**
+ * Helper to center crop and compress an image file to a perfect square (300x300 JPEG)
+ * for optimal performance and exact border fit.
+ */
+const compressAndCropToSquare = (file: File, size: number = 300): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Gagal memproses gambar pada canvas.'));
+          return;
+        }
+
+        // Center crop calculation
+        const sourceSize = Math.min(img.width, img.height);
+        const sourceX = (img.width - sourceSize) / 2;
+        const sourceY = (img.height - sourceSize) / 2;
+
+        ctx.drawImage(
+          img,
+          sourceX,
+          sourceY,
+          sourceSize,
+          sourceSize,
+          0,
+          0,
+          size,
+          size
+        );
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], 'avatar.jpg', {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Gagal melakukan kompresi gambar.'));
+            }
+          },
+          'image/jpeg',
+          0.85 // 85% quality is the exact performance sweet spot
+        );
+      };
+      img.onerror = () => reject(new Error('Gagal memuat file gambar.'));
+    };
+    reader.onerror = () => reject(new Error('Gagal membaca file gambar.'));
+  });
+};
 
 interface SettingsScreenProps {
   onNavigate: (id: string) => void;
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
-  const { user, isMarketing, isSuperAdmin } = useAuth();
+  const { user, isMarketing, isSuperAdmin, setUser } = useAuth();
   const isAdmin = isMarketing();
 
   // Profile state
@@ -150,9 +211,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     setProfileLoading(true);
     try {
       await api.updateProfile(profileData);
-      alert('Profil berhasil diperbarui');
+      showToast('Profil berhasil diperbarui', 'success');
     } catch (error: any) {
-      alert('Gagal memperbarui profil: ' + (error.message || 'Unknown error'));
+      showToast('Gagal memperbarui profil: ' + (error.message || 'Unknown error'), 'error');
     } finally {
       setProfileLoading(false);
     }
@@ -162,43 +223,50 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate size (max 5MB client-side)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Ukuran file maksimal 5MB');
+    // Validate size (max 10MB client-side before compression)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Ukuran file awal maksimal 10MB', 'error');
       return;
     }
 
     setProfileLoading(true);
+    showToast('Mengompresi & mengunggah foto...', 'info');
     try {
-      await api.uploadAvatar(file);
-      alert('Foto profil berhasil diperbarui');
-      // Forcing a full page reload to safely refresh the global AuthContext state 
-      // with the new profile picture across the application
-      window.location.reload(); 
+      // 1. Center crop and compress image to optimized JPEG square (300x300)
+      const optimizedFile = await compressAndCropToSquare(file);
+      
+      // 2. Upload to backend
+      const response = await api.uploadAvatar(optimizedFile);
+      
+      // 3. Update React global Auth state instantly without any page reload!
+      setUser(prev => prev ? { ...prev, avatar: response.avatar } : null);
+      
+      showToast('Foto profil berhasil diperbarui', 'success');
     } catch (error: any) {
       console.error('Avatar upload failed:', error);
-      alert('Gagal memperbarui foto profil: ' + (error.message || 'Unknown error'));
-      setProfileLoading(false); 
+      showToast('Gagal memperbarui foto profil: ' + (error.message || 'Error tidak diketahui'), 'error');
+    } finally {
+      setProfileLoading(false);
     }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Kata sandi baru dan konfirmasi tidak cocok');
+      showToast('Kata sandi baru dan konfirmasi tidak cocok', 'error');
       return;
     }
     if (passwordData.newPassword.length < 5) {
-      alert('Kata sandi minimal 5 karakter');
+      showToast('Kata sandi minimal 5 karakter', 'error');
       return;
     }
     setSecurityLoading(true);
     try {
       await api.updatePassword(passwordData.currentPassword, passwordData.newPassword);
-      alert('Kata sandi berhasil diubah');
+      showToast('Kata sandi berhasil diubah', 'success');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error: any) {
-      alert('Gagal mengubah kata sandi: ' + (error.message || 'Unknown error'));
+      showToast('Gagal mengubah kata sandi: ' + (error.message || 'Unknown error'), 'error');
     } finally {
       setSecurityLoading(false);
     }
@@ -208,9 +276,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     setPreferencesLoading(true);
     try {
       await api.updatePreferences({ notifications });
-      alert('Preferensi berhasil disimpan');
+      showToast('Preferensi berhasil disimpan', 'success');
     } catch (error: any) {
-      alert('Gagal menyimpan preferensi: ' + (error.message || 'Unknown error'));
+      showToast('Gagal menyimpan preferensi: ' + (error.message || 'Unknown error'), 'error');
     } finally {
       setPreferencesLoading(false);
     }
@@ -237,12 +305,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
       await api.updateUser(editingUser.id, updateData);
       setUsers(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...updateData } : u));
-      alert('Peran dan profil pengguna berhasil diperbarui');
+      showToast('Peran dan profil pengguna berhasil diperbarui', 'success');
       setShowEditUserModal(false);
       setEditingUser(null);
     } catch (error: any) {
       console.error('Failed to update user:', error);
-      alert(error?.message || 'Gagal memperbarui pengguna');
+      showToast(error?.message || 'Gagal memperbarui pengguna', 'error');
     } finally {
       setEditLoading(false);
     }
@@ -250,14 +318,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
   const handleAddUser = async () => {
     if (!newUser.name || !newUser.email || !newUser.division || !newUser.roleName) {
-      alert('Harap lengkapi semua field');
+      showToast('Harap lengkapi semua field', 'error');
       return;
     }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newUser.email)) {
-      alert('Format email tidak valid');
+      showToast('Format email tidak valid', 'error');
       return;
     }
     
@@ -282,7 +350,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
       
       const response = await api.createUser(userData);
       console.log('User created successfully:', response);
-      alert('Pengguna berhasil ditambahkan. Password default: 12345');
+      showToast('Pengguna berhasil ditambahkan. Password default: 12345', 'success');
       setShowAddUserModal(false);
       setNewUser({ name: '', email: '', role: 'common', roleName: 'Surveyor', division: '', employeeId: '' });
       loadUsers();
@@ -306,7 +374,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
         errorMessage = error.message;
       }
       
-      alert(`Gagal menambahkan pengguna:\n${errorMessage}`);
+      showToast(`Gagal menambahkan pengguna: ${errorMessage}`, 'error');
     }
   };
 
@@ -343,7 +411,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
   const handleGenerateInviteCode = async () => {
     if (!generateDivision) {
-      alert('Silakan pilih divisi target terlebih dahulu.');
+      showToast('Silakan pilih divisi target terlebih dahulu.', 'error');
       return;
     }
     setGenerateLoading(true);
@@ -353,11 +421,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
         division: generateDivision,
       });
       const codeData: any = (response as any).data || response;
-      alert(`Kode undangan berhasil dibuat: ${codeData.code || codeData?.invite_code?.code || 'Buka tab kode untuk melihatnya'}`);
+      showToast(`Kode undangan berhasil dibuat: ${codeData.code || codeData?.invite_code?.code || 'Buka tab kode untuk melihatnya'}`, 'success');
       loadInviteCodes();
     } catch (error) {
       console.error('Failed to generate invite code:', error);
-      alert('Gagal membuat kode undangan');
+      showToast('Gagal membuat kode undangan', 'error');
     } finally {
       setGenerateLoading(false);
     }
@@ -365,7 +433,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Kode disalin ke clipboard');
+    showToast('Kode disalin ke clipboard', 'success');
   };
 
   const getInviteCodeStatus = (ic: any) => {
@@ -414,20 +482,20 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     
     // Cannot delete yourself
     if (userToDelete.isCurrentUser) {
-      alert('Tidak dapat menghapus akun Anda sendiri.');
+      showToast('Tidak dapat menghapus akun Anda sendiri.', 'error');
       return;
     }
 
     // Cannot delete super_admin
     if (userToDelete.role === 'super_admin') {
-      alert('Akun Super Admin tidak dapat dihapus.');
+      showToast('Akun Super Admin tidak dapat dihapus.', 'error');
       return;
     }
 
     // Privileged accounts can only be deleted by super_admin
     const privilegedRoles = ['marketing', 'head_section', 'approver', 'senior_manager', 'general_manager'];
     if (privilegedRoles.includes(userToDelete.role) && user?.role !== 'super_admin') {
-      alert('Hanya Super Admin yang dapat menghapus akun dengan hak akses tinggi.');
+      showToast('Hanya Super Admin yang dapat menghapus akun dengan hak akses tinggi.', 'error');
       return;
     }
 
@@ -435,11 +503,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     
     try {
       await api.deleteUser(userId);
-      alert('Pengguna berhasil dihapus');
+      showToast('Pengguna berhasil dihapus', 'success');
       loadUsers();
     } catch (error: any) {
       const msg = error?.response?.data?.message || error.message || 'Unknown error';
-      alert('Gagal menghapus pengguna: ' + msg);
+      showToast('Gagal menghapus pengguna: ' + msg, 'error');
     }
   };
 
