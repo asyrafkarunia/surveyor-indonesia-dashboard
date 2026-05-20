@@ -209,6 +209,22 @@ class CalendarController extends Controller
         return response()->json($event->load(['user', 'project']));
     }
 
+    public function show($id)
+    {
+        $event = CalendarEvent::with(['user', 'project'])->findOrFail($id);
+        
+        $allUsers = User::all()->keyBy('id');
+        if (!empty($event->team_members)) {
+            $event->team_member_users = collect($event->team_members)->map(function ($memberId) use ($allUsers) {
+                return $allUsers->get($memberId);
+            })->filter()->values();
+        } else {
+            $event->team_member_users = [];
+        }
+        
+        return response()->json($event);
+    }
+
     public function destroy($id, Request $request)
     {
         $event = CalendarEvent::findOrFail($id);

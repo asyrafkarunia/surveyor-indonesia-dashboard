@@ -35,6 +35,24 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
   const MAX_VISIBLE_EVENTS = 3;
 
   useEffect(() => {
+    if (initialEventId) {
+      const fetchAndSetEventMonth = async () => {
+        try {
+          const event = await api.getCalendarEvent(initialEventId);
+          if (event && event.date) {
+            const cleanDate = event.date.includes('T') ? event.date.split('T')[0] : event.date;
+            const eventDate = new Date(cleanDate + 'T00:00:00');
+            setCurrentDate(eventDate);
+          }
+        } catch (error) {
+          console.error('Failed to fetch initial event for deep link:', error);
+        }
+      };
+      fetchAndSetEventMonth();
+    }
+  }, [initialEventId]);
+
+  useEffect(() => {
     if (initialEventId && !loading && events.length > 0) {
       const event = events.find(e => e.id === initialEventId);
       if (event) {
@@ -127,8 +145,10 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
 
       // Prepare data for Excel
       const exportData = (allEvents || []).map((event: any) => {
-        const startDate = event.date ? new Date(event.date + 'T00:00:00') : null;
-        const endDate = event.end_date ? new Date(event.end_date + 'T00:00:00') : null;
+        const cleanStart = event.date ? (event.date.includes('T') ? event.date.split('T')[0] : event.date) : '';
+        const cleanEnd = event.end_date ? (event.end_date.includes('T') ? event.end_date.split('T')[0] : event.end_date) : '';
+        const startDate = cleanStart ? new Date(cleanStart + 'T00:00:00') : null;
+        const endDate = cleanEnd ? new Date(cleanEnd + 'T00:00:00') : null;
         
         const getTypeLabel = (type: string) => {
           switch (type) {

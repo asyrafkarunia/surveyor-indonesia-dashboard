@@ -308,4 +308,91 @@ class UserController extends Controller
 
         return response()->json($inviteCodes);
     }
+
+    /**
+     * Revoke an active invite code (Admin only)
+     */
+    public function revokeInviteCode(Request $request, $id)
+    {
+        try {
+            $inviteCode = InviteCode::findOrFail($id);
+            $actor = $request->user();
+
+            // Marketing can only revoke codes they created
+            if ($actor->role === 'marketing' && $inviteCode->created_by !== $actor->id) {
+                return response()->json([
+                    'message' => 'Anda hanya dapat mencabut kode yang Anda buat sendiri.',
+                ], 403);
+            }
+
+            // Cannot revoke already used codes
+            if ($inviteCode->used_by) {
+                return response()->json([
+                    'message' => 'Kode yang sudah digunakan tidak dapat dicabut.',
+                ], 422);
+            }
+
+            // Cannot revoke already inactive codes
+            if (!$inviteCode->is_active) {
+                return response()->json([
+                    'message' => 'Kode sudah tidak aktif.',
+                ], 422);
+            }
+
+            $inviteCode->update(['is_active' => false]);
+
+            return response()->json([
+                'message' => 'Kode undangan berhasil dicabut.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Kode undangan tidak ditemukan.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Invite code revoke error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Gagal mencabut kode undangan.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete an invite code - only for used/expired/inactive codes (Admin only)
+     */
+    public function deleteInviteCode(Request $request, $id)
+    {
+        try {
+            $inviteCode = InviteCode::findOrFail($id);
+            $actor = $request->user();
+
+            // Marketing can only delete codes they created
+            if ($actor->role === 'marketing' && $inviteCode->created_by !== $actor->id) {
+                return response()->json([
+                    'message' => 'Anda hanya dapat menghapus kode yang Anda buat sendiri.',
+                ], 403);
+            }
+
+            // Cannot delete active, unused, non-expired codes - must revoke first
+            if ($inviteCode->is_active && !$inviteCode->used_by && $inviteCode->expires_at->isFuture()) {
+                return response()->json([
+                    'message' => 'Kode yang masih aktif harus dicabut terlebih dahulu sebelum dihapus.',
+                ], 422);
+            }
+
+            $inviteCode->delete();
+
+            return response()->json([
+                'message' => 'Kode undangan berhasil dihapus.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Kode undangan tidak ditemukan.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Invite code delete error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Gagal menghapus kode undangan.',
+            ], 500);
+        }
+    }
 }

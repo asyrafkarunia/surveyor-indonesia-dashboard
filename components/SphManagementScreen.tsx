@@ -6,9 +6,15 @@ import { id } from 'date-fns/locale';
 
 interface SphManagementScreenProps {
   onCreateClick: () => void;
+  initialSphId?: number | null;
+  onInitialSphHandled?: () => void;
 }
 
-const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick }) => {
+const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ 
+  onCreateClick,
+  initialSphId,
+  onInitialSphHandled
+}) => {
   const [sphList, setSphList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -25,6 +31,27 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({ onCreateClick
     { value: 'Approved', label: 'Approved' },
     { value: 'Rejected', label: 'Rejected' },
   ];
+
+  useEffect(() => {
+    if (initialSphId) {
+      const fetchAndSetSearch = async () => {
+        try {
+          const sph = await api.getSph(initialSphId.toString());
+          if (sph && sph.sph_no) {
+            setSearch(sph.sph_no);
+            setPage(1);
+            handleViewSph(sph);
+          }
+          if (onInitialSphHandled) {
+            onInitialSphHandled();
+          }
+        } catch (error) {
+          console.error('Failed to fetch initial SPH for deep link:', error);
+        }
+      };
+      fetchAndSetSearch();
+    }
+  }, [initialSphId]);
 
   useEffect(() => {
     fetchSph();

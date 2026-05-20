@@ -5,6 +5,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  phone?: string;
   role: 'super_admin' | 'marketing' | 'common' | 'approver' | 'head_section' | 'senior_manager' | 'general_manager';
   roleName?: string;
   division?: string;

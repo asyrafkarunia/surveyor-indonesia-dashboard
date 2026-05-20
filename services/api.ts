@@ -799,6 +799,10 @@ class ApiService {
     return this.request(`/calendar/events${queryString ? `?${queryString}` : ''}`);
   }
 
+  async getCalendarEvent(id: number) {
+    return this.request<any>(`/calendar/events/${id}`);
+  }
+
   async createCalendarEvent(data: any) {
     return this.request('/calendar/events', {
       method: 'POST',
@@ -986,6 +990,13 @@ class ApiService {
     });
   }
 
+  async broadcastNotification(data: { title: string; content: string }) {
+    return this.request('/notifications/broadcast', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // User Management (Admin only)
   async getUsers(params?: { page?: number; search?: string }) {
     const query = new URLSearchParams();
@@ -1057,6 +1068,18 @@ class ApiService {
     return this.request('/invite-codes/generate', {
       method: 'POST',
       body: JSON.stringify(data || {}),
+    });
+  }
+
+  async revokeInviteCode(id: string | number) {
+    return this.request(`/invite-codes/${id}/revoke`, {
+      method: 'PUT',
+    });
+  }
+
+  async deleteInviteCode(id: string | number) {
+    return this.request(`/invite-codes/${id}`, {
+      method: 'DELETE',
     });
   }
 }

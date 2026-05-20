@@ -111,6 +111,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     
     // Calendar
     Route::get('/calendar/events', [CalendarController::class, 'events']);
+    Route::get('/calendar/events/{id}', [CalendarController::class, 'show']);
     Route::post('/calendar/events', [CalendarController::class, 'store']);
     Route::put('/calendar/events/{id}', [CalendarController::class, 'update']);
     Route::delete('/calendar/events/{id}', [CalendarController::class, 'destroy']);
@@ -136,6 +137,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     Route::delete('/essential-documents/{id}', [\App\Http\Controllers\EssentialDocumentController::class, 'destroy'])->middleware('role:marketing');
 
     // Notifications
+    Route::post('/notifications/broadcast', [NotificationController::class, 'broadcast'])->middleware('role:super_admin');
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/count', [NotificationController::class, 'count']);
     Route::get('/notifications/projects', [NotificationController::class, 'getProjects']);
@@ -158,6 +160,8 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     // Invite Codes (Admin only)
     Route::post('/invite-codes/generate', [UserController::class, 'generateInviteCode'])->middleware('role:marketing');
     Route::get('/invite-codes', [UserController::class, 'listInviteCodes'])->middleware('role:marketing');
+    Route::put('/invite-codes/{id}/revoke', [UserController::class, 'revokeInviteCode'])->middleware('role:marketing');
+    Route::delete('/invite-codes/{id}', [UserController::class, 'deleteInviteCode'])->middleware('role:marketing');
     
 
     // Activity Logs (Admin only)

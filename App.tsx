@@ -425,6 +425,8 @@ const AppContent: React.FC = () => {
   });
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
   const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
+  const [pendingSphId, setPendingSphId] = useState<number | null>(null);
+  const [pendingAudiensiId, setPendingAudiensiId] = useState<number | null>(null);
   const { startTutorial, isCompleted, loading: tutorialLoading } = useTutorial();
 
   // ── Helper: compute full URL path from current navigation state ──
@@ -783,6 +785,12 @@ const AppContent: React.FC = () => {
             if (tab === 'calendar' && data?.eventId) {
               setPendingCalendarEventId(data.eventId);
             }
+            if (tab === 'sph' && data?.sphId) {
+              setPendingSphId(data.sphId);
+            }
+            if (tab === 'audiensi' && data?.audiensiId) {
+              setPendingAudiensiId(data.audiensiId);
+            }
           }} 
         />
       );
@@ -816,7 +824,13 @@ const AppContent: React.FC = () => {
           );
         }
         return <ClientsScreen onSelectClient={(client) => setSelectedClient(client)} onAddClient={() => setIsCreatingClient(true)} />;
-      case 'sph': return <SphManagementScreen onCreateClick={() => setIsCreatingSph(true)} />;
+      case 'sph': return (
+        <SphManagementScreen 
+          onCreateClick={() => setIsCreatingSph(true)} 
+          initialSphId={pendingSphId}
+          onInitialSphHandled={() => setPendingSphId(null)}
+        />
+      );
       case 'audiensi': 
         if (audiensiView === 'create') {
           return <AudiensiScreen onManageTemplates={() => setAudiensiView('manage')} onBack={() => setAudiensiView('list')} />;
@@ -837,7 +851,14 @@ const AppContent: React.FC = () => {
             />
           );
         }
-        return <AudiensiListScreen onCreateNew={() => setAudiensiView('create')} onManageTemplates={() => setAudiensiView('manage')} />;
+        return (
+          <AudiensiListScreen 
+            onCreateNew={() => setAudiensiView('create')} 
+            onManageTemplates={() => setAudiensiView('manage')} 
+            initialAudiensiId={pendingAudiensiId}
+            onInitialAudiensiHandled={() => setPendingAudiensiId(null)}
+          />
+        );
       case 'settings': return <SettingsScreen onManagePermissions={(userId) => {
         // No-op or redirect to user management if needed, but removing logic for now
         setActiveTab('settings');

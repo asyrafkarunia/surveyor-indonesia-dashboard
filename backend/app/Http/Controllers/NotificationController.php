@@ -27,6 +27,8 @@ class NotificationController extends Controller
             
             if ($request->type === 'Belum Dibaca') {
                 $query->where('is_read', false);
+            } elseif ($request->type === 'Tugas & Persetujuan') {
+                $query->whereIn('type', ['assignment', 'alert']);
             } else {
                 $query->where('type', $typeMap[$request->type] ?? $request->type);
             }
@@ -102,17 +104,41 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification deleted']);
     }
 
+    public function broadcast(Request $request)
+    {
+        if ($request->user()->role !== 'super_admin') {
+            return response()->json(['message' => 'Hanya Super Admin yang dapat mengirim broadcast.'], 403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $users = \App\Models\User::all();
+        
+        foreach ($users as $recipient) {
+            Notification::create([
+                'user_id' => $recipient->id,
+                'project_id' => null,
+                'type' => 'system',
+                'title' => $validated['title'],
+                'content' => $validated['content'],
+                'project_name' => null,
+                'tag' => 'Broadcast',
+                'is_read' => false,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Broadcast notification sent successfully',
+            'sent_to' => $users->count()
+        ]);
+    }
+
     public function getProjects(Request $request)
     {
-        // Get projects that have notifications for this user
-        $projectIds = Notification::where('user_id', $request->user()->id)
-            ->whereNotNull('project_id')
-            ->distinct()
-            ->pluck('project_id');
-
-        $projects = Project::whereIn('id', $projectIds)
-            ->select('id', 'code', 'title')
-            ->get();
+        $projects = Project::select('id', 'code', 'title')->get();
 
         return response()->json($projects);
     }

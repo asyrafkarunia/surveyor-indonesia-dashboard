@@ -6,9 +6,16 @@ import { id } from 'date-fns/locale';
 interface AudiensiListScreenProps {
   onCreateNew: () => void;
   onManageTemplates: () => void;
+  initialAudiensiId?: number | null;
+  onInitialAudiensiHandled?: () => void;
 }
 
-const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, onManageTemplates }) => {
+const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ 
+  onCreateNew, 
+  onManageTemplates,
+  initialAudiensiId,
+  onInitialAudiensiHandled
+}) => {
   const [letters, setLetters] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -18,6 +25,37 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({ onCreateNew, on
   const [dateFilter, setDateFilter] = useState('');
   const [stats, setStats] = useState<{ total_sent?: number; upcoming?: number; completed?: number; rejected?: number }>({});
   const dateInputRef = useRef<HTMLInputElement>(null);
+
+  const handleViewAudiensi = (letter: any) => {
+    const filePath = letter.generated_file_path;
+    if (filePath) {
+      const url = filePath.startsWith('http') 
+        ? filePath 
+        : `${(((import.meta as any).env.VITE_API_URL) || 'http://localhost:8000/api').replace(/\/api$/, '')}/storage/${filePath}`;
+      window.open(url, '_blank');
+    }
+  };
+
+  useEffect(() => {
+    if (initialAudiensiId) {
+      const fetchAndSetSearch = async () => {
+        try {
+          const letter = await api.getAudiensi(initialAudiensiId.toString());
+          if (letter && letter.company_name) {
+            setSearch(letter.company_name);
+            setPage(1);
+            handleViewAudiensi(letter);
+          }
+          if (onInitialAudiensiHandled) {
+            onInitialAudiensiHandled();
+          }
+        } catch (error) {
+          console.error('Failed to fetch initial Audiensi letter for deep link:', error);
+        }
+      };
+      fetchAndSetSearch();
+    }
+  }, [initialAudiensiId]);
 
   useEffect(() => {
     fetchLetters();

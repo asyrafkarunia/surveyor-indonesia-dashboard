@@ -211,14 +211,41 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Semua');
   const [selectedProject, setSelectedProject] = useState<number | ''>('');
-  const [selectedType, setSelectedType] = useState('Semua Tipe');
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [projectSearchInput, setProjectSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isDateInputFocused, setIsDateInputFocused] = useState(false);
+  const [selectedBroadcast, setSelectedBroadcast] = useState<Notification | null>(null);
   
   const { unreadCount, fetchUnreadCount, decrementUnreadCount, resetUnreadCount } = useNotification();
+
+  const renderContentWithLinks = (text: string) => {
+    if (!text) return '';
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline font-semibold break-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -227,7 +254,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
 
   useEffect(() => {
     fetchNotifications();
-  }, [activeTab, selectedProject, selectedType, selectedDate, searchQuery, currentPage]);
+  }, [activeTab, selectedProject, selectedDate, searchQuery, currentPage]);
 
   const fetchNotifications = async () => {
     setLoading(true);
@@ -242,10 +269,6 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
 
       if (selectedProject) {
         params.project_id = selectedProject;
-      }
-
-      if (selectedType !== 'Semua Tipe') {
-        params.type = selectedType;
       }
 
       if (selectedDate) {
@@ -277,7 +300,11 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
   const fetchProjects = async () => {
     try {
       const data = await api.getNotificationProjects();
-      setProjects(data.data || data);
+      const rawProjects = (data.data || data) as Project[];
+      const sortedProjects = [...rawProjects].sort((a, b) =>
+        a.title.localeCompare(b.title, 'id', { sensitivity: 'base' })
+      );
+      setProjects(sortedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -349,11 +376,30 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
       handleMarkAsRead(notification.id);
     }
     
+    if (notification.tag === 'Broadcast') {
+      setSelectedBroadcast(notification);
+      return;
+    }
+    
     // Check for calendar deep link
     const data = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
     if (notification.tag === 'Calendar' && data?.event_id) {
       if (onNavigate) {
         onNavigate('calendar', { eventId: data.event_id });
+      }
+      return;
+    }
+
+    if (data?.sph_id) {
+      if (onNavigate) {
+        onNavigate('sph', { sphId: data.sph_id });
+      }
+      return;
+    }
+
+    if (data?.audiensi_id) {
+      if (onNavigate) {
+        onNavigate('audiensi', { audiensiId: data.audiensi_id });
       }
       return;
     }
@@ -415,8 +461,11 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
+    setSearchInput(e.target.value);
+    if (!e.target.value) {
+      setSearchQuery('');
+      setCurrentPage(1);
+    }
   };
 
   const handleDateSelect = (date: string) => {
@@ -431,22 +480,22 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
     <main className="flex-1 w-full overflow-y-auto bg-slate-50 dark:bg-slate-900 px-4 py-8 sm:px-8 lg:px-20 custom-scrollbar">
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Daftar Notifikasi</h1>
             <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-2xl">Pantau pembaruan terbaru seputar proyek, tugas, dan aktivitas sistem Anda dalam satu tempat.</p>
           </div>
-          <div className="flex gap-3 shrink-0">
+          <div className="flex flex-row flex-wrap sm:flex-nowrap gap-3 shrink-0 items-center w-full md:w-auto justify-start sm:justify-end">
             <button 
               onClick={handleDeleteAll}
-              className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all uppercase tracking-widest shadow-sm"
+              className="h-10 px-4 flex items-center justify-center gap-2 rounded-lg border border-rose-200 dark:border-rose-900/30 text-rose-600 dark:text-rose-400 bg-rose-50/50 dark:bg-rose-950/10 hover:bg-rose-100/70 hover:text-rose-700 transition-all text-xs font-bold shadow-sm cursor-pointer"
             >
-              <span className="material-symbols-outlined text-lg text-slate-400 group-hover:text-primary">delete_sweep</span>
+              <span className="material-symbols-outlined text-lg">delete_sweep</span>
               <span>Hapus Semua</span>
             </button>
             <button 
               onClick={handleMarkAllAsRead}
-              className="flex items-center justify-center gap-2 rounded-lg bg-primary h-10 px-4 text-white text-sm font-bold hover:bg-primary-dark transition-all shadow-sm"
+              className="h-10 px-4 flex items-center justify-center gap-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition-all text-xs font-bold shadow-sm cursor-pointer"
             >
               <span className="material-symbols-outlined text-lg">done_all</span>
               <span>Tandai Semua Dibaca</span>
@@ -455,11 +504,11 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
         </div>
 
         {/* List Container */}
-        <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+        <div className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-visible">
           {/* Tabs */}
-          <div className="border-b border-slate-100 dark:border-slate-700 px-6">
+          <div className="border-b border-slate-100 dark:border-slate-700 px-6 rounded-t-xl">
             <div className="flex gap-8 overflow-x-auto no-scrollbar">
-              {['Semua', 'Belum Dibaca', 'Assignment', 'Sistem'].map(tab => (
+              {['Semua', 'Belum Dibaca'].map(tab => (
                 <button 
                   key={tab}
                   onClick={() => {
@@ -486,103 +535,189 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
 
           {/* Search & Filters */}
           <div className="flex flex-col lg:flex-row gap-4 px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 items-center justify-between">
-            <div className="w-full lg:w-auto relative group">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 group-focus-within:text-primary transition-colors">
+            <div className="w-full lg:flex-1 lg:max-w-md focus-within:lg:max-w-xl transition-all duration-300 relative group">
+              <button 
+                onClick={() => {
+                  setSearchQuery(searchInput);
+                  setCurrentPage(1);
+                }}
+                className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 group-focus-within:text-primary transition-colors cursor-pointer"
+                title="Cari"
+              >
                 <span className="material-symbols-outlined text-[20px]">search</span>
-              </span>
+              </button>
               <input 
-                className="w-full lg:w-72 pl-10 pr-4 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:ring-primary placeholder:text-slate-400 outline-none transition-all" 
-                placeholder="Cari notifikasi..." 
+                className="w-full pl-10 pr-4 h-10 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 focus:border-primary focus:ring-primary placeholder:text-slate-400 outline-none transition-all" 
+                placeholder="Cari notifikasi... (Tekan Enter)" 
                 type="text"
-                value={searchQuery}
+                value={searchInput}
                 onChange={handleSearchChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    setSearchQuery(searchInput);
+                    setCurrentPage(1);
+                  }
+                }}
               />
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto justify-end">
-              <select 
-                value={selectedProject}
-                onChange={(e) => {
-                  setSelectedProject(e.target.value ? Number(e.target.value) : '');
-                  setCurrentPage(1);
-                }}
-                className="w-full sm:w-auto text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
-              >
-                <option value="">Semua Proyek</option>
-                {projects.map(project => (
-                  <option key={project.id} value={project.id}>
-                    {project.code} - {project.title}
-                  </option>
-                ))}
-              </select>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <select 
-                  value={selectedType}
-                  onChange={(e) => {
-                    setSelectedType(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="flex-1 sm:flex-none text-xs font-bold py-2.5 pl-3 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors uppercase tracking-tight outline-none"
+              {/* Custom Project Dropdown */}
+              <div className="relative w-full sm:w-64 max-w-[280px] shrink-0">
+                <button
+                  onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+                  className="w-full min-h-[40px] h-auto flex items-center justify-between gap-2 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 focus:border-primary focus:ring-1 focus:ring-primary transition-colors tracking-tight outline-none shadow-sm cursor-pointer"
                 >
-                  <option>Semua Tipe</option>
-                  <option>Komentar</option>
-                  <option>Update Proyek</option>
-                  <option>Assignment</option>
-                  <option>Sistem</option>
-                  <option>Finance</option>
-                </select>
-                <div className="relative">
-                  <button 
-                    onClick={() => setShowDatePicker(!showDatePicker)}
-                    className={`flex items-center justify-center p-2.5 sm:p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-400 hover:text-primary transition-colors shadow-sm ${
-                      selectedDate ? 'text-primary border-primary' : ''
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[18px]">calendar_month</span>
-                  </button>
-                {showDatePicker && (
-                  <div className="absolute top-full right-0 mt-2 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-4">
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => handleDateSelect(e.target.value)}
-                      className="text-sm border border-slate-200 dark:border-slate-700 rounded px-3 py-2 focus:border-primary focus:ring-primary outline-none"
+                  <span className="line-clamp-2 break-words text-left leading-normal flex-1">
+                    {selectedProject 
+                      ? projects.find(p => p.id === selectedProject)?.title || 'Proyek Terpilih'
+                      : 'Semua Proyek'
+                    }
+                  </span>
+                  <span className="material-symbols-outlined text-base text-slate-400 shrink-0 select-none">
+                    keyboard_arrow_down
+                  </span>
+                </button>
+                
+                {isProjectDropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => {
+                        setIsProjectDropdownOpen(false);
+                        setProjectSearchInput('');
+                      }}
                     />
-                    {selectedDate && (
-                      <button
+                    <div className="absolute right-0 top-full mt-1.5 w-full sm:w-[320px] max-h-60 overflow-y-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 custom-scrollbar py-1">
+                      {/* Search bar inside Dropdown */}
+                      <div className="p-2 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/30 sticky top-0 z-10">
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                            <span className="material-symbols-outlined text-[16px]">search</span>
+                          </span>
+                          <input
+                            type="text"
+                            value={projectSearchInput}
+                            onChange={(e) => setProjectSearchInput(e.target.value)}
+                            placeholder="Cari nama proyek..."
+                            className="w-full pl-8 pr-7 py-1.5 text-xs rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 outline-none"
+                            onClick={(e) => e.stopPropagation()} // Prevent closing dropdown on click
+                          />
+                          {projectSearchInput && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setProjectSearchInput('');
+                              }}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 flex items-center"
+                            >
+                              <span className="material-symbols-outlined text-[14px]">close</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Dropdown Options List */}
+                      <div 
                         onClick={() => {
-                          setSelectedDate('');
-                          setShowDatePicker(false);
+                          setSelectedProject('');
                           setCurrentPage(1);
+                          setIsProjectDropdownOpen(false);
+                          setProjectSearchInput('');
                         }}
-                        className="mt-2 text-xs text-slate-500 dark:text-slate-400 hover:text-primary"
+                        className={`px-4 py-2 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors text-left ${
+                          selectedProject === '' ? 'text-primary bg-primary/5' : 'text-slate-700 dark:text-slate-300'
+                        }`}
                       >
-                        Hapus filter tanggal
-                      </button>
-                    )}
-                  </div>
+                        Semua Proyek
+                      </div>
+                      {(() => {
+                        const filtered = projects.filter(project => 
+                          project.title.toLowerCase().includes(projectSearchInput.toLowerCase())
+                        );
+                        if (filtered.length === 0) {
+                          return (
+                            <div className="px-4 py-3 text-xs text-slate-400 text-center">
+                              Tidak ada proyek ditemukan
+                            </div>
+                          );
+                        }
+                        return filtered.map(project => (
+                          <div 
+                            key={project.id}
+                            onClick={() => {
+                              setSelectedProject(project.id);
+                              setCurrentPage(1);
+                              setIsProjectDropdownOpen(false);
+                              setProjectSearchInput('');
+                            }}
+                            className={`px-4 py-2 text-xs font-semibold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors text-left break-words line-clamp-3 leading-relaxed border-t border-slate-50 dark:border-slate-700/30 ${
+                              selectedProject === project.id ? 'text-primary bg-primary/5 font-bold' : 'text-slate-700 dark:text-slate-300'
+                            }`}
+                            title={project.title}
+                          >
+                            {project.title}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </>
                 )}
+              </div>
+
+              {/* Date Filter Picker */}
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                <div className="relative flex items-center w-full sm:w-40">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    onClick={(e) => {
+                      try {
+                        e.currentTarget.showPicker();
+                      } catch (err) {
+                        console.error('showPicker error:', err);
+                      }
+                    }}
+                    className="w-full h-10 text-xs font-semibold px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring-0 cursor-pointer shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors outline-none"
+                  />
                 </div>
+                {selectedDate && (
+                  <button
+                    onClick={() => {
+                      setSelectedDate('');
+                      setCurrentPage(1);
+                    }}
+                    className="h-10 w-10 flex items-center justify-center rounded-lg border border-rose-200 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-colors cursor-pointer shrink-0"
+                    title="Hapus Tanggal"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">close</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
           {/* Items List */}
           {loading && notifications.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 rounded-b-xl">
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-emerald-500"></div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat...</p>
                 </div>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 rounded-b-xl">
               <div className="text-center">
                 <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">notifications_off</span>
                 <p className="text-slate-500 dark:text-slate-400 text-sm">Tidak ada notifikasi</p>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col divide-y divide-slate-100">
+            <div className={`flex flex-col divide-y divide-slate-100 ${!hasMore ? 'rounded-b-xl overflow-hidden' : ''}`}>
               {Object.entries(notificationGroups).map(([groupKey, groupNotifications]) => (
                 <React.Fragment key={groupKey}>
                   <div className="bg-slate-50 dark:bg-slate-900/50 px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
@@ -617,6 +752,60 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ onNavigate })
           )}
         </div>
       </div>
+
+      {/* Broadcast Detail Modal */}
+      {selectedBroadcast && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-xl overflow-hidden scale-in-center animate-in zoom-in-95 duration-200">
+            
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-primary/5 to-transparent flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary fill text-3xl">campaign</span>
+                <div>
+                  <h3 className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pengumuman Broadcast</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    Dikirim pada {new Date(selectedBroadcast.created_at).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedBroadcast(null)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-8 max-h-[60vh] overflow-y-auto">
+              <h4 className="text-lg font-black text-slate-900 dark:text-white mb-4 leading-snug">
+                {selectedBroadcast.title}
+              </h4>
+              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-wrap">
+                {renderContentWithLinks(selectedBroadcast.content)}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+              <button
+                onClick={() => setSelectedBroadcast(null)}
+                className="px-6 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-white transition-colors shadow-md"
+              >
+                Tutup
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </main>
   );
 };
