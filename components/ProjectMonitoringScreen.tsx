@@ -14,6 +14,8 @@ interface ProjectMonitoringScreenProps {
   externalSearchQuery?: string;
   onExternalSearchHandled?: () => void;
   onViewProjectDetail?: (projectId: string) => void;
+  initialSortByDeadline?: string;
+  onInitialSortByDeadlineHandled?: () => void;
 }
 
 const toPascalCase = (str: string) => {
@@ -42,6 +44,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   externalSearchQuery,
   onExternalSearchHandled,
   onViewProjectDetail,
+  initialSortByDeadline,
+  onInitialSortByDeadlineHandled,
 }) => {
   const { isMarketing } = useAuth();
   const isAdmin = isMarketing();
@@ -75,6 +79,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   const [selectedExportIds, setSelectedExportIds] = useState<string[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [clientIdFilter, setClientIdFilter] = useState<string>('');
+  const [sortByDeadline, setSortByDeadline] = useState<string>(initialSortByDeadline || '');
   const projectListRef = useRef<HTMLDivElement | null>(null);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -115,35 +120,6 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     }
   };
 
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response: any = await api.getProjects({
-        year: selectedYear,
-        search: searchQuery || undefined,
-        page: currentPage,
-        client_id: clientIdFilter || undefined,
-      });
-      
-      if (response && response.data) {
-        setProjects(response.data);
-        setPagination({
-          current_page: response.current_page,
-          last_page: response.last_page,
-          per_page: response.per_page,
-          total: response.total,
-        });
-      } else {
-        setProjects(response || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch projects:', error);
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchStats = async () => {
     try {
       const statsData = await api.getMonitoringStats(selectedYear);
@@ -158,8 +134,50 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   }, [selectedYear]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [selectedYear, searchQuery, currentPage, clientIdFilter]);
+    let active = true;
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const response: any = await api.getProjects({
+          year: selectedYear,
+          search: searchQuery || undefined,
+          page: currentPage,
+          client_id: clientIdFilter || undefined,
+          sort_by: sortByDeadline || undefined,
+        });
+
+        if (!active) return;
+
+        if (response && response.data) {
+          setProjects(response.data);
+          setPagination({
+            current_page: response.current_page,
+            last_page: response.last_page,
+            per_page: response.per_page,
+            total: response.total,
+          });
+        } else {
+          setProjects(response || []);
+        }
+      } catch (error) {
+        if (active) {
+          console.error('Failed to fetch projects:', error);
+          setProjects([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, [selectedYear, searchQuery, currentPage, clientIdFilter, sortByDeadline]);
 
   useEffect(() => {
     const fetchPicOptions = async () => {
@@ -219,6 +237,21 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
     }
   }, [externalSearchQuery]);
 
+  useEffect(() => {
+    if (initialSortByDeadline === 'deadline') {
+      setSortByDeadline('deadline');
+      setCurrentPage(1);
+      if (onInitialSortByDeadlineHandled) {
+        onInitialSortByDeadlineHandled();
+      }
+      setTimeout(() => {
+        if (projectListRef.current) {
+          projectListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [initialSortByDeadline]);
+
 
 
   const handleYearChange = (year: number) => {
@@ -235,7 +268,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   };
 
   const handleResetSearch = () => {
-    setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setSearchInput(''); setClientIdFilter(''); setTenderFilter('');
+    setPicFilter(''); setStatusFilter(''); setProjectTypeFilter(''); setProgressFilter(''); setContractFilter(''); setSearchQuery(''); setSearchInput(''); setClientIdFilter(''); setTenderFilter(''); setSortByDeadline('');
   };
 
   const formatDate = (dateString: string) => {
@@ -641,6 +674,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                   { id: 'status', label: 'Status', value: statusFilter, setter: setStatusFilter, display: statusFilter },
                   { id: 'progress', label: 'Progres', value: progressFilter, setter: setProgressFilter, display: progressOptions.find(o => o.value === progressFilter)?.label },
                   { id: 'contract', label: 'Kontrak', value: contractFilter, setter: setContractFilter, display: contractOptions.find(o => o.value === contractFilter)?.label },
+                  { id: 'priority', label: 'Prioritas', value: sortByDeadline, setter: setSortByDeadline, display: sortByDeadline === 'deadline' ? 'Deadline Terdekat' : '' },
                 ].filter(f => f.value);
                 
                 return (
@@ -674,6 +708,7 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                                 <FilterSelect label="Status" icon="flag" value={statusFilter} onChange={setStatusFilter} options={statusOptions} className="max-w-full!" />
                                 <FilterSelect label="Progres" icon="trending_up" value={progressFilter} onChange={setProgressFilter} options={progressOptions} className="max-w-full!" />
                                 <FilterSelect label="Durasi Kontrak" icon="schedule" value={contractFilter} onChange={setContractFilter} options={contractOptions} className="max-w-full!" />
+                                <FilterSelect label="Prioritas" icon="alarm" value={sortByDeadline} onChange={setSortByDeadline} options={[{ value: 'deadline', label: 'Deadline Terdekat' }]} className="max-w-full!" />
                               </div>
                               <div className="mt-6 flex justify-end">
                                 <button onClick={() => setIsFilterPopupOpen(false)} className="px-6 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-md hover:bg-slate-800 dark:hover:bg-white transition-all active:scale-95">

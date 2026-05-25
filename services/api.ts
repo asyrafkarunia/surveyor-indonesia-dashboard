@@ -261,13 +261,14 @@ class ApiService {
   }
 
   // Projects
-  async getProjects(params?: { status?: string; search?: string; page?: number; year?: number; client_id?: string | number }) {
+  async getProjects(params?: { status?: string; search?: string; page?: number; year?: number; client_id?: string | number; sort_by?: string }) {
     const query = new URLSearchParams();
     if (params?.status) query.append('status', params.status);
     if (params?.search) query.append('search', params.search);
     if (params?.page) query.append('page', params.page.toString());
     if (params?.year) query.append('year', params.year.toString());
     if (params?.client_id) query.append('client_id', params.client_id.toString());
+    if (params?.sort_by) query.append('sort_by', params.sort_by);
     const queryString = query.toString();
     return this.request(`/projects${queryString ? `?${queryString}` : ''}`);
   }

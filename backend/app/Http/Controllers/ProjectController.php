@@ -46,7 +46,14 @@ class ProjectController extends Controller
             $query->where('client_id', $request->client_id);
         }
 
-        $projects = $query->latest()->paginate(15);
+        if ($request->get('sort_by') === 'deadline') {
+            $query->whereIn('status', ['RUNNING', 'PENDING'])
+                  ->orderByRaw('CASE WHEN end_date IS NULL THEN 1 ELSE 0 END, end_date ASC');
+        } else {
+            $query->latest();
+        }
+
+        $projects = $query->paginate(15);
 
         return response()->json($projects);
     }

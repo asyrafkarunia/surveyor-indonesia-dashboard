@@ -4,8 +4,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { TutorialProvider, useTutorial } from './contexts/TutorialContext';
 import TutorialManager from './components/TutorialManager';
-import { 
-  DASHBOARD_STEPS, 
+import {
+  DASHBOARD_STEPS,
   MONITORING_STEPS,
   CALENDAR_STEPS,
   ACTIVITY_STEPS,
@@ -85,7 +85,7 @@ const DashboardHome: React.FC<{
         api.getTopProjects(),
         api.getRecentActivities(),
       ]);
-      
+
       setStats(statsData);
       setRevenueData(revenueDataResult);
       setTopProjects(topProjectsData);
@@ -133,50 +133,50 @@ const DashboardHome: React.FC<{
   };
 
   const statsCards = stats ? [
-    { 
-      title: 'Nilai Kontrak', 
-      value: stats.totalBudgetFormatted || 'Rp 0', 
+    {
+      title: 'Nilai Kontrak',
+      value: stats.totalBudgetFormatted || 'Rp 0',
       rawValue: stats.totalBudget || 0,
-      trend: stats.budgetTrend || 0, 
-      trendLabel: 'vs periode sebelumnya', 
-      icon: 'payments', 
-      iconColor: 'text-primary' 
+      trend: stats.budgetTrend || 0,
+      trendLabel: 'vs periode sebelumnya',
+      icon: 'payments',
+      iconColor: 'text-primary'
     },
-    { 
-      title: 'Nilai Realisasi', 
-      value: stats.totalActualFormatted || 'Rp 0', 
+    {
+      title: 'Nilai Realisasi',
+      value: stats.totalActualFormatted || 'Rp 0',
       rawValue: stats.totalActual || 0,
-      trend: stats.actualTrend || 0, 
-      trendLabel: 'vs periode sebelumnya', 
-      icon: 'account_balance_wallet', 
-      iconColor: 'text-emerald-600' 
+      trend: stats.actualTrend || 0,
+      trendLabel: 'vs periode sebelumnya',
+      icon: 'account_balance_wallet',
+      iconColor: 'text-emerald-600'
     },
-    { 
-      title: 'SPH Issued', 
-      value: stats.sphIssued?.toString() || '0', 
-      trend: stats.sphTrend || 0, 
-      trendLabel: 'vs periode sebelumnya', 
-      icon: 'description', 
-      iconColor: 'text-blue-600' 
+    {
+      title: 'SPH Issued',
+      value: stats.sphIssued?.toString() || '0',
+      trend: stats.sphTrend || 0,
+      trendLabel: 'vs periode sebelumnya',
+      icon: 'description',
+      iconColor: 'text-blue-600'
     },
-    { 
-      title: 'Win Rate', 
-      value: `${stats.winRate || 0}%`, 
-      trend: 0, 
-      trendLabel: 'dari total audiensi', 
-      icon: 'emoji_events', 
+    {
+      title: 'Win Rate',
+      value: `${stats.winRate || 0}%`,
+      trend: 0,
+      trendLabel: 'dari total audiensi',
+      icon: 'emoji_events',
       iconColor: 'text-amber-500'
     },
-    { 
-      title: 'Project Berjalan', 
-      value: stats.runningProjects?.toString() || '0', 
-      trend: 0, 
-      trendLabel: 'proyek aktif', 
-      icon: 'engineering', 
-      iconColor: 'text-purple-500' 
+    {
+      title: 'Project Berjalan',
+      value: stats.runningProjects?.toString() || '0',
+      trend: 0,
+      trendLabel: 'proyek aktif',
+      icon: 'engineering',
+      iconColor: 'text-purple-500'
     },
   ] : [];
-  
+
   return (
     <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -211,13 +211,13 @@ const DashboardHome: React.FC<{
               // 2: SPH Issued (Small)
               // 3: Win Rate (Small)
               // 4: Project Berjalan (Medium)
-              
+
               let wrapperClass = "flex-1 min-w-[200px]"; // Default (Large/Medium)
-              
+
               if (stat.title === 'SPH Issued' || stat.title === 'Win Rate') {
                 wrapperClass = "w-full sm:w-[48%] lg:w-40 xl:w-48 shrink-0";
               }
-              
+
               return (
                 <div key={stat.title} className={wrapperClass}>
                   <StatsCard {...stat} />
@@ -227,111 +227,111 @@ const DashboardHome: React.FC<{
           </div>
         )}
 
-      {/* Charts and Activity */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Main Chart */}
-        <div id="revenue-chart" className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Realisasi</h3>
-          <p className="text-xs text-slate-400">Nilai Kontrak = nilai proyek, Realisasi = nilai terserap</p>
+        {/* Charts and Activity */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Main Chart */}
+          <div id="revenue-chart" className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-2 relative z-10">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Nilai Kontrak vs Realisasi</h3>
+                <p className="text-xs text-slate-400">Nilai Kontrak = nilai proyek, Realisasi = nilai terserap</p>
+              </div>
+              <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-wider">
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-slate-200"></span>
+                  <span className="text-slate-500 dark:text-slate-400">Nilai Kontrak</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-primary"></span>
+                  <span className="text-slate-500 dark:text-slate-400">Realisasi</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-wider">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-slate-200"></span>
-                <span className="text-slate-500 dark:text-slate-400">Nilai Kontrak</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-primary"></span>
-                <span className="text-slate-500 dark:text-slate-400">Realisasi</span>
-              </div>
+            <div className="h-72 w-full">
+              {loading ? (
+                <div className="flex h-full items-center justify-center">
+                  <div className="text-sm text-slate-500 dark:text-slate-400">Loading chart data...</div>
+                </div>
+              ) : (
+                <Suspense fallback={<div className="flex h-full items-center justify-center"><div className="text-sm text-slate-500">Memuat Grafik...</div></div>}>
+                  <RevenueChart data={revenueData} />
+                </Suspense>
+              )}
             </div>
           </div>
-          <div className="h-72 w-full">
+
+          {/* Activity Feed */}
+          <div id="recent-activities" className="flex flex-col rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-1 relative z-10">
+            <h3 className="mb-8 text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h3>
             {loading ? (
-              <div className="flex h-full items-center justify-center">
-                <div className="text-sm text-slate-500 dark:text-slate-400">Loading chart data...</div>
+              <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
+            ) : recentActivities.length > 0 ? (
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <div className="relative h-10 w-10 shrink-0">
+                      {activity.avatar ? (
+                        <img
+                          src={activity.avatar}
+                          alt={activity.user}
+                          className="h-10 w-10 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '0';
+                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                          }}
+                          onLoad={(e) => {
+                            (e.target as HTMLImageElement).style.opacity = '1';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`absolute inset-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary dark:bg-primary/20 ${activity.avatar ? 'hidden' : ''}`}>
+                        {activity.user.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex flex-wrap items-center justify-between gap-1">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">{activity.user}</p>
+                        <p className="text-[10px] font-medium text-slate-400 whitespace-nowrap">{activity.time}</p>
+                      </div>
+                      <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">{translateDateIndo(activity.action)}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <Suspense fallback={<div className="flex h-full items-center justify-center"><div className="text-sm text-slate-500">Memuat Grafik...</div></div>}>
-                <RevenueChart data={revenueData} />
-              </Suspense>
+              <div className="flex-1 text-sm text-slate-400">Tidak ada aktivitas terbaru</div>
             )}
+            <button
+              onClick={() => onNavigate?.('activity')}
+              className="mt-6 flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-50 py-3 text-sm font-bold text-primary transition-all hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary"
+            >
+              <span>Lihat Semua Aktivitas</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
           </div>
         </div>
 
-        {/* Activity Feed */}
-        <div id="recent-activities" className="flex flex-col rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-md lg:col-span-1 relative z-10">
-          <h3 className="mb-8 text-base font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h3>
+        {/* Projects Table */}
+        <div id="monitoring-table" className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Proyek Aktif — Prioritas Deadline</h3>
+            <button
+              onClick={() => onNavigate?.('monitoring', { sortByDeadline: 'deadline' })}
+              className="text-sm font-bold text-primary hover:underline"
+            >
+              Lihat Semua Project
+            </button>
+          </div>
           {loading ? (
-            <div className="flex-1 text-sm text-slate-400">Loading activities...</div>
-          ) : recentActivities.length > 0 ? (
-            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-2">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="group flex gap-3 rounded-xl p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                  <div className="relative h-10 w-10 shrink-0">
-                    {activity.avatar ? (
-                      <img 
-                        src={activity.avatar} 
-                        alt={activity.user} 
-                        className="h-10 w-10 rounded-full object-cover border border-slate-100 dark:border-slate-700 shadow-sm transition-opacity duration-300" 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.opacity = '0';
-                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                        }}
-                        onLoad={(e) => {
-                          (e.target as HTMLImageElement).style.opacity = '1';
-                        }}
-                      />
-                    ) : null}
-                    <div className={`absolute inset-0 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary dark:bg-primary/20 ${activity.avatar ? 'hidden' : ''}`}>
-                      {activity.user.charAt(0).toUpperCase()}
-                    </div>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center justify-between gap-1">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">{activity.user}</p>
-                      <p className="text-[10px] font-medium text-slate-400 whitespace-nowrap">{activity.time}</p>
-                    </div>
-                    <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">{translateDateIndo(activity.action)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">Loading projects...</div>
           ) : (
-            <div className="flex-1 text-sm text-slate-400">Tidak ada aktivitas terbaru</div>
+            <Suspense fallback={<div className="p-6 text-center text-sm text-slate-500">Memuat tabel...</div>}>
+              <ProjectTable projects={topProjects} onSelectProjectId={(id) => onOpenProject?.(id)} />
+            </Suspense>
           )}
-          <button 
-            onClick={() => onNavigate?.('activity')}
-            className="mt-6 flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-50 py-3 text-sm font-bold text-primary transition-all hover:bg-primary hover:text-white dark:bg-slate-700/50 dark:hover:bg-primary"
-          >
-            <span>View All Activity</span>
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </button>
         </div>
       </div>
-
-      {/* Projects Table */}
-      <div id="monitoring-table" className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-md relative z-10">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 p-6">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Proyek Aktif — Prioritas Deadline</h3>
-          <button
-            onClick={() => onNavigate?.('monitoring')}
-            className="text-sm font-bold text-primary hover:underline"
-          >
-            See All Projects
-          </button>
-        </div>
-        {loading ? (
-          <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">Loading projects...</div>
-        ) : (
-          <Suspense fallback={<div className="p-6 text-center text-sm text-slate-500">Memuat tabel...</div>}>
-            <ProjectTable projects={topProjects} onSelectProjectId={(id) => onOpenProject?.(id)} />
-          </Suspense>
-        )}
-      </div>
-    </div>
-  </main>
+    </main>
   );
 };
 
@@ -424,6 +424,7 @@ const AppContent: React.FC = () => {
     return 'list';
   });
   const [globalProjectSearch, setGlobalProjectSearch] = useState<string>('');
+  const [globalProjectDeadlineFilter, setGlobalProjectDeadlineFilter] = useState<string>('');
   const [pendingCalendarEventId, setPendingCalendarEventId] = useState<number | null>(null);
   const [pendingSphId, setPendingSphId] = useState<number | null>(null);
   const [pendingAudiensiId, setPendingAudiensiId] = useState<number | null>(null);
@@ -509,23 +510,23 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     // Only proceed if tutorial data is fully loaded and user is established
     if (tutorialLoading || !user) return;
-    
+
     // Also skip if we just logged in and are still resetting navigation
     if (localStorage.getItem('just_logged_in')) return;
 
     const tutorialMap: Record<string, { id: string; steps: any[] }> = {
-      dashboard:        { id: 'dashboard',     steps: DASHBOARD_STEPS },
-      monitoring:       { id: 'monitoring',    steps: MONITORING_STEPS },
-      calendar:         { id: 'calendar',      steps: CALENDAR_STEPS },
-      activity:         { id: 'activity',      steps: ACTIVITY_STEPS },
-      clients:          { id: 'clients',       steps: CLIENTS_STEPS },
-      sph:              { id: 'sph',           steps: SPH_STEPS },
-      audiensi:         { id: 'audiensi',      steps: AUDIENSI_STEPS },
-      marketing_kanban: { id: 'kanban',        steps: KANBAN_STEPS },
-      settings:         { id: 'settings',      steps: SETTINGS_STEPS },
-      essential_docs:   { id: 'dokumen',       steps: DOKUMEN_STEPS },
-      approval:         { id: 'approval',      steps: APPROVAL_STEPS },
-      admin_log:        { id: 'admin_log',     steps: ADMIN_LOG_STEPS },
+      dashboard: { id: 'dashboard', steps: DASHBOARD_STEPS },
+      monitoring: { id: 'monitoring', steps: MONITORING_STEPS },
+      calendar: { id: 'calendar', steps: CALENDAR_STEPS },
+      activity: { id: 'activity', steps: ACTIVITY_STEPS },
+      clients: { id: 'clients', steps: CLIENTS_STEPS },
+      sph: { id: 'sph', steps: SPH_STEPS },
+      audiensi: { id: 'audiensi', steps: AUDIENSI_STEPS },
+      marketing_kanban: { id: 'kanban', steps: KANBAN_STEPS },
+      settings: { id: 'settings', steps: SETTINGS_STEPS },
+      essential_docs: { id: 'dokumen', steps: DOKUMEN_STEPS },
+      approval: { id: 'approval', steps: APPROVAL_STEPS },
+      admin_log: { id: 'admin_log', steps: ADMIN_LOG_STEPS },
     };
 
     const tutorial = tutorialMap[activeTab];
@@ -575,9 +576,9 @@ const AppContent: React.FC = () => {
           'Authorization': `Bearer ${token}`
         };
         fetch((import.meta as any).env.VITE_API_URL + '/activities/offline', {
-            method: 'POST',
-            headers: headers,
-            keepalive: true
+          method: 'POST',
+          headers: headers,
+          keepalive: true
         });
       }
     };
@@ -604,10 +605,10 @@ const AppContent: React.FC = () => {
 
           {/* Resonating Ripples (Expanding from center) */}
           <div className="absolute top-1/2 left-1/2 w-0 h-0">
-             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/20" />
-             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/20" style={{ animationDelay: '2s' }} />
-             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/10" style={{ animationDelay: '4s' }} />
-             <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/10" style={{ animationDelay: '6s' }} />
+            <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/20" />
+            <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/20" style={{ animationDelay: '2s' }} />
+            <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-white/10" style={{ animationDelay: '4s' }} />
+            <div className="animate-ripple-expand absolute w-[400px] h-[400px] rounded-full border border-cyan-400/10" style={{ animationDelay: '6s' }} />
           </div>
 
           <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-[#00B4AE] blur-[150px] animate-pulse opacity-10"></div>
@@ -617,8 +618,8 @@ const AppContent: React.FC = () => {
         <div className="relative z-10 flex flex-col items-center">
           {/* MARS Logo Icon - Seamless and glowing */}
           <div className="loading-logo-pulse loading-breathe mb-12 relative flex flex-col items-center justify-center">
-             <div className="absolute inset-0 bg-[#00B4AE] blur-[30px] opacity-40 rounded-full scale-[1.5] animate-pulse"></div>
-             <MarsIconLogo className="w-32 h-32 relative z-10 drop-shadow-[0_0_20px_rgba(0,180,174,0.6)]" color="white" />
+            <div className="absolute inset-0 bg-[#00B4AE] blur-[30px] opacity-40 rounded-full scale-[1.5] animate-pulse"></div>
+            <MarsIconLogo className="w-32 h-32 relative z-10 drop-shadow-[0_0_20px_rgba(0,180,174,0.6)]" color="white" />
           </div>
 
           {/* App name */}
@@ -672,16 +673,16 @@ const AppContent: React.FC = () => {
     if (activeTab === 'sph' && isCreatingSph) {
       return <CreateSphWizard onCancel={() => setIsCreatingSph(false)} onFinish={() => setIsCreatingSph(false)} />;
     }
-    
+
     if (activeTab === 'clients' && isCreatingClient) {
       return <CreateClientWizard onCancel={() => setIsCreatingClient(false)} onFinish={() => setIsCreatingClient(false)} />;
     }
 
     if (activeTab === 'marketing_kanban' && isCreatingMarketingTask) {
       return (
-        <CreateMarketingTaskScreen 
-          onCancel={() => setIsCreatingMarketingTask(false)} 
-          onSave={() => setIsCreatingMarketingTask(false)} 
+        <CreateMarketingTaskScreen
+          onCancel={() => setIsCreatingMarketingTask(false)}
+          onSave={() => setIsCreatingMarketingTask(false)}
         />
       );
     }
@@ -693,15 +694,15 @@ const AppContent: React.FC = () => {
         return null;
       }
       return (
-        <CreateProjectScreen 
+        <CreateProjectScreen
           onCancel={() => {
             setActiveTab('monitoring');
             setPreSelectedClientId(null);
-          }} 
+          }}
           onSave={() => {
             setActiveTab('monitoring');
             setPreSelectedClientId(null);
-          }} 
+          }}
           initialClientId={preSelectedClientId}
         />
       );
@@ -713,8 +714,13 @@ const AppContent: React.FC = () => {
           <DashboardHome
             onNavigate={(tab, data) => {
               setActiveTab(tab);
-              if (tab === 'monitoring' && data?.projectCode) {
-                setGlobalProjectSearch(data.projectCode);
+              if (tab === 'monitoring') {
+                if (data?.projectCode) {
+                  setGlobalProjectSearch(data.projectCode);
+                }
+                if (data?.sortByDeadline) {
+                  setGlobalProjectDeadlineFilter(data.sortByDeadline);
+                }
               }
             }}
             onOpenProject={(projectId) => {
@@ -729,6 +735,8 @@ const AppContent: React.FC = () => {
             onAddProject={() => setActiveTab('create_project')}
             externalSearchQuery={globalProjectSearch}
             onExternalSearchHandled={() => setGlobalProjectSearch('')}
+            initialSortByDeadline={globalProjectDeadlineFilter}
+            onInitialSortByDeadlineHandled={() => setGlobalProjectDeadlineFilter('')}
             onViewProjectDetail={(id) => {
               setSelectedProjectId(id);
               setActiveTab('project_detail');
@@ -760,15 +768,15 @@ const AppContent: React.FC = () => {
         );
       case 'approval': return <ProjectApprovalScreen />;
       case 'calendar': return (
-        <CalendarActivityScreen 
-          initialEventId={pendingCalendarEventId} 
-          onInitialEventHandled={() => setPendingCalendarEventId(null)} 
+        <CalendarActivityScreen
+          initialEventId={pendingCalendarEventId}
+          onInitialEventHandled={() => setPendingCalendarEventId(null)}
         />
       );
       case 'marketing_kanban': return <MarketingKanbanScreen onAddTask={() => setIsCreatingMarketingTask(true)} />;
       case 'essential_docs': return isAdmin ? <BerkasDokumenScreen /> : <DashboardHome />;
       case 'activity': return (
-        <FeedScreen 
+        <FeedScreen
           onNavigate={(tab, data) => {
             setActiveTab(tab);
             if (tab === 'calendar' && data?.eventId) {
@@ -784,7 +792,7 @@ const AppContent: React.FC = () => {
         />
       );
       case 'notifications': return (
-        <NotificationsScreen 
+        <NotificationsScreen
           onNavigate={(tab, data) => {
             setActiveTab(tab);
             if (tab === 'calendar' && data?.eventId) {
@@ -796,16 +804,16 @@ const AppContent: React.FC = () => {
             if (tab === 'audiensi' && data?.audiensiId) {
               setPendingAudiensiId(data.audiensiId);
             }
-          }} 
+          }}
         />
       );
-      case 'clients': 
+      case 'clients':
         if (selectedClient) {
           if (isEditingClient) {
             return (
-              <EditClientScreen 
-                client={selectedClient} 
-                onBack={() => setIsEditingClient(false)} 
+              <EditClientScreen
+                client={selectedClient}
+                onBack={() => setIsEditingClient(false)}
                 onSave={(updatedClient) => {
                   setSelectedClient(updatedClient);
                   setIsEditingClient(false);
@@ -815,9 +823,9 @@ const AppContent: React.FC = () => {
           }
 
           return (
-            <ClientDetailScreen 
-              client={selectedClient} 
-              onBack={() => setSelectedClient(null)} 
+            <ClientDetailScreen
+              client={selectedClient}
+              onBack={() => setSelectedClient(null)}
               onNewProject={(client) => {
                 setPreSelectedClientId(client.id);
                 setActiveTab('create_project');
@@ -830,36 +838,36 @@ const AppContent: React.FC = () => {
         }
         return <ClientsScreen onSelectClient={(client) => setSelectedClient(client)} onAddClient={() => setIsCreatingClient(true)} />;
       case 'sph': return (
-        <SphManagementScreen 
-          onCreateClick={() => setIsCreatingSph(true)} 
+        <SphManagementScreen
+          onCreateClick={() => setIsCreatingSph(true)}
           initialSphId={pendingSphId}
           onInitialSphHandled={() => setPendingSphId(null)}
         />
       );
-      case 'audiensi': 
+      case 'audiensi':
         if (audiensiView === 'create') {
           return <AudiensiScreen onManageTemplates={() => setAudiensiView('manage')} onBack={() => setAudiensiView('list')} />;
         }
         if (audiensiView === 'manage') {
           return (
-            <AudiensiTemplateManagementScreen 
-              onBack={() => setAudiensiView('list')} 
-              onAddTemplate={() => setAudiensiView('add-template')} 
+            <AudiensiTemplateManagementScreen
+              onBack={() => setAudiensiView('list')}
+              onAddTemplate={() => setAudiensiView('add-template')}
             />
           );
         }
         if (audiensiView === 'add-template') {
           return (
-            <AddAudiensiTemplateScreen 
-              onBack={() => setAudiensiView('manage')} 
+            <AddAudiensiTemplateScreen
+              onBack={() => setAudiensiView('manage')}
               onSave={() => setAudiensiView('manage')}
             />
           );
         }
         return (
-          <AudiensiListScreen 
-            onCreateNew={() => setAudiensiView('create')} 
-            onManageTemplates={() => setAudiensiView('manage')} 
+          <AudiensiListScreen
+            onCreateNew={() => setAudiensiView('create')}
+            onManageTemplates={() => setAudiensiView('manage')}
             initialAudiensiId={pendingAudiensiId}
             onInitialAudiensiHandled={() => setPendingAudiensiId(null)}
           />
@@ -875,8 +883,8 @@ const AppContent: React.FC = () => {
 
   const getBreadcrumbItems = () => {
     const items = [{ label: 'Home', id: 'dashboard' }];
-    
-    switch(activeTab) {
+
+    switch (activeTab) {
       case 'monitoring':
         items.push({ label: 'Monitoring Proyek', id: 'monitoring' });
         break;
@@ -900,13 +908,13 @@ const AppContent: React.FC = () => {
           items.push({ label: 'Tambah Kegiatan', id: 'create_marketing_task' });
         }
         break;
-      case 'activity': 
+      case 'activity':
         items.push({ label: 'Feed Aktivitas', id: 'activity' });
         break;
-      case 'notifications': 
+      case 'notifications':
         items.push({ label: 'Notifikasi', id: 'notifications' });
         break;
-      case 'clients': 
+      case 'clients':
         items.push({ label: 'Clients', id: 'clients' });
         if (isCreatingClient) {
           items.push({ label: 'Tambah Klien Baru', id: 'create-client' });
@@ -952,16 +960,16 @@ const AppContent: React.FC = () => {
     <div className="flex h-screen w-full font-display" style={{ background: 'var(--bg-stone)' }}>
       {/* Navigation Overlay for Mobile */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
       {/* Sidebar Navigation */}
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)} 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         activeId={activeTab === 'clients' && (selectedClient || isCreatingClient) ? 'clients' : activeTab}
         isAdmin={isAdmin}
         isApprover={isApprover()}
@@ -984,8 +992,8 @@ const AppContent: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header 
-          onMenuClick={() => setIsSidebarOpen(true)} 
+        <Header
+          onMenuClick={() => setIsSidebarOpen(true)}
           onNotificationClick={() => setActiveTab('notifications')}
           activeId={activeTab}
           user={user}
@@ -1005,15 +1013,15 @@ const AppContent: React.FC = () => {
             setActiveTab('monitoring');
           }}
         />
-        
+
         {/* Custom Breadcrumb for Sub-Screens */}
         {activeTab !== 'dashboard' && (
-           <header className="flex h-12 w-full items-center px-6 py-2 lg:px-10 shrink-0" style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--header-border)' }}>
+          <header className="flex h-12 w-full items-center px-6 py-2 lg:px-10 shrink-0" style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--header-border)' }}>
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
               {breadcrumbs.map((crumb, idx) => (
                 <React.Fragment key={`${crumb.id}-${idx}`}>
                   {idx > 0 && <span className="text-slate-200 scale-150">/</span>}
-                  <button 
+                  <button
                     onClick={() => {
                       if (crumb.id === 'dashboard') {
                         setActiveTab('dashboard');
@@ -1043,7 +1051,7 @@ const AppContent: React.FC = () => {
                       } else if (crumb.id === 'admin') {
                         setActiveTab('settings'); // Fallback for admin group crumbs
                       }
-                    }} 
+                    }}
                     className={`${idx === breadcrumbs.length - 1 ? 'text-slate-900 dark:text-white' : 'hover:text-primary transition-colors'}`}
                   >
                     {crumb.label}
@@ -1055,7 +1063,7 @@ const AppContent: React.FC = () => {
         )}
 
         <div className="flex-1 overflow-hidden flex flex-col bg-slate-50 dark:bg-slate-900">
-          <PageTransition 
+          <PageTransition
             transitionKey={`${activeTab}-${selectedClient?.id || ''}-${isCreatingSph}-${isCreatingClient}-${isEditingClient}-${isCreatingMarketingTask}-${selectedProjectId || ''}-${audiensiView}`}
           >
             <Suspense fallback={<LoadingScreen />}>
