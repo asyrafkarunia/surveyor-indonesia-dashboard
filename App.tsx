@@ -687,6 +687,11 @@ const AppContent: React.FC = () => {
     }
 
     if (activeTab === 'create_project') {
+      if (!isMarketing()) {
+        // Non-admin users cannot create projects — redirect to monitoring
+        setActiveTab('monitoring');
+        return null;
+      }
       return (
         <CreateProjectScreen 
           onCancel={() => {

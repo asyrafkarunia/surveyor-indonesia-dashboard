@@ -30,6 +30,18 @@ const toPascalCase = (str: string) => {
   return str.replace(/(\w)(\w*)/g, (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase());
 };
 
+const convertToBulletList = (notes: string) => {
+  if (!notes) return '';
+  return notes
+    .split(/[,\n]/)
+    .map(line => {
+      const cleaned = line.replace(/^[•\-\*\+\s]+/, '').trim();
+      return cleaned ? `• ${cleaned}` : '';
+    })
+    .filter(Boolean)
+    .join('\n');
+};
+
 const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, onBack }) => {
   const auth = useAuth();
   const canUpdateProject = auth?.canUpdateProject || (() => false);
@@ -57,6 +69,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [submittingAttachment, setSubmittingAttachment] = useState(false);
   const [attachmentToDelete, setAttachmentToDelete] = useState<string | null>(null);
+  const [showAllAttachments, setShowAllAttachments] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [users, setUsers] = useState<any[]>([]);
@@ -92,7 +105,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
       });
       setUseCustomPic(!!data?.custom_pic_name);
       setSelectedTeamMembers(data?.team_member_users?.map((u: any) => u.id) || []);
-      setCustomTeamNotes(data?.custom_team_notes || '');
+      setCustomTeamNotes(data?.custom_team_notes ? convertToBulletList(data.custom_team_notes) : '');
     } catch (e: any) {
       setError(e?.message || 'Gagal memuat detail proyek');
     } finally {
@@ -116,7 +129,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
       });
       setUseCustomPic(!!project.custom_pic_name);
       setSelectedTeamMembers(project.team_member_users?.map((u: any) => u.id) || []);
-      setCustomTeamNotes(project.custom_team_notes || '');
+      setCustomTeamNotes(project.custom_team_notes ? convertToBulletList(project.custom_team_notes) : '');
     }
   };
 
@@ -134,7 +147,14 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
         pic_id: useCustomPic ? null : (editData.pic_id ? Number(editData.pic_id) : null),
         custom_pic_name: useCustomPic ? editData.custom_pic_name || null : null,
         team_members: selectedTeamMembers,
-        custom_team_notes: customTeamNotes || null,
+        custom_team_notes: customTeamNotes 
+          ? customTeamNotes
+              .split('\n')
+              .map(x => x.replace(/^[•\-\*\+\s]+/, '').trim())
+              .filter(Boolean)
+              .map(x => `• ${x}`)
+              .join('\n')
+          : null,
       };
       await api.updateProject(projectId, payload);
       await fetchProject();
@@ -180,16 +200,24 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    // Limit: 1 file per project
+    const existingFileAttachments = project?.attachments?.filter((a: any) => a.file_type !== 'link') || [];
+    if (existingFileAttachments.length >= 1) {
+      showToast('Maksimal 1 file per proyek. Hapus file yang ada terlebih dahulu untuk mengunggah file baru.', 'error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    const file = files[0];
+    if (file.size > 20 * 1024 * 1024) {
+      showToast(`File ${file.name} melebihi batas maksimal 20MB`, 'error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     try {
       setSubmittingAttachment(true);
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.size > 20 * 1024 * 1024) {
-          showToast(`File ${file.name} melebihi 20MB dan dilewati`, 'error');
-          continue;
-        }
-        await api.uploadProjectAttachment(String(project.id), file);
-      }
+      await api.uploadProjectAttachment(String(project.id), file);
       await fetchProject(true);
       showToast('File berhasil diunggah', 'success');
     } catch (error: any) {
@@ -227,7 +255,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
 
   const handleDownloadAttachment = async (att: any) => {
     // 1. Cek apakah ini eksternal link (berdasarkan flag tipe, ketiadaan nama file, atau isi string)
-    const isLink = att.type === 'link' || (!att.file_name && (att.url || att.file_path));
+    const isLink = att.file_type === 'link' || att.type === 'link' || (!att.file_name && (att.url || att.file_path));
     const linkUrl = att.url || att.file_path;
     
     if (isLink && linkUrl) {
@@ -406,9 +434,11 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         onChange={(e) => setEditData(p => ({ ...p, description: e.target.value }))}
                        />
                      ) : (
-                       <p className="text-sm font-bold text-slate-600 dark:text-slate-400 whitespace-pre-line leading-relaxed italic bg-emerald-500/5 p-6 rounded-3xl border border-emerald-500/10">
-                          {project.description || 'Tidak ada deskripsi rinci.'}
-                       </p>
+                       <div className="rounded-3xl bg-emerald-500/5 border border-emerald-500/10" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                         <p className="text-sm font-bold text-slate-600 dark:text-slate-400 whitespace-pre-line leading-relaxed italic p-6">
+                            {project.description || 'Tidak ada deskripsi rinci.'}
+                         </p>
+                       </div>
                      )}
                   </div>
                </div>
@@ -429,7 +459,15 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                         </div>
                         <div className="flex-1 pt-1">
                            <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">{loc.address}</p>
-                           <p className="text-[10px] font-black text-slate-400 uppercase">Koordinat: {loc.latitude}, {loc.longitude}</p>
+                           <a
+                             href={`https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}`}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-[10px] font-black text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline uppercase tracking-wider inline-flex items-center gap-1.5"
+                           >
+                             <span className="material-symbols-outlined text-[14px]">map</span>
+                             Koordinat: {loc.latitude}, {loc.longitude}
+                           </a>
                         </div>
                       </div>
                     ))
@@ -441,7 +479,15 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                       <div className="flex-1 pt-1">
                          <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">{project.location_address}</p>
                          {project.latitude && project.longitude && (
-                           <p className="text-[10px] font-black text-slate-400 uppercase">Koordinat: {project.latitude}, {project.longitude}</p>
+                           <a
+                             href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-[10px] font-black text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline uppercase tracking-wider inline-flex items-center gap-1.5"
+                           >
+                             <span className="material-symbols-outlined text-[14px]">map</span>
+                             Koordinat: {project.latitude}, {project.longitude}
+                           </a>
                          )}
                       </div>
                     </div>
@@ -455,29 +501,37 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
 
             {/* Comments/Feed Section */}
             <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200 dark:border-slate-800 p-7 shadow-sm">
-                <h2 className="text-sm font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2 uppercase tracking-widest">
+                <h2 className="text-sm font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
                   <span className="material-symbols-outlined text-teal-600">forum</span>
                   Kolaborasi (Komentar)
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500 ml-auto">{project.comments?.length || 0}</span>
                 </h2>
-                <div className="space-y-4 mb-6 h-[320px] max-h-[320px] overflow-y-auto custom-scrollbar pr-2">
-                   {project.comments?.map((c: any) => (
-                     <div key={c.id} className="flex gap-4">
-                        <div className="size-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-teal-600 shrink-0">
-                           {c.user?.name?.[0]?.toUpperCase()}
-                        </div>
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
-                           <div className="flex justify-between items-center mb-1.5">
-                              <span className="text-xs font-black text-slate-900 dark:text-white">{c.user?.name}</span>
-                              <span className="text-[10px] font-bold text-slate-400">{formatDate(c.created_at)}</span>
-                           </div>
-                           <p className="text-[10px] text-slate-400 font-medium wrap-break-word leading-relaxed">{c.comment}</p>
-                        </div>
-                     </div>
-                   ))}
-                </div>
+                {project.comments?.length > 0 ? (
+                  <div className="space-y-4 mb-4 pr-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                     {project.comments.map((c: any) => (
+                       <div key={c.id} className="flex gap-4">
+                          <div className="size-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-teal-600 shrink-0">
+                             {c.user?.name?.[0]?.toUpperCase()}
+                          </div>
+                          <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
+                             <div className="flex justify-between items-center mb-1.5">
+                                <span className="text-xs font-black text-slate-900 dark:text-white">{c.user?.name}</span>
+                                <span className="text-[10px] font-bold text-slate-400">{formatDate(c.created_at)}</span>
+                             </div>
+                             <p className="text-xs text-slate-700 dark:text-slate-300 font-medium wrap-break-word leading-relaxed">{c.comment}</p>
+                          </div>
+                       </div>
+                     ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 mb-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                    <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[32px] mb-2">chat_bubble_outline</span>
+                    <p className="text-[11px] font-bold text-slate-400 italic">Belum ada komentar. Mulai diskusi proyek ini!</p>
+                  </div>
+                )}
                 <div className="relative group">
                   <input 
-                    className="w-full h-14 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl px-6 pr-16 text-sm font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-teal-500/10 transition-all outline-none"
+                    className="w-full h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl px-6 pr-16 text-sm font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-teal-500/10 transition-all outline-none"
                     placeholder="Apa kabar proyek hari ini?"
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
@@ -567,7 +621,7 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
                 <h2 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest flex items-center justify-between">
                   Anggota Tim
-                  {!isEditing && <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500">{(project.team_member_users?.length || 0) + (project.custom_team_notes ? project.custom_team_notes.split(/[,\n]/).filter((x: string) => x.trim()).length : 0)}</span>}
+                  {!isEditing && <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500">{(project.team_member_users?.length || 0) + (project.custom_team_notes ? project.custom_team_notes.split(/[,\n]/).filter((x: string) => x.replace(/^[•\-\*\+\s]+/, '').trim()).length : 0)}</span>}
                 </h2>
                 
                 {isEditing ? (
@@ -584,63 +638,118 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                           className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 outline-none"
                         />
                       </div>
-                      {teamSearch && (
-                        <div className="max-h-40 overflow-y-auto mt-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm custom-scrollbar p-2">
-                          {users.filter(u => u.name.toLowerCase().includes(teamSearch.toLowerCase())).slice(0, 10).map((user: any) => (
-                            <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg cursor-pointer transition-colors">
-                              <input
-                                type="checkbox"
-                                checked={selectedTeamMembers.includes(user.id)}
-                                onChange={(e) => {
-                                  if (e.target.checked) setSelectedTeamMembers(prev => [...prev, user.id]);
-                                  else setSelectedTeamMembers(prev => prev.filter(id => id !== user.id));
-                                }}
-                                className="text-teal-500 focus:ring-teal-500 rounded"
-                              />
-                              <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-500">{user.name[0]}</div>
-                              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{user.name}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
+                       {teamSearch && (
+                         <div className="max-h-40 overflow-y-auto mt-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm custom-scrollbar p-2">
+                           {users.filter(u => u.name.toLowerCase().includes(teamSearch.toLowerCase()))
+                             .sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''))
+                             .slice(0, 10).map((user: any) => (
+                             <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg cursor-pointer transition-colors">
+                               <input
+                                 type="checkbox"
+                                 checked={selectedTeamMembers.includes(user.id)}
+                                 onChange={(e) => {
+                                   if (e.target.checked) setSelectedTeamMembers(prev => [...prev, user.id]);
+                                   else setSelectedTeamMembers(prev => prev.filter(id => id !== user.id));
+                                 }}
+                                 className="text-teal-500 focus:ring-teal-500 rounded"
+                               />
+                               <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-500">{user.name?.[0]?.toUpperCase()}</div>
+                               <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{user.name}</span>
+                             </label>
+                           ))}
+                         </div>
+                       )}
                       
-                      {selectedTeamMembers.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-4">
-                          {selectedTeamMembers.map(id => {
-                            const user = users.find(u => u.id === id);
-                            if (!user) return null;
-                            return (
-                              <div key={id} className="flex items-center gap-2 bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 rounded-lg px-2 py-1">
-                                <span className="text-xs font-bold text-teal-700 dark:text-teal-400">{user.name}</span>
-                                <button onClick={() => setSelectedTeamMembers(prev => prev.filter(x => x !== id))} className="text-teal-400 hover:text-teal-600">
-                                  <span className="material-symbols-outlined text-[14px]">close</span>
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                       {selectedTeamMembers.length > 0 && (
+                         <div className="flex flex-wrap gap-2 mt-4">
+                           {selectedTeamMembers.map(id => {
+                             const user = users.find(u => u.id === id);
+                             return user;
+                           }).filter(Boolean)
+                             .sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''))
+                             .map((user: any) => (
+                               <div key={user.id} className="flex items-center gap-2 bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 rounded-lg px-2 py-1">
+                                 <span className="text-xs font-bold text-teal-700 dark:text-teal-400">{user.name}</span>
+                                 <button onClick={() => setSelectedTeamMembers(prev => prev.filter(x => x !== user.id))} className="text-teal-400 hover:text-teal-600">
+                                   <span className="material-symbols-outlined text-[14px]">close</span>
+                                 </button>
+                               </div>
+                             ))}
+                         </div>
+                       )}
                     </div>
                     
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tambahan Manual</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tambahan Manual</label>
                       <textarea
                         value={customTeamNotes}
-                        onChange={(e) => setCustomTeamNotes(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none"
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          // Auto-add bullet on first character if field was empty
+                          if (val.length === 1 && !val.startsWith('• ')) {
+                            val = '• ' + val;
+                          }
+                          setCustomTeamNotes(val);
+                        }}
+                        onKeyDown={(e) => {
+                          const target = e.target as HTMLTextAreaElement;
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const { selectionStart, value } = target;
+                            const before = value.substring(0, selectionStart);
+                            const after = value.substring(selectionStart);
+                            const newValue = before + '\n• ' + after;
+                            setCustomTeamNotes(newValue);
+                            // Set cursor position after bullet
+                            setTimeout(() => {
+                              target.selectionStart = target.selectionEnd = before.length + 3;
+                            }, 0);
+                          } else if (e.key === 'Backspace') {
+                            const { selectionStart, value } = target;
+                            // If cursor is right after "• " on a line, delete the whole bullet prefix
+                            const before = value.substring(0, selectionStart);
+                            if (before.endsWith('\n• ') || (before === '• ' && selectionStart === 2)) {
+                              e.preventDefault();
+                              const charsToRemove = before === '• ' ? 2 : 3; // "• " or "\n• "
+                              const newValue = value.substring(0, selectionStart - charsToRemove) + value.substring(selectionStart);
+                              setCustomTeamNotes(newValue);
+                              setTimeout(() => {
+                                target.selectionStart = target.selectionEnd = selectionStart - charsToRemove;
+                              }, 0);
+                            }
+                          }
+                        }}
+                        onFocus={(e) => {
+                          // Auto-add bullet when focusing empty field
+                          if (!customTeamNotes) {
+                            setCustomTeamNotes('• ');
+                            setTimeout(() => {
+                              const target = e.target as HTMLTextAreaElement;
+                              target.selectionStart = target.selectionEnd = 2;
+                            }, 0);
+                          }
+                        }}
+                        onBlur={() => {
+                          // Clean up if only bullet remains
+                          if (customTeamNotes.trim() === '•' || customTeamNotes.trim() === '') {
+                            setCustomTeamNotes('');
+                          }
+                        }}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none font-medium leading-relaxed"
                         rows={3}
-                        placeholder="Ketik nama anggota tim manual (pisahkan dengan koma atau baris baru)..."
+                        placeholder="Klik di sini untuk mulai menambahkan nama..."
                       />
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight italic">Tuliskan nama anggota tim yang belum memiliki akun pada sistem. Tekan Enter untuk menambah nama baru.</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div>
                      {project.team_member_users?.length > 0 || project.custom_team_notes ? (
-                       <>
-                         {project.team_member_users?.map((u: any) => (
+                       <div className="pr-1 space-y-3" style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                         {[...(project.team_member_users || [])].sort((a: any, b: any) => (a.name || '').localeCompare(b.name || '')).map((u: any) => (
                            <div key={u.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800">
                               <div className="size-9 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100">
-                                 {u.name?.[0]}
+                                 {u.name?.[0]?.toUpperCase()}
                               </div>
                               <div className="min-w-0">
                                  <p className="text-xs font-black text-slate-900 dark:text-white truncate">{u.name}</p>
@@ -648,18 +757,22 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                               </div>
                            </div>
                          ))}
-                         {project.custom_team_notes && project.custom_team_notes.split(/[,\n]/).filter((x: string) => x.trim()).map((name: string, i: number) => (
+                         {project.custom_team_notes && project.custom_team_notes.split(/[,\n]/)
+                           .map((name: string) => name.replace(/^[•\-\*\+\s]+/, '').trim())
+                           .filter(Boolean)
+                           .sort((a: string, b: string) => a.localeCompare(b))
+                           .map((cleanName: string, i: number) => (
                            <div key={`custom-${i}`} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-50 dark:border-slate-800">
                               <div className="size-9 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100">
-                                 {name.trim()[0]?.toUpperCase()}
+                                 {cleanName[0]?.toUpperCase()}
                               </div>
                               <div className="min-w-0">
-                                 <p className="text-xs font-black text-slate-900 dark:text-white truncate">{name.trim()}</p>
+                                 <p className="text-xs font-black text-slate-900 dark:text-white truncate">{cleanName}</p>
                                  <p className="text-[10px] font-bold text-slate-500 truncate">Tambahan Manual</p>
                               </div>
                            </div>
                          ))}
-                       </>
+                       </div>
                      ) : (
                        <p className="text-[11px] font-bold text-slate-400 italic py-2">Belum ada anggota spesifik.</p>
                      )}
@@ -671,32 +784,48 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
                 <h2 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest">Lampiran & File</h2>
                 <div className="space-y-2 mb-6">
-                  {project.attachments?.length > 0 ? (
-                    project.attachments.map((att: any) => (
-                      <div key={att.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-transparent group">
-                         <button 
-                           onClick={() => handleDownloadAttachment(att)}
-                           className="flex items-center gap-3 flex-1 min-w-0 hover:bg-teal-50 dark:hover:bg-teal-900/10 hover:border-teal-100 transition-all rounded-xl px-2 py-1 text-left"
-                         >
-                           <span className="material-symbols-outlined text-teal-600 group-hover:scale-110 transition-transform">attachment</span>
-                           <div className="min-w-0">
-                              <p className="text-xs font-black text-slate-900 dark:text-white truncate">{att.label || att.file_name || 'Lampiran'}</p>
-                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Download / Open Link</p>
+                   {project.attachments?.length > 0 ? (
+                     <>
+                       {project.attachments.slice(0, 3).map((att: any) => {
+                         const isLink = att.file_type === 'link' || att.type === 'link' || (!att.file_name && (att.url || att.file_path));
+                         const icon = isLink ? 'link' : 'description';
+                         const subText = isLink ? 'Buka Tautan / Open Link' : `Unduh File / Download (${att.file_size ? (att.file_size / (1024 * 1024)).toFixed(2) + ' MB' : 'Download File'})`;
+                         return (
+                           <div key={att.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-transparent group">
+                              <button 
+                                onClick={() => handleDownloadAttachment(att)}
+                                className="flex items-center gap-3 flex-1 min-w-0 hover:bg-teal-50 dark:hover:bg-teal-900/10 hover:border-teal-100 transition-all rounded-xl px-2 py-1 text-left"
+                              >
+                                <span className="material-symbols-outlined text-teal-600 group-hover:scale-110 transition-transform">{icon}</span>
+                                <div className="min-w-0">
+                                   <p className="text-xs font-black text-slate-900 dark:text-white truncate">{att.label || att.file_name || 'Lampiran'}</p>
+                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{subText}</p>
+                                </div>
+                              </button>
+                              {canEdit && (
+                                <button
+                                  onClick={() => setAttachmentToDelete(att.id)}
+                                  disabled={submittingAttachment}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                                  title="Hapus Lampiran"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              )}
                            </div>
+                         );
+                       })}
+                       {project.attachments.length > 3 && (
+                         <button
+                           onClick={() => setShowAllAttachments(true)}
+                           className="w-full mt-2 p-3 rounded-2xl bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-teal-600 dark:text-teal-400 text-xs font-bold hover:bg-teal-100 dark:hover:bg-teal-500/20 transition-all flex items-center justify-center gap-2"
+                         >
+                           <span className="material-symbols-outlined text-[16px]">visibility</span>
+                           Lihat Semua ({project.attachments.length} lampiran)
                          </button>
-                         {canEdit && (
-                           <button
-                             onClick={() => setAttachmentToDelete(att.id)}
-                             disabled={submittingAttachment}
-                             className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
-                             title="Hapus Lampiran"
-                           >
-                             <span className="material-symbols-outlined text-[18px]">delete</span>
-                           </button>
-                         )}
-                      </div>
-                    ))
-                  ) : (
+                       )}
+                     </>
+                   ) : (
                     <p className="text-[11px] font-bold text-slate-400 italic py-2">Tidak ada lampiran.</p>
                   )}
                 </div>
@@ -705,22 +834,41 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                   <div className="p-4 rounded-[22px] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 space-y-4">
                      <div>
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 mb-2">Upload File Baru</p>
-                       <div className="flex gap-2">
-                         <div
-                           onClick={() => fileInputRef.current?.click()}
-                           className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 text-teal-600 transition-all cursor-pointer ${submittingAttachment ? 'opacity-50 pointer-events-none' : ''}`}
-                         >
-                           <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
-                           <span className="text-[11px] font-bold">Pilih File (Max 20MB)</span>
-                         </div>
-                         <input
-                           ref={fileInputRef}
-                           type="file"
-                           className="hidden"
-                           multiple
-                           onChange={handleFileUpload}
-                         />
-                       </div>
+                       <p className="text-[9px] font-bold text-slate-400 px-1 mb-2 italic">Maksimal 1 file per proyek (maks. 20MB)</p>
+                       {(() => {
+                          const existingFiles = project?.attachments?.filter((a: any) => a.file_type !== 'link' && a.type !== 'link' && a.file_name) || [];
+                          const hasFile = existingFiles.length >= 1;
+                          return hasFile ? (
+                            <div className="flex flex-col gap-2">
+                              <div
+                                className="flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/20 text-slate-400 dark:text-slate-500 cursor-not-allowed select-none"
+                                title="Hapus file yang ada untuk mengunggah file baru"
+                              >
+                                <span className="material-symbols-outlined text-[20px]">lock</span>
+                                <span className="text-[11px] font-bold">Pilih File (Kuota Penuh)</span>
+                              </div>
+                              <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 px-1 italic">
+                                File proyek sudah diunggah. Hapus file yang ada terlebih dahulu untuk menggantinya.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2">
+                              <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10 text-teal-600 transition-all cursor-pointer ${submittingAttachment ? 'opacity-50 pointer-events-none' : ''}`}
+                              >
+                                <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
+                                <span className="text-[11px] font-bold">Pilih File (Max 20MB)</span>
+                              </div>
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                className="hidden"
+                                onChange={handleFileUpload}
+                              />
+                            </div>
+                          );
+                        })()}
                      </div>
 
                      <div className="relative">
@@ -801,6 +949,128 @@ const ProjectDetailScreen: React.FC<ProjectDetailScreenProps> = ({ projectId, on
                 className="flex-1 px-4 py-3 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 active:scale-95 transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
               >
                 {submittingAttachment ? 'Menghapus...' : 'Ya, Hapus'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Full Attachments List Modal */}
+      {showAllAttachments && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-teal-600">folder_open</span>
+                  Semua Lampiran
+                </h3>
+                <p className="text-[11px] font-bold text-slate-500 mt-1">Total {project?.attachments?.length || 0} lampiran</p>
+              </div>
+              <button
+                onClick={() => setShowAllAttachments(false)}
+                className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+              {(() => {
+                const links = project?.attachments?.filter((a: any) => a.file_type === 'link' || a.type === 'link' || (!a.file_name && (a.url || a.file_path))) || [];
+                const files = project?.attachments?.filter((a: any) => !(a.file_type === 'link' || a.type === 'link' || (!a.file_name && (a.url || a.file_path)))) || [];
+
+                return (
+                  <div className="space-y-8">
+                    {/* Files Section */}
+                    <div>
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px]">description</span>
+                        File Fisik ({files.length})
+                      </h4>
+                      {files.length > 0 ? (
+                        <div className="space-y-2">
+                          {files.map((att: any) => (
+                            <div key={att.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 group">
+                              <button 
+                                onClick={() => handleDownloadAttachment(att)}
+                                className="flex items-center gap-3 flex-1 min-w-0 hover:bg-teal-50 dark:hover:bg-teal-900/10 transition-all rounded-xl px-2 py-1 text-left"
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center shrink-0">
+                                  <span className="material-symbols-outlined">description</span>
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{att.file_name || 'File'}</p>
+                                  <p className="text-[10px] font-bold text-slate-500">Unduh File ({att.file_size ? (att.file_size / (1024 * 1024)).toFixed(2) + ' MB' : 'Download'})</p>
+                                </div>
+                              </button>
+                              {canEdit && (
+                                <button
+                                  onClick={() => setAttachmentToDelete(att.id)}
+                                  disabled={submittingAttachment}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all shrink-0"
+                                  title="Hapus File"
+                                >
+                                  <span className="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] font-bold text-slate-400 italic py-2 bg-slate-50 dark:bg-slate-800/30 rounded-xl px-4">Belum ada file yang diunggah.</p>
+                      )}
+                    </div>
+
+                    {/* Links Section */}
+                    <div>
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px]">link</span>
+                        Tautan / Link ({links.length})
+                      </h4>
+                      {links.length > 0 ? (
+                        <div className="space-y-2">
+                          {links.map((att: any) => (
+                            <div key={att.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 group">
+                              <button 
+                                onClick={() => handleDownloadAttachment(att)}
+                                className="flex items-center gap-3 flex-1 min-w-0 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all rounded-xl px-2 py-1 text-left"
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+                                  <span className="material-symbols-outlined">link</span>
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{att.label || att.url || att.file_path || 'Tautan'}</p>
+                                  <p className="text-[10px] font-bold text-blue-500 truncate">{att.url || att.file_path || 'Buka Tautan'}</p>
+                                </div>
+                              </button>
+                              {canEdit && (
+                                <button
+                                  onClick={() => setAttachmentToDelete(att.id)}
+                                  disabled={submittingAttachment}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all shrink-0"
+                                  title="Hapus Link"
+                                >
+                                  <span className="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] font-bold text-slate-400 italic py-2 bg-slate-50 dark:bg-slate-800/30 rounded-xl px-4">Belum ada tautan yang ditambahkan.</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end">
+              <button
+                onClick={() => setShowAllAttachments(false)}
+                className="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
+              >
+                Tutup
               </button>
             </div>
           </div>

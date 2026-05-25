@@ -40,7 +40,7 @@ const AudiensiListScreen: React.FC<AudiensiListScreenProps> = ({
     if (initialAudiensiId) {
       const fetchAndSetSearch = async () => {
         try {
-          const letter = await api.getAudiensi(initialAudiensiId.toString());
+          const letter = (await api.getAudiensi(initialAudiensiId.toString())) as any;
           if (letter && letter.company_name) {
             setSearch(letter.company_name);
             setPage(1);

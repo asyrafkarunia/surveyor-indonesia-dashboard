@@ -178,6 +178,7 @@ export interface SystemUser {
   status: 'Aktif' | 'Cuti' | 'Nonaktif';
   isCurrentUser?: boolean;
   employeeId?: string;
+  phone?: string;
 }
 
 
@@ -262,4 +263,19 @@ export interface MonitoringProjectItem {
   iconColor: string;
   iconBg: string;
   recentActivity?: string;
+}
+
+export interface SystemPermission {
+  id: string;
+  name: string;
+  description: string;
+  isEnabled: boolean;
+}
+
+export interface PermissionCategory {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  permissions: SystemPermission[];
 }

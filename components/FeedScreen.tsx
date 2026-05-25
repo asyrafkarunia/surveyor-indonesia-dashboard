@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import UserProfileModal from './UserProfileModal';
+import { showToast } from './Toast';
 
 interface Activity {
   id: number;
   type: 'project_update' | 'alert' | 'meeting' | 'post';
   content: string;
+  link?: string;
   project_id?: number;
   project?: {
     id: number;
@@ -351,7 +353,8 @@ const FeedItem: React.FC<{
                     <a 
                       key={file.id}
                       href={`${storageUrl}${file.path}`}
-                      download={file.name}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-primary transition-colors cursor-pointer shadow-sm"
                     >
                       <span className="material-symbols-outlined text-[18px] text-slate-400">description</span>
@@ -359,6 +362,20 @@ const FeedItem: React.FC<{
                     </a>
                   );
                 })}
+              </div>
+            )}
+
+            {item.link && (
+              <div className="mt-3">
+                <a 
+                  href={item.link.startsWith('http') ? item.link : `https://${item.link}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/20 px-3 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors shadow-sm cursor-pointer group"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-blue-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200">open_in_new</span>
+                  <span className="truncate max-w-[250px]">{item.link}</span>
+                </a>
               </div>
             )}
           </>
@@ -450,6 +467,8 @@ const FeedScreen: React.FC<{
   const [newPostContent, setNewPostContent] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [link, setLink] = useState('');
+  const [showLinkInput, setShowLinkInput] = useState(false);
   const [showAllOnlineUsers, setShowAllOnlineUsers] = useState(false);
   const [showDirectory, setShowDirectory] = useState(false);
   const [selectedPreviewUser, setSelectedPreviewUser] = useState<any>(null);
@@ -550,7 +569,7 @@ const FeedScreen: React.FC<{
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostContent.trim() && files.length === 0) return;
+    if (!newPostContent.trim() && files.length === 0 && !link) return;
 
     setIsPosting(true);
     try {
@@ -558,9 +577,11 @@ const FeedScreen: React.FC<{
         content: newPostContent,
         type: 'post',
         is_urgent: false,
+        link: link || undefined,
       }, files);
       setNewPostContent('');
       setFiles([]);
+      setLink('');
       fetchData();
     } catch (error) {
       console.error('Error creating post:', error);
@@ -620,7 +641,7 @@ const FeedScreen: React.FC<{
       });
 
       if (hasOversizedFile) {
-        alert('File tidak dapat dilampirkan karena melebihi batas maksimal 10MB.');
+        showToast('File tidak dapat dilampirkan karena melebihi batas maksimal 10MB.', 'error');
       }
 
       if (validFiles.length > 0) {
@@ -723,6 +744,49 @@ const FeedScreen: React.FC<{
                   ))}
                 </div>
               )}
+              {link && (
+                <div className="mt-2 flex items-center gap-2 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-2.5 py-1 text-xs text-blue-600 dark:text-blue-300 w-fit">
+                  <span className="material-symbols-outlined text-[16px] text-blue-500">link</span>
+                  <span className="truncate max-w-[250px] font-medium">{link}</span>
+                  <button type="button" onClick={() => setLink('')} className="text-slate-400 hover:text-red-500 transition-colors ml-1">
+                    <span className="material-symbols-outlined text-[16px]">close</span>
+                  </button>
+                </div>
+              )}
+              {showLinkInput && !link && (
+                <div className="mt-2 flex items-center gap-2 max-w-md animate-in fade-in duration-200">
+                  <input
+                    type="text"
+                    placeholder="Masukkan URL (misal: https://google.com)"
+                    className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 focus:border-primary focus:ring-primary outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) {
+                          setLink(val);
+                          setShowLinkInput(false);
+                        }
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const val = e.target.value.trim();
+                      if (val) {
+                        setLink(val);
+                      }
+                      setShowLinkInput(false);
+                    }}
+                    autoFocus
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowLinkInput(false)}
+                    className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors px-2 py-1"
+                  >
+                    Batal
+                  </button>
+                </div>
+              )}
               <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3">
                 <div className="flex gap-2">
                   <button 
@@ -733,10 +797,19 @@ const FeedScreen: React.FC<{
                     Lampirkan File
                   </button>
                   <input type="file" multiple ref={fileInputRef} className="hidden" onChange={handleFileSelect} />
+                  
+                  <button 
+                    type="button"
+                    onClick={() => setShowLinkInput(true)}
+                    className="flex items-center gap-1 rounded px-2 py-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-900 hover:text-primary transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">link</span>
+                    Sematkan Link
+                  </button>
                 </div>
                 <button 
                   onClick={handlePost}
-                  disabled={isPosting || (!newPostContent.trim() && files.length === 0)}
+                  disabled={isPosting || (!newPostContent.trim() && files.length === 0 && !link)}
                   className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPosting ? 'Memposting...' : 'Posting'}

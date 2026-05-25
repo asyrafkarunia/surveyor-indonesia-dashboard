@@ -388,7 +388,14 @@ const CreateProjectScreen: React.FC<CreateProjectScreenProps> = ({ onCancel, onS
           latitude: formData.latitude,
           longitude: formData.longitude
         }] : []),
-        custom_team_notes: customTeamNotes || null,
+        custom_team_notes: customTeamNotes 
+          ? customTeamNotes
+              .split('\n')
+              .map(x => x.replace(/^[•\-\*\+\s]+/, '').trim())
+              .filter(Boolean)
+              .map(x => `• ${x}`)
+              .join('\n')
+          : null,
         payment_terms: paymentTerms.filter(pt => pt.percentage || pt.amount || pt.term_date || pt.pic_name),
       };
 

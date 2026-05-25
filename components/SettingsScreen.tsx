@@ -5,6 +5,7 @@ import { api } from '../services/api';
 import { SystemUser, UserRoleType, UserRoleName } from '../types';
 import { SYSTEM_USERS } from '../constants';
 import { showToast } from './Toast';
+import { formatPhoneForWhatsApp } from '../utils/phoneFormat';
 
 /**
  * Helper to center crop and compress an image file to a perfect square (300x300 JPEG)
@@ -126,10 +127,31 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
   const [generateLoading, setGenerateLoading] = useState(false);
   const [generateRole, setGenerateRole] = useState('common');
   const [generateDivision, setGenerateDivision] = useState('');
+
+  const getAvailableDivisionsForRole = (role: string) => {
+    if (role === 'marketing' || role === 'head_section') {
+      return [{ value: 'Divisi Marketing & Sales', label: 'Divisi Marketing & Sales' }];
+    }
+    if (['approver', 'senior_manager', 'general_manager'].includes(role)) {
+      return [{ value: 'Divisi Manajemen', label: 'Divisi Manajemen' }];
+    }
+    return [
+      { value: 'Divisi Operasi', label: 'Divisi Operasi' },
+      { value: 'Divisi Keuangan', label: 'Divisi Keuangan' },
+      { value: 'Divisi SDM & Umum', label: 'Divisi SDM & Umum' },
+    ];
+  };
+
+  const handleGenerateRoleChange = (role: string) => {
+    setGenerateRole(role);
+    setGenerateDivision(''); // Reset selected division to force choosing a valid one
+  };
   
   // User management filters
   const [divisionFilter, setDivisionFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'division' | 'role'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     if (user) {
@@ -189,7 +211,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
           division: u.division || '',
           status: (u.status || 'Aktif') as 'Aktif' | 'Cuti' | 'Nonaktif',
           employeeId: '', // Not stored in database currently
-          isCurrentUser: u.id?.toString() === user?.id?.toString()
+          isCurrentUser: u.id?.toString() === user?.id?.toString(),
+          phone: u.phone || ''
         };
       });
       
@@ -211,8 +234,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
     e.preventDefault();
     setProfileLoading(true);
     try {
-      await api.updateProfile(profileData);
+      const updatedUser = await api.updateProfile(profileData);
+      setUser(updatedUser);
       showToast('Profil berhasil diperbarui', 'success');
+      await loadUsers();
     } catch (error: any) {
       showToast('Gagal memperbarui profil: ' + (error.message || 'Unknown error'), 'error');
     } finally {
@@ -243,6 +268,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
       setUser(prev => prev ? { ...prev, avatar: response.avatar } : null);
       
       showToast('Foto profil berhasil diperbarui', 'success');
+      await loadUsers();
     } catch (error: any) {
       console.error('Avatar upload failed:', error);
       showToast('Gagal memperbarui foto profil: ' + (error.message || 'Error tidak diketahui'), 'error');
@@ -458,6 +484,15 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
       loadInviteCodes();
     } catch (error: any) {
       showToast(error?.message || 'Gagal menghapus kode undangan', 'error');
+    }
+  };
+
+  const handleSort = (field: 'name' | 'division' | 'role') => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
     }
   };
 
@@ -700,6 +735,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                   type="tel" 
                   value={profileData.phone}
                   onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                  placeholder="08xx-xxxx-xxxx"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -745,6 +781,38 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
               u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
               u.roleName.toLowerCase().includes(searchQuery.toLowerCase());
             return matchesDivision && matchesSearch;
+          });
+
+          // Sort users dynamically
+          const sortedUsers = [...filteredUsers].sort((a, b) => {
+            let comparison = 0;
+            if (sortBy === 'name') {
+              comparison = a.name.localeCompare(b.name);
+            } else if (sortBy === 'division') {
+              const divA = a.division || '';
+              const divB = b.division || '';
+              comparison = divA.localeCompare(divB);
+              if (comparison === 0) {
+                comparison = a.name.localeCompare(b.name); // secondary sort by name
+              }
+            } else if (sortBy === 'role') {
+              const roleWeights: Record<string, number> = {
+                'super_admin': 1,
+                'head_section': 2,
+                'approver': 3,
+                'senior_manager': 4,
+                'general_manager': 5,
+                'marketing': 6,
+                'common': 7
+              };
+              const weightA = roleWeights[a.role] || 99;
+              const weightB = roleWeights[b.role] || 99;
+              comparison = weightA - weightB;
+              if (comparison === 0) {
+                comparison = a.name.localeCompare(b.name); // secondary sort by name
+              }
+            }
+            return sortOrder === 'asc' ? comparison : -comparison;
           });
 
           // Get unique divisions
@@ -886,7 +954,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                   <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Memuat data pengguna...</p>
                 </div>
               </div>
-            ) : filteredUsers.length === 0 ? (
+            ) : sortedUsers.length === 0 ? (
               <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
                 <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">person_search</span>
                 <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
@@ -898,16 +966,49 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
-                      <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400">
-                        <th className="px-5 py-3.5">Pengguna</th>
-                        <th className="px-5 py-3.5 hidden md:table-cell">Divisi</th>
-                        <th className="px-5 py-3.5">Peran</th>
-                        <th className="px-5 py-3.5 hidden sm:table-cell">Status</th>
-                        <th className="px-5 py-3.5 text-right">Aksi</th>
+                      <tr className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 select-none">
+                        <th className="px-5 py-3.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-[30%]" onClick={() => handleSort('name')}>
+                          <div className="flex items-center gap-1">
+                            Pengguna
+                            {sortBy === 'name' ? (
+                              <span className="material-symbols-outlined text-xs text-primary font-black">
+                                {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                              </span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[10px] text-slate-300 dark:text-slate-600">swap_vert</span>
+                            )}
+                          </div>
+                        </th>
+                        <th className="px-5 py-3.5 hidden md:table-cell cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-[22%]" onClick={() => handleSort('division')}>
+                          <div className="flex items-center gap-1">
+                            Divisi
+                            {sortBy === 'division' ? (
+                              <span className="material-symbols-outlined text-xs text-primary font-black">
+                                {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                              </span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[10px] text-slate-300 dark:text-slate-600">swap_vert</span>
+                            )}
+                          </div>
+                        </th>
+                        <th className="px-5 py-3.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-[20%]" onClick={() => handleSort('role')}>
+                          <div className="flex items-center gap-1">
+                            Peran
+                            {sortBy === 'role' ? (
+                              <span className="material-symbols-outlined text-xs text-primary font-black">
+                                {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                              </span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[10px] text-slate-300 dark:text-slate-600">swap_vert</span>
+                            )}
+                          </div>
+                        </th>
+                        <th className="px-5 py-3.5 hidden sm:table-cell text-slate-400 dark:text-slate-400 w-[18%]">Kontak</th>
+                        <th className="px-5 py-3.5 text-right text-slate-400 dark:text-slate-400 w-[10%]">Aksi</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                      {filteredUsers.map(userItem => {
+                      {sortedUsers.map(userItem => {
                         const canEdit = canModifyUser(userItem);
                         const canDelete = canDeleteUser(userItem);
                         const isSuperAdminUser = userItem.role === 'super_admin';
@@ -965,23 +1066,29 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                 <span className="text-[10px] text-slate-400">{userItem.roleName}</span>
                               </div>
                             </td>
-                            {/* Status */}
+                             {/* Kontak */}
                             <td className="px-5 py-3 hidden sm:table-cell">
-                              <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-tight ${
-                                userItem.status === 'Aktif' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
-                              }`}>
-                                <span className={`w-1.5 h-1.5 rounded-full ${
-                                  userItem.status === 'Aktif' ? 'bg-emerald-500' : 'bg-slate-400'
-                                }`} />
-                                {userItem.status}
-                              </span>
+                              {userItem.phone ? (
+                                <a 
+                                  href={`https://wa.me/${formatPhoneForWhatsApp(userItem.phone)}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-emerald-500 transition-colors group/link"
+                                  title="Hubungi via WhatsApp"
+                                >
+                                  <span className="material-symbols-outlined text-[16px] text-emerald-500 group-hover/link:scale-110 transition-transform">chat</span>
+                                  {userItem.phone}
+                                </a>
+                              ) : (
+                                <span className="text-xs text-slate-400 font-medium">-</span>
+                              )}
                             </td>
                             {/* Actions */}
                             <td className="px-5 py-3 text-right">
-                              <div className="flex items-center gap-0.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-0.5 justify-end">
                                 <button
                                   className={`p-1.5 rounded-lg transition-colors ${
-                                    canEdit ? 'text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'text-slate-300 cursor-not-allowed'
+                                    canEdit ? 'text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'text-slate-200 dark:text-slate-700 cursor-not-allowed'
                                   }`}
                                   disabled={!canEdit}
                                   title={canEdit ? (userItem.isCurrentUser ? 'Edit Profil Saya' : 'Edit Profil & Peran') : 'Tidak memiliki izin'}
@@ -996,7 +1103,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                 </button>
                                 <button
                                   className={`p-1.5 rounded-lg transition-colors ${
-                                    canDelete ? 'text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-slate-300 cursor-not-allowed'
+                                    canDelete ? 'text-slate-400 dark:text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20' : 'text-slate-200 dark:text-slate-700 cursor-not-allowed'
                                   }`}
                                   disabled={!canDelete}
                                   title={canDelete ? 'Hapus User' : userItem.isCurrentUser ? 'Tidak dapat menghapus akun sendiri' : 'Tidak memiliki izin hapus'}
@@ -1020,7 +1127,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
             {/* Footer summary */}
             <div className="text-center py-2">
               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                Menampilkan {filteredUsers.length} dari {totalUsers} pengguna
+                Menampilkan {sortedUsers.length} dari {totalUsers} pengguna
                 {divisionFilter !== 'all' && ` · Divisi: ${divisionFilter}`}
                 {searchQuery && ` · Pencarian: "${searchQuery}"`}
               </span>
@@ -1039,7 +1146,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                     <span className="material-symbols-outlined text-primary fill">key</span>
                     Kode Undangan Form Registrasi
                   </h3>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Generate kode untuk pendaftaran akun baru. Kode membawa role dan divisi yang ditentukan oleh admin. Berlaku 72 jam dan sekali pakai.</p>
+                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">Generate kode untuk pendaftaran akun baru. Kode membawa role dan divisi yang ditentukan oleh admin. Berlaku 24 jam dan sekali pakai.</p>
                 </div>
               </div>
               {/* Generate Invite Code Form */}
@@ -1054,20 +1161,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                       className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm font-bold text-slate-900 dark:text-white focus:border-primary outline-none"
                     >
                       <option value="">Pilih Divisi...</option>
-                      {user?.role !== 'marketing' && (
-                        <option value="Divisi Manajemen">Divisi Manajemen</option>
-                      )}
-                      <option value="Divisi Operasi">Divisi Operasi</option>
-                      <option value="Divisi Keuangan">Divisi Keuangan</option>
-                      <option value="Divisi Marketing & Sales">Divisi Marketing & Sales</option>
-                      <option value="Divisi SDM & Umum">Divisi SDM & Umum</option>
+                      {getAvailableDivisionsForRole(generateRole).map((div) => (
+                        <option key={div.value} value={div.value}>{div.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
                     <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Level Akses</label>
                     <select
                       value={generateRole}
-                      onChange={(e) => setGenerateRole(e.target.value)}
+                      onChange={(e) => handleGenerateRoleChange(e.target.value)}
                       className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm font-bold text-slate-900 dark:text-white focus:border-primary outline-none"
                     >
                       <option value="common">Umum (Common)</option>
@@ -1165,8 +1268,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                   <span className="material-symbols-outlined text-[18px]">content_copy</span>
                                 </button>
                               )}
-                              {/* Revoke — only for active unused codes */}
-                              {!ic.used_by && ic.is_active && (
+                              {/* Revoke — only for active unused codes, and authorized user */}
+                              {!ic.used_by && ic.is_active && (user?.role === 'super_admin' || user?.role === 'head_section' || ic.created_by === user?.id) && (
                                 <button
                                   onClick={() => handleRevokeInviteCode(ic.id)}
                                   className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
@@ -1175,8 +1278,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                                   <span className="material-symbols-outlined text-[18px]">block</span>
                                 </button>
                               )}
-                              {/* Delete — only for used, expired, or revoked codes */}
-                              {(ic.used_by || !ic.is_active || new Date(ic.expires_at) <= new Date()) && (
+                              {/* Delete — only for used, expired, or revoked codes, and authorized user */}
+                              {(ic.used_by || !ic.is_active || new Date(ic.expires_at) <= new Date()) && (user?.role === 'super_admin' || user?.role === 'head_section' || ic.created_by === user?.id) && (
                                 <button
                                   onClick={() => handleDeleteInviteCode(ic.id)}
                                   className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -1441,18 +1544,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2">Status Akun</label>
-                  <select
-                    value={editingUser.status}
-                    onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white focus:border-primary focus:ring-primary/20 outline-none"
-                  >
-                    <option value="Aktif">Aktif</option>
-                    <option value="Cuti">Cuti</option>
-                    <option value="Nonaktif">Nonaktif</option>
-                  </select>
-                </div>
+
               </div>
 
               <div className="flex gap-3 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">

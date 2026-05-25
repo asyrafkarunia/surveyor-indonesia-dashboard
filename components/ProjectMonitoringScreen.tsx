@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import ActivityModal from './ActivityModal';
 import StatsCard from './StatsCard';
 import FilterSelect from './FilterSelect';
@@ -42,6 +43,8 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
   onExternalSearchHandled,
   onViewProjectDetail,
 }) => {
+  const { isMarketing } = useAuth();
+  const isAdmin = isMarketing();
   const currentYear = new Date().getFullYear();
   const startYear = 2015;
   const endYear = 2026;
@@ -451,14 +454,16 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
             selectedStartYear={selectedYear}
             onChange={(sm, sy) => handleYearChange(sy)}
           />
-          <button 
-            id="add-project-btn" 
-            onClick={onAddProject} 
-            className="group flex items-center justify-center gap-3 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-xl shadow-primary/20 transition-all font-black text-xs uppercase tracking-widest active:scale-95 w-full sm:w-auto"
-          >
-            <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform duration-300">add</span>
-            <span>Tambah Proyek Baru</span>
-          </button>
+          {isAdmin && (
+            <button 
+              id="add-project-btn" 
+              onClick={onAddProject} 
+              className="group flex items-center justify-center gap-3 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-xl shadow-primary/20 transition-all font-black text-xs uppercase tracking-widest active:scale-95 w-full sm:w-auto"
+            >
+              <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform duration-300">add</span>
+              <span>Tambah Proyek Baru</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
@@ -700,10 +705,12 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                 );
               })()}
             </div>
-            <button type="button" onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-xl text-[10px] font-black text-primary transition-all duration-300 tracking-[0.15em] uppercase border border-primary/20 hover:border-primary/40 active:scale-95 shrink-0">
-              <span className="material-symbols-outlined text-[18px]">download</span>
-              Unduh CSV
-            </button>
+            {isAdmin && (
+              <button type="button" onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-xl text-[10px] font-black text-primary transition-all duration-300 tracking-[0.15em] uppercase border border-primary/20 hover:border-primary/40 active:scale-95 shrink-0">
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                Unduh CSV
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -817,19 +824,21 @@ const ProjectMonitoringScreen: React.FC<ProjectMonitoringScreenProps> = ({
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-5 text-right whitespace-nowrap relative" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={(e) => { e.stopPropagation(); setActionMenuProjectId(actionMenuProjectId === projectId ? null : projectId); }} className="text-[#64748b] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full">
-                            <span className="material-symbols-outlined text-2xl">more_vert</span>
-                          </button>
-                          {actionMenuProjectId === projectId && (
-                            <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-lg shadow-lg z-50">
-                              <button onClick={(e) => { e.stopPropagation(); confirmDeleteProject(project); }} className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">delete</span>
-                                Hapus Proyek
-                              </button>
-                            </div>
-                          )}
-                        </td>
+                        {isAdmin && (
+                          <td className="px-6 py-5 text-right whitespace-nowrap relative" onClick={(e) => e.stopPropagation()}>
+                            <button onClick={(e) => { e.stopPropagation(); setActionMenuProjectId(actionMenuProjectId === projectId ? null : projectId); }} className="text-[#64748b] dark:text-slate-300 hover:text-primary transition-colors p-1.5 rounded-full">
+                              <span className="material-symbols-outlined text-2xl">more_vert</span>
+                            </button>
+                            {actionMenuProjectId === projectId && (
+                              <div className="absolute right-4 mt-2 w-48 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-lg shadow-lg z-50">
+                                <button onClick={(e) => { e.stopPropagation(); confirmDeleteProject(project); }} className="w-full px-4 py-2 text-xs font-bold text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2">
+                                  <span className="material-symbols-outlined text-sm">delete</span>
+                                  Hapus Proyek
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        )}
                       </tr>
                     );
                   })

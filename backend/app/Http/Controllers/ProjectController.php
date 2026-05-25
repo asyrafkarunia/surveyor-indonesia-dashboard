@@ -313,6 +313,7 @@ class ProjectController extends Controller
             'payment_terms.*.pic_name' => 'nullable|string',
             'team_members' => 'nullable|array',
             'team_members.*' => 'nullable|integer|exists:users,id',
+            'custom_team_notes' => 'nullable|string',
             'locations' => 'nullable|array',
             'locations.*.address' => 'required|string',
             'locations.*.latitude' => 'required|numeric',

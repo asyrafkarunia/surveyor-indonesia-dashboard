@@ -37,6 +37,10 @@ const ProjectApprovalScreen: React.FC = () => {
     }
   }, [user, activeTab, isApprover, isHeadSection, isSeniorManager, isGeneralManager]);
 
+  useEffect(() => {
+    setSelectedItem(null);
+  }, [activeTab]);
+
   const loadApprovals = async () => {
     try {
       setLoading(true);

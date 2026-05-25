@@ -22,6 +22,7 @@ class Activity extends Model
         'attachment_type',
         'attachment_size',
         'is_urgent',
+        'link',
     ];
 
     protected $casts = [

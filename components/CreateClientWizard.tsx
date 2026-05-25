@@ -351,7 +351,7 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ onCancel, onFin
                     </label>
                     <input 
                       className="w-full h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-white focus:ring-primary/20 focus:border-primary px-4" 
-                      placeholder="0812-xxxx-xxxx" 
+                      placeholder="08xx-xxxx-xxxx" 
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => updateFormData('phone', e.target.value)}

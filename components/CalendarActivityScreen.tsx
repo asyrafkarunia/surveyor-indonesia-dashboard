@@ -19,7 +19,8 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
   initialEventId, 
   onInitialEventHandled 
 }) => {
-  const { user } = useAuth();
+  const { user, isMarketing } = useAuth();
+  const isAdmin = isMarketing();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -297,7 +298,7 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                   setDayViewDate(cellDate);
                   setDayViewEvents(dayEvents);
                   setIsDayListModalOpen(true);
-                } else {
+                } else if (isAdmin) {
                   setSelectedDate(cellDate);
                   setIsModalOpen(true);
                 }
@@ -311,18 +312,20 @@ const CalendarActivityScreen: React.FC<CalendarActivityScreenProps> = ({
                     {day}
                   </div>
 
-                  {/* Add button - Hidden on mobile, hover on desktop */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedDate(cellDate);
-                      setIsModalOpen(true);
-                    }}
-                    className="absolute left-2 top-2 hidden md:group-hover:flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-dark transition-all active:scale-90 z-20"
-                    title="Tambah aktivitas"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">add</span>
-                  </button>
+                  {/* Add button - Hidden on mobile, hover on desktop, only for admin */}
+                  {isAdmin && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDate(cellDate);
+                        setIsModalOpen(true);
+                      }}
+                      className="absolute left-2 top-2 hidden md:group-hover:flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-primary-dark transition-all active:scale-90 z-20"
+                      title="Tambah aktivitas"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span>
+                    </button>
+                  )}
 
                   {/* Events */}
                   <div className="mt-2 space-y-1.5 pb-8">
@@ -505,24 +508,28 @@ return (
             <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium">Pantau jadwal, deadline tender, dan kolaborasi pemasaran.</p>
           </div>
           <div className="flex items-center justify-end w-full sm:w-auto gap-3">
-            <button 
-              onClick={handleExport}
-              className="group flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors hover:border-primary hover:text-primary shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[20px]">file_download</span>
-              <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Export</span>
-            </button>
-            <button
-              onClick={() => {
-                setSelectedDate(null);
-                setIsModalOpen(true);
-              }}
-              id="add-event-btn"
-              className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[20px]">add</span>
-              <span className="hidden sm:inline">Tambah Aktivitas</span>
-            </button>
+            {isAdmin && (
+              <button 
+                onClick={handleExport}
+                className="group flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 transition-colors hover:border-primary hover:text-primary shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[20px]">file_download</span>
+                <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Export</span>
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  setSelectedDate(null);
+                  setIsModalOpen(true);
+                }}
+                id="add-event-btn"
+                className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark active:scale-95"
+              >
+                <span className="material-symbols-outlined text-[20px]">add</span>
+                <span className="hidden sm:inline">Tambah Aktivitas</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -237,6 +237,7 @@ const EditClientScreen: React.FC<EditClientScreenProps> = ({ client, onBack, onS
                     value={formData.phone}
                     onChange={handleChange}
                     required
+                    placeholder="08xx-xxxx-xxxx"
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-slate-700 dark:text-slate-200"
                   />
                 </div>

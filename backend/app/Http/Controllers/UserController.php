@@ -281,7 +281,7 @@ class UserController extends Controller
                 'role' => $request->input('role', 'common'),
                 'division' => $request->input('division', ''),
                 'created_by' => $request->user()->id,
-                'expires_at' => now()->addHours(72),
+                'expires_at' => now()->addHours(24),
                 'is_active' => true,
             ]);
 

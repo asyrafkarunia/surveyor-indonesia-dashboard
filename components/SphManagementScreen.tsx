@@ -23,6 +23,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const dateInputRef = useRef<HTMLInputElement>(null);
+  const [decisionModal, setDecisionModal] = useState<{isOpen: boolean, id: string, decision: 'accepted'|'rejected'|null}>({isOpen: false, id: '', decision: null});
 
   const statusOptions = [
     { value: '', label: 'Semua Status' },
@@ -36,7 +37,7 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({
     if (initialSphId) {
       const fetchAndSetSearch = async () => {
         try {
-          const sph = await api.getSph(initialSphId.toString());
+          const sph = (await api.getSph(initialSphId.toString())) as any;
           if (sph && sph.sph_no) {
             setSearch(sph.sph_no);
             setPage(1);
@@ -114,10 +115,16 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({
     }
   };
 
-  const handleDecision = async (id: string, decision: 'accepted' | 'rejected') => {
-    if (!confirm(`Apakah Anda yakin ingin mengubah status menjadi ${decision === 'accepted' ? 'Diterima' : 'Ditolak'}?`)) return;
+  const openDecisionModal = (id: string, decision: 'accepted' | 'rejected') => {
+    setDecisionModal({isOpen: true, id, decision});
+  };
+
+  const handleConfirmDecision = async () => {
+    if (!decisionModal.id || !decisionModal.decision) return;
+    
     try {
-      await api.clientDecisionSph(id, decision);
+      await api.clientDecisionSph(decisionModal.id, decisionModal.decision);
+      setDecisionModal({isOpen: false, id: '', decision: null});
       fetchSph();
     } catch (e) {
       console.error(e);
@@ -345,18 +352,18 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({
                       </td>
                       <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {!!sph.is_new_application && sph.status !== 'Approved' && sph.status !== 'Rejected' && (
+                          {!!sph.is_new_application && sph.status === 'waiting_client' && (
                             <>
                               <button
-                                onClick={() => handleDecision(sph.id.toString(), 'accepted')}
+                                onClick={() => openDecisionModal(sph.id.toString(), 'accepted')}
                                 className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                                 title="Diterima Klien"
                               >
                                 <span className="material-symbols-outlined text-[20px]">check_circle</span>
                               </button>
                               <button
-                                onClick={() => handleDecision(sph.id.toString(), 'rejected')}
-                                className="p-1.5 text-red-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                onClick={() => openDecisionModal(sph.id.toString(), 'rejected')}
+                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Ditolak Klien"
                               >
                                 <span className="material-symbols-outlined text-[20px]">cancel</span>
@@ -413,6 +420,37 @@ const SphManagementScreen: React.FC<SphManagementScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Custom Decision Modal */}
+      {decisionModal.isOpen && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className={`size-12 rounded-xl flex items-center justify-center mb-4 ${decisionModal.decision === 'accepted' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20' : 'bg-red-100 text-red-600 dark:bg-red-500/20'}`}>
+                <span className="material-symbols-outlined text-2xl">{decisionModal.decision === 'accepted' ? 'task_alt' : 'cancel'}</span>
+              </div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">Konfirmasi Keputusan</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Apakah Anda yakin ingin mengubah status dokumen ini menjadi <strong className={decisionModal.decision === 'accepted' ? 'text-emerald-600' : 'text-red-600'}>{decisionModal.decision === 'accepted' ? 'Diterima Klien' : 'Ditolak Klien'}</strong>? Aksi ini tidak dapat dibatalkan.
+              </p>
+            </div>
+            <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+              <button 
+                onClick={() => setDecisionModal({isOpen: false, id: '', decision: null})}
+                className="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleConfirmDecision}
+                className={`px-4 py-2 text-sm font-bold text-white rounded-lg transition-colors shadow-sm ${decisionModal.decision === 'accepted' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20' : 'bg-red-600 hover:bg-red-700 shadow-red-500/20'}`}
+              >
+                Konfirmasi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

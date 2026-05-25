@@ -79,6 +79,7 @@ class ActivityController extends Controller
             'mentions' => 'nullable|array',
             'mentions.*' => 'exists:users,id',
             'is_urgent' => 'sometimes|boolean',
+            'link' => 'nullable|string',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:10240', // Max 10MB per file
         ]);
@@ -162,6 +163,7 @@ class ActivityController extends Controller
             'mentions' => 'nullable|array',
             'mentions.*' => 'exists:users,id',
             'is_urgent' => 'sometimes|boolean',
+            'link' => 'nullable|string',
         ]);
 
         $activity->update($validated);
