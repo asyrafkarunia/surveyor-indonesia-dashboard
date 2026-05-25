@@ -69,7 +69,11 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     
     // Clients
     Route::get('/clients/stats', [ClientController::class, 'stats'])->middleware('role:marketing,approver,head_section,senior_manager,general_manager');
-    Route::apiResource('clients', ClientController::class)->middleware('role:marketing,approver,head_section,senior_manager,general_manager');
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::get('/clients/{id}', [ClientController::class, 'show']);
+    Route::post('/clients', [ClientController::class, 'store'])->middleware('role:marketing,approver,head_section,senior_manager,general_manager');
+    Route::put('/clients/{id}', [ClientController::class, 'update'])->middleware('role:marketing,approver,head_section,senior_manager,general_manager');
+    Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->middleware('role:marketing,approver,head_section,senior_manager,general_manager');
     Route::get('/clients/{id}/history', [ClientController::class, 'history']);
     Route::get('/clients/{id}/activities', [ClientController::class, 'activities']);
     
@@ -151,7 +155,7 @@ Route::middleware(['auth:sanctum', 'track.activity'])->group(function () {
     Route::put('/users/profile', [UserController::class, 'updateProfile']);
     Route::post('/users/avatar', [UserController::class, 'updateAvatar']);
     Route::put('/users/password', [UserController::class, 'updatePassword']);
-    Route::get('/users', [UserController::class, 'index'])->middleware('role:marketing');
+    Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store'])->middleware('role:marketing');
     Route::put('/users/{id}', [UserController::class, 'update'])->middleware('role:marketing');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('role:marketing');

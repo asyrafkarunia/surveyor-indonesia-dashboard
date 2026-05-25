@@ -293,13 +293,15 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-black text-blue-900">
-                    {formatDateTime(event.date, event.start_time)} - {formatTime(event.end_time)} WIB
+                    {formatTime(event.start_time)} - {formatTime(event.end_time)} WIB
                   </p>
                   <p className="text-xs text-blue-700">
                     Durasi: {(() => {
                       try {
-                        const start = new Date(`${event.date}T${event.start_time}`);
-                        const end = new Date(`${event.date}T${event.end_time}`);
+                        const dateOnly = event.date.split('T')[0];
+                        const start = new Date(`${dateOnly}T${event.start_time}`);
+                        const end = new Date(`${dateOnly}T${event.end_time}`);
+                        if (isNaN(start.getTime()) || isNaN(end.getTime())) return '';
                         const diffMs = end.getTime() - start.getTime();
                         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
                         const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
@@ -344,7 +346,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
           ) : null}
 
           {/* Recurring Information */}
-          {event.is_recurring && (
+          {!!event.is_recurring && (
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Aktivitas Berulang</label>
               <div className="p-4 rounded-xl bg-purple-50 border border-purple-200">
